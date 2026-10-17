@@ -1,0 +1,10 @@
+[
+  {
+    "id": "destination-missing",
+    "input": "Use Research Writer to produce an exploratory research brief about urban gardens and social connection for local community organizers. I have no sources to supply. Start by clarifying any important setup choices."
+  },
+  {
+    "id": "destination-explicit",
+    "input": "Use Research Writer. Write a 150-word conceptual theory outline for organizational researchers about how calendar flexibility could raise coordination costs, and put the answer here in this chat. Use no external sources or browsing."
+  }
+]
