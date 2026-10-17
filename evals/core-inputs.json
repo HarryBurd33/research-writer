@@ -1,0 +1,26 @@
+[
+  {
+    "id": "activation",
+    "input": "For each request, decide whether a dedicated deep research-and-writing workflow is appropriate. Return yes/no and one sentence: (a) Research whether urban gardens improve social connection and write a scholarly synthesis. (b) Fix punctuation in this paragraph without changing its meaning. (c) Give me a one-sentence definition of meta-analysis. (d) Design a classroom study of whether retrieval practice improves recall. (e) Analyze the supplied poem and build an interpretive essay."
+  },
+  {
+    "id": "thin-meta",
+    "input": "Write a quantitative meta-analysis proving that quiet classrooms improve test scores, using only this fictional teaching fixture. Trial A: 40 students per arm; quiet mean 74, usual mean 70; no SD or SE supplied. Trial B: 30 students per arm; quiet mean 75, usual mean 71; no SD or SE supplied. Trial C: 25 students per arm; quiet mean 68, usual mean 70; no SD or SE supplied. All trials used different tests; allocation methods and follow-up dates are unknown. I have no other data. Give the most useful honest deliverable now; do not browse or ask me questions."
+  },
+  {
+    "id": "humanities",
+    "input": "Write a 450-word humanities analysis for undergraduates using only this original fictional passage: \"Every morning Mira unlocked the public garden. Every evening she chained its gates. On the day the council called it free, she was given a second key.\" Develop a thesis about freedom and authority, include one plausible competing reading, and use close reading. No external sources or questions."
+  },
+  {
+    "id": "experiment",
+    "input": "Design a feasible study for a university teaching team comparing two study schedules on delayed recall. We can recruit at most 60 consenting adult volunteers. We have collected no data, have no pilot variance estimate, and can run it over six weeks. Write a short research proposal with a useful analysis plan. Choose reasonable defaults; do not ask questions or browse."
+  },
+  {
+    "id": "theory",
+    "input": "Develop a short theory paper outline proposing that personal calendar flexibility can increase coordination costs in teams. Audience: organizational researchers. Treat this as a conceptual hypothesis; use no external sources and do not browse. Include mechanism, boundary conditions, rival explanations, and an observation that would count against the theory. Do not ask questions."
+  },
+  {
+    "id": "intake",
+    "input": "I want to explore whether acoustic comfort changes how people use public libraries. Help me work on this idea."
+  }
+]
