@@ -2,7 +2,21 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
+This branch contains the **0.3.0 preview**. The stable version remains 0.2.0 on `main`. The requested expanded workflow passed its cases, but paired testing did not demonstrate a performance gain over the prior version; see the validation report.
+
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
+
+## Develop the research question
+
+Bring a rough idea as well as a finished question. The skill helps map the **territory** (the conversation and established knowledge), investigate a **niche** (a supported unresolved issue), and decide how to **occupy the niche** (a worthwhile contribution and a way to investigate it).
+
+It researches before fixing the thesis, offers distinct question/contribution options, compares them with the closest prior work, and asks about the choices that matter to you. It expands the conceptual picture before converging on a precise main question and connected subquestions. If the first idea is already well studied, it helps revise the niche instead of manufacturing a novelty claim.
+
+Novelty is assessed within the literature actually inspected. Replication, synthesis, reinterpretation, explanation, meaningful comparisons and feasible design validation may all be worthwhile contributions. A confident first-ever claim is not a requirement.
+
+Try:
+
+> Use Research Writer to develop my idea into a research question. Investigate the territory, help identify a worthwhile niche, and compare ways I could contribute. Produce a question-development brief here in chat and ask me about the choices that would change its direction.
 
 ## What it supports
 
@@ -40,6 +54,8 @@ Live research requires browsing or suitable research tools. Full texts may requi
 ## Files
 
 - [`skills/research-writer/SKILL.md`](skills/research-writer/SKILL.md): main workflow and discovery metadata.
+- [`skills/research-writer/references/question-development.md`](skills/research-writer/references/question-development.md): iterative territory, niche, contribution and novelty workflow.
+- [`skills/research-writer/references/argument-and-synthesis.md`](skills/research-writer/references/argument-and-synthesis.md): source roles, claims, evidence, warrants and fair counterarguments.
 - [`skills/research-writer/references`](skills/research-writer/references): writing modes, source handling, delivery and methodological sources.
 - [`skills/research-writer/templates/research-record.md`](skills/research-writer/templates/research-record.md): optional record for sustained projects.
 - [`portable/research-writer.md`](portable/research-writer.md): single-file version.
@@ -48,6 +64,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.2.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.3.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. No public-distribution license has been selected. Project-specific research and private development notes are excluded from this repository.
