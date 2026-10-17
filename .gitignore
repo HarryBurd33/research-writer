@@ -1,0 +1,6 @@
+.DS_Store
+.skill-forge-private/
+private/
+research-projects/
+__pycache__/
+*.pyc
