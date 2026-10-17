@@ -6,6 +6,8 @@ Translate the question into concepts, synonyms and relevant terminology; disting
 
 Use recent reviews to map the field, then inspect primary evidence for consequential claims. In humanities, a book, edition or archival item may be the primary source. Search for counterevidence, negative results, alternate mechanisms and limitations as well as supportive examples. Follow citations in both directions when supported by the available tools. Do not treat citation count, journal reputation or a source's confidence as proof of a claim.
 
+When the question is developing, connect search passes to [question development](question-development.md): orient to the territory, compare closest precedents, challenge the apparent niche, and resolve a specific uncertainty. Trace what each pass changed about the question or contribution. Annotations should separate accurate source summary, critical appraisal, and project inference. Assign useful source roles and compare across sources instead of assuming a stack of summaries is a synthesis.
+
 Record search source, query, date, filters, coverage and selection rationale at a level proportionate to the artifact. Do not imply that approximate search counts or connector snippets constitute screened records. For bounded exploration, stop when the agreed scope is covered and additional searches cease changing the major claims, while documenting unresolved gaps. For a systematic review, complete the planned searches and screening; thematic saturation is not a substitute.
 
 ## Verify before citing
