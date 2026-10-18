@@ -2,6 +2,8 @@
 
 Read the sections relevant to the request; do not impose every section on every project. Confirm the intended artifact through the core intake before choosing its depth. Reporting checklists help describe work; they do not replace doing it.
 
+If the question or intended contribution is unsettled, use [question development](question-development.md). A proposal, theory and humanities analysis may occupy a niche in different ways; none requires claiming an unprecedented invention. Use [argument and synthesis](argument-and-synthesis.md) to align question, evidence, inference and genre.
+
 ## Exploratory brief or literature synthesis
 
 Define the question and boundaries. Group evidence by claims, mechanisms, methods or themes. Explain disagreements and compare source quality rather than counting citations. State which areas were covered and which were not. End with the supported answer, important unknowns and useful next steps. Call a bounded narrative synthesis what it is; do not label it systematic on the strength of extensive browsing alone.
