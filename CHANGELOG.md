@@ -1,5 +1,14 @@
 # Changes
 
+## Validation and usage update — 2026-10-18
+
+- Added a practical invocation guide for the supported writing modes and sustained projects.
+- Added eight fictional evidence/intake/genre cases with independent grading: 28/28 required checks passed on installed v0.3.0.
+- Added a reproducible three-trial calculation that handles a shared control, with retained inputs and expected outputs.
+- Corrected installation/status reporting: v0.3.0 was explicitly installed by the user after the earlier inconclusive comparison.
+- Refreshed the portable file's generated notice for the current builder; its workflow text remains unchanged.
+- Kept skill instructions and version unchanged; this round found no demonstrated failure warranting a behavioral patch. These results establish baseline assurance, not a performance improvement.
+
 ## 0.3.0 preview — 2026-10-17
 
 - Added a research-driven dialogue for developing an encompassing but answerable question.
