@@ -1,5 +1,11 @@
 # Changes
 
+## Portable packaging correction — 2026-10-18
+
+- Corrected the portable header to identify Research Writer and its research/writing purpose.
+- Added an original standalone standard-library builder with source digest, bundled resource links and a nonwriting `--check` option.
+- Verified unchanged substantive resource text and detection of a temporary canonical-source edit; skill instructions and installed version remain unchanged.
+
 ## Validation and usage update — 2026-10-18
 
 - Added a practical invocation guide for the supported writing modes and sustained projects.
