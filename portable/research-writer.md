@@ -9,8 +9,8 @@ Without executable checks, retain behavior changes as unverified candidates.
 Executable helpers are optional and are distributed with the full skill package;
 their references below describe capabilities, not tools available in plain chat.
 
-Generated from canonical instructions and all reference, template, and question
-resources. Edit those sources and regenerate this file; do not edit this bundle.
+Generated from canonical instructions and all reference, template, question,
+and bundled sub-skill resources. Edit those sources and regenerate this file; do not edit this bundle.
 
 Source SHA-256: `b8097027c3d11d496fd2d97d99eb526a2094c21a6ed469f473bed6f07cf3adfc`
 
