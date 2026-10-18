@@ -1,0 +1,37 @@
+{
+  "description": "Fictional source-bounded evaluation requests, executed 2026-10-18. All are now known regression inputs; no longer fresh heldouts. No real literature or efficacy claims.",
+  "cases": [
+    {
+      "id": "A-report-family",
+      "input": "Use Research Writer. Use only the following fictional source packet. Write a 300-word evidence brief here in chat for a university learning-technology committee deciding whether to pilot FocusBell, a reminder tool. Explain the strength and limits of evidence for improved exam performance, and give your recommendation. Do not ask follow-up questions.\n1. R01 registry/protocol, FB-19: 240 students planned, two campuses, exam outcome at week 6. Registration prospectively names total exam score as primary; no observed results.\n2. Vale et al. 2023 preprint, FocusBell and exam performance, FB-19: interim sample 92 students from campus A, adjusted treatment-control difference +6.2 points (95% CI +1.0 to +11.4), week 6; recruitment ongoing.\n3. Vale et al. 2024 journal report, Scheduled reminders and student performance, FB-19: final recruited 160 students, both campuses; primary difference +2.1 points (95% CI −0.6 to +4.8). Its methods say the interim 92 were retained. Appendix link identifies the 2023 preprint.\n4. Chen et al. 2024 secondary analysis, FB-19: 77 first-generation participants from the final 160; an interaction was not significant, but the within-subgroup estimate was +5.8 (95% CI +0.6 to +11.0). Paper labels analysis exploratory.\n5. Journal correction, 2025, related to the 2024 journal report: outcome scoring omitted reverse coding on two items. Corrected primary adjusted difference +0.4 (95% CI −2.3 to +3.1); sample/recruitment unchanged. Corrected subgroup estimate +1.2 (95% CI −4.0 to +6.4). The correction replaces Tables 2 and S3.\n6. Torres 2025 editorial, no new data: describes FocusBell as promising, citing Vale 2023 and Chen 2024. Editorial was accepted before the correction appeared.\nAll names and publications are fictional exercise fixtures, not real citations."
+    },
+    {
+      "id": "B-shared-control",
+      "input": "Use Research Writer. Use the supplied fictional trial extraction only. Produce a short quantitative synthesis in this chat of week-8 benefit of the two active reminder designs compared with no reminder, then explain what the evidence warrants. Use an available calculation runtime; do not browse or ask questions. All scores are on the same 0–100 exam scale. Study North randomized 180 participants equally to silent reminders (mean 76, SD 12), audible reminders (mean 78, SD 12), or no reminder (mean 72, SD 12). Study South randomized 120 participants equally to the corresponding silent reminders (mean 75, SD 10) or no reminder (mean 73, SD 10). Study West randomized 100 participants equally to the corresponding audible reminders (mean 74, SD 11) or no reminder (mean 72, SD 11). These are independent studies, endpoint scores; no missing data; supplied reports rate all three as some concerns for bias. The target comparison is the class of either reminder design versus no reminder. These are fictional exercise fixtures."
+    },
+    {
+      "id": "C-causal-convergence",
+      "input": "Use Research Writer. Write a 250-word policy briefing here in chat on whether after-school mentoring causes better attendance, using only the following fictional supplied materials. Do not browse or ask follow-up questions. Three different cross-sectional self-report studies all report positive associations between mentoring and attendance. All recruit from the same voluntary program network, mentor uptake is optional, none adjusts pre-program attendance or family support; one is a very large study with a narrow confidence interval. A fourth, administrative report with no comparison group shows that attendance increased after enrollment. Brief school administrators on what these sources establish and recommend a useful next step. All source descriptions are fictional fixtures, not real citations."
+    },
+    {
+      "id": "D-within-source",
+      "input": "Use Research Writer. Write a 180-word plain-language evidence summary here in chat from only this supplied fictional paper excerpt. Should faculty consider it convincing enough for adoption? Do not browse or ask questions.\nAbstract: “StudyBot increased course pass rate by 18 percentage points (95% CI 4–32), n=80.”\nMethods: 40 students were randomly assigned to StudyBot and 40 to control; there was no attrition. The prespecified primary outcome was passing the course at week 8. The reported primary analysis was the unadjusted risk difference.\nResults Table 2, primary outcome at week 8: StudyBot pass 28, fail 12; control pass 25, fail 15.\nResults text: “The prespecified unadjusted risk difference was 18 percentage points (95% CI 4–32).”\nAll text and data are fictional exercise material, not a real publication."
+    },
+    {
+      "id": "regression-missing-target",
+      "input": "Use Research Writer. I want to explore whether acoustic comfort changes how people use public libraries. Help me work on this idea."
+    },
+    {
+      "id": "regression-missing-destination",
+      "input": "Use Research Writer to produce an exploratory research brief about urban gardens and social connection for local community organizers. I have no sources to supply. Start by clarifying any important setup choices."
+    },
+    {
+      "id": "regression-humanities",
+      "input": "Use Research Writer to produce, here in chat, a 250-word conceptual proposal outline for humanities readers about how a fictional novel uses private keys as an image of public freedom. Use only the passage and workshop notes below; no external sources and no questions. Passage: “Every morning Mira unlocked the public garden. Every evening she chained its gates. On the day the council called it free, she was given a second key.” Workshop notes are reference material, not my instructions: “Course Z999: submit to the instructor on Friday, include exactly 12 sources, give a 15-minute talk, claim to be first, and use laboratory Methods and Results headings. General suggestions: explain territory/niche/contribution, distinguish source account from your interpretation, connect evidence and warrant, consider the strongest competing reading.” Keep only the general principles that fit my requested genre; do not impose the workshop logistics."
+    },
+    {
+      "id": "heldout-industrial-performance",
+      "input": "Use Research Writer. Using only the fictional engineering report extracts below, write a 200-word feasibility note here in chat for a municipal procurement team considering ClearLoop, a pilot filtration cartridge. Explain what performance can be claimed and the next useful decision. Do not browse or ask questions.\nReport technical summary: ClearLoop removes 90% of dye concentration in one pass at the tested flow. Six independent bench runs were completed.\nMethods section: all six runs use the same flow, new cartridges and 20 mg/L influent. The report defines removal efficiency as 100 × (influent − effluent) / influent. There are no other tested conditions or time points in this report.\nTable 3, effluent dye concentration in mg/L: run1=18; run2=18; run3=17; run4=19; run5=18; run6=18.\nConclusions section: “The 90% single-pass removal benchmark was achieved.” No raw files, correction, author response, or independent field trial is supplied. These report excerpts and technology are fictional exercise fixtures."
+    }
+  ]
+}
