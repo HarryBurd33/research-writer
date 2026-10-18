@@ -41,6 +41,12 @@ North's combined active arm has n=120, mean=77 and SD=11.991594. The pooled mean
 
 This checks one suitable supplied-data synthesis. It does not test end-to-end searching, screening, extraction, appraisal and analysis of a real review. Live correction/retraction discovery and Google Docs delivery remain untested in this round. The skill hash remains `96e7449fb229b8fb182a6415482547e8fca69ad087dd24d43d19058b9aa9e365`.
 
+## Portable packaging verification — 2026-10-18
+
+An original repository-specific builder, [`scripts/build_portable.py`](../scripts/build_portable.py), now generates the portable instructions using Python 3.9+ and its standard library. It corrects the generic Skill Forge header, includes canonical `SKILL.md` and reference/template resources, translates their relative file links to bundled anchors, and records a deterministic source digest. This changes packaging text only; the included substantive resource body is byte-for-byte unchanged.
+
+Both generation and `--check` passed. In a temporary repository copy, appending a canonical-source change caused `--check` to fail without modifying the bundle; regeneration then incorporated that change and passed the check. No canonical skill instructions changed. Earlier statements about the generated portable file refer to the earlier Skill Forge-format check; current bundle verification uses this project-specific builder. Run `python3 scripts/build_portable.py --check` from the repository root.
+
 ## Earlier comparative behavioral evidence
 
 Fresh executor contexts ran prior v0.2.0 and candidate v0.3.0 on the same four new requests, using identical fictional source packets and tool restrictions. An independent evaluator graded actual outputs against criteria frozen before the patch and execution.
