@@ -1,0 +1,75 @@
+{
+  "case_id": "B-shared-control",
+  "runtime": {
+    "python": "3.9.6",
+    "libraries": "Python standard library: json, math, platform, pathlib"
+  },
+  "studies": [
+    {
+      "study": "North",
+      "active_n": 120,
+      "active_mean": 77.0,
+      "active_sd": 11.991593694239773,
+      "control_n": 60,
+      "mean_difference": 5.0,
+      "variance": 3.598319327731092,
+      "normal_95_ci": [
+        1.282097967779845,
+        8.717902032220156
+      ]
+    },
+    {
+      "study": "South",
+      "active_n": 60,
+      "active_mean": 75.0,
+      "active_sd": 10.0,
+      "control_n": 60,
+      "mean_difference": 2.0,
+      "variance": 3.3333333333333335,
+      "normal_95_ci": [
+        -1.5783882874343145,
+        5.578388287434315
+      ]
+    },
+    {
+      "study": "West",
+      "active_n": 50,
+      "active_mean": 74.0,
+      "active_sd": 11.0,
+      "control_n": 50,
+      "mean_difference": 2.0,
+      "variance": 4.84,
+      "normal_95_ci": [
+        -2.311920765988119,
+        6.311920765988119
+      ]
+    }
+  ],
+  "pooled_random_effects": {
+    "method": "DerSimonian\u2013Laird; modified Hartung\u2013Knapp t interval",
+    "mean_difference": 3.062718001479052,
+    "95_ci": [
+      -1.795025028320449,
+      7.920461031278553
+    ],
+    "tau_squared": 0.0,
+    "Q": 1.6151557063801458,
+    "Q_df": 2,
+    "I_squared_percent": 0.0,
+    "hk_scale": 0.8075778531900729,
+    "modified_hk_se": 1.1290111786647394,
+    "t_critical": 4.302652729749464
+  },
+  "sensitivity_common_effect_normal": {
+    "mean_difference": 3.062718001479052,
+    "95_ci": [
+      0.8498967531530464,
+      5.275539249805057
+    ]
+  },
+  "checks": {
+    "combined_arm_order_invariant": true,
+    "total_unique_participants": 400,
+    "North_effect_arithmetic": 5.0
+  }
+}
