@@ -31,6 +31,9 @@ The workflow checks the idea's premises, chooses an appropriate method, verifies
 
 ## Start using it
 
+See the [usage guide](docs/usage.md) for prompts covering question development, synthesis, theory, proposals and humanities writing. The [evidence tests](docs/validation.md#2026-10-18-evidence-reliability-check) now include eight executed cases and a reproducible fictional quantitative example.
+
+
 The installable skill is in [`skills/research-writer`](skills/research-writer). Use your agent's supported skill installer to install that complete folder, keeping its references and template together. The entry point is [`SKILL.md`](skills/research-writer/SKILL.md). This repository does not automatically install or activate it.
 
 If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow and its supporting guidance. Skill Forge is not required to use either version.
@@ -59,6 +62,7 @@ Live research requires browsing or suitable research tools. Full texts may requi
 - [`skills/research-writer/references`](skills/research-writer/references): writing modes, source handling, delivery and methodological sources.
 - [`skills/research-writer/templates/research-record.md`](skills/research-writer/templates/research-record.md): optional record for sustained projects.
 - [`portable/research-writer.md`](portable/research-writer.md): single-file version.
+- [`docs/usage.md`](docs/usage.md): practical prompts and ways to guide a sustained project.
 - [`docs/validation.md`](docs/validation.md): test evidence and limitations.
 - [`evals`](evals): synthetic requests used for the behavioral checks.
 
