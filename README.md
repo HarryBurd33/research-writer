@@ -36,7 +36,7 @@ See the [usage guide](docs/usage.md) for prompts covering question development, 
 
 The installable skill is in [`skills/research-writer`](skills/research-writer). Use your agent's supported skill installer to install that complete folder, keeping its references and template together. The entry point is [`SKILL.md`](skills/research-writer/SKILL.md). This repository does not automatically install or activate it.
 
-If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow and its supporting guidance. Skill Forge is not required to use either version.
+If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow and its supporting guidance. Skill Forge is not required to use either version. Regenerate it with `python3 scripts/build_portable.py`; verify it with `python3 scripts/build_portable.py --check` (Python 3.9+, standard library only).
 
 Try:
 
