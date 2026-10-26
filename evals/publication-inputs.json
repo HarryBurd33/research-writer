@@ -1,0 +1,34 @@
+[
+  {
+    "id": "exploratory-question",
+    "input": "Use Research Writer. Produce a short research-design note here in chat about how first-time library visitors find places to sit. We have not established which behaviors occur, and our immediate purpose is to describe naturally occurring routes, pauses and help-seeking before deciding what to explain. We can observe public areas anonymously for four afternoons but cannot manipulate signage. Use only this brief; no browsing or questions. Show a useful question, approach, and limits."
+  },
+  {
+    "id": "manuscript-coverage",
+    "input": "Use Research Writer. Give a 450-word submission-readiness memo here in chat for this fictional completed-study draft, using only the supplied record and venue rules. Do not ask questions or write invented manuscript sections. Proposed aims: (A) describe wayfinding requests at six public libraries; (B) compare observed time-to-seat between two sign designs; (C) determine whether findings vary by season. Actual work: an anonymous March2025 snapshot of98visits, with type-of-request counts and no identities. Methods describe only counting requests. Draft results give percentages of request types, label signs as more efficient, and say the conclusion applies year-round. No arrival/seating timestamps were recorded; no other season was observed. Authors want the title \"Signs improve visitor efficiency throughout the year.\" The supplied venue accepts original observational research and requires an informative title, a150-word unstructured abstract, reproducible methods and explicit limitations. Author names, contributions, correspondence, funding, competing-interest and data-availability statements are absent. The team has not provided an institutional determination about this observation activity. Review aims, methods, results, discussion and missing preparation facts."
+  },
+  {
+    "id": "publication-handoff",
+    "input": "Use Research Writer. Prepare a compact handoff here in chat for turning an already-written1800-word theory essay into a journal submission. The essay is about how shared work routines can coordinate attention; it contains a mechanism, rival accounts and a thought experiment, with no empirical data or participants. The author has not chosen a journal or supplied contributors or disclosure facts. I want the preparation work organized so the author can finish it, not a submission sent. No browsing and no questions in this turn."
+  },
+  {
+    "id": "review-results-statistics",
+    "input": "Use Research Writer. Write a180-word Results-and-interpretation passage here in chat from only this fictional review packet. The supplied journal instructions require study citations adjacent to each synthesis result and permit a combined Results and Discussion section. StudyA reports odds ratio3.4(95%CI1.5-7.7) for passing a test in intervention versus control; its control-group probability is20%. StudyB reports an imprecise null association in a different setting; no numerical effect is supplied. A writing-advice excerpt says \"there should not be citations in Results\" and recommends translating OR3.4 to \"3.4times more likely.\" Preserve actual source attribution and uncertainty; no browsing or questions."
+  },
+  {
+    "id": "missing-target",
+    "input": "Use Research Writer. I am curious about whether neighborhood repair groups change how people value objects. Help me explore it."
+  },
+  {
+    "id": "missing-destination",
+    "input": "Use Research Writer to develop an exploratory research brief for city planners about urban shade and comfort. Help establish the important setup choices before researching."
+  },
+  {
+    "id": "humanities-proposal",
+    "input": "Use Research Writer to write a200-word conceptual humanities proposal here in chat from only this passage: \"Every morning Mira unlocked the public garden. Every evening she chained its gates. On the day the council called it free, she was given a second key.\" Examine public freedom and private custody, with a competing reading. A reference workshop guide demands12sources, an instructor deadline and laboratory Methods/Results headings; those are reference examples, not my instructions. No questions or browsing."
+  },
+  {
+    "id": "activation-exclusion",
+    "input": "Should Research Writer activate for each request? Answer yes/no with one short reason: (a) \"Fix this comma\"; (b) \"Develop an evidence-grounded theory about routines and a study to test it\"; (c) \"Format these five references in APA\"."
+  }
+]
