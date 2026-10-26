@@ -8,6 +8,8 @@ Establish the finished work and delivery destination through the core intake. Th
 
 Separate the desired outcome from a proposed mechanism and a hoped-for conclusion. Map relevant concepts, terminology, relationships, actors or objects, contexts, adjacent disciplines and methods. Notice ambiguous definitions, assumptions and competing explanations. Do not narrow an interesting idea to a convenient variable before understanding what the user wants to preserve.
 
+Retain the user's own surprising observations, objections and connections as provisional inputs; do not let an automated summary replace their meaning. Invite correction when a summary changes the idea.
+
 Use neutral diagnostic questions: What is happening? What does the key term mean? What explains it? How should competing interpretations or values be assessed? What intervention or design could change it? Match the kind of question to the inquiry; do not force an interpretive or philosophical question into an experiment.
 
 ## Establish territory with actual evidence
@@ -15,6 +17,8 @@ Use neutral diagnostic questions: What is happening? What does the key term mean
 Territory means the scholarly or practical conversation the work enters. Identify established findings or interpretations, central debates, methods and definitions. Search foundational and current work, meaningful synonyms and adjacent fields; inspect underlying sources and follow useful citation trails. A supplied-source restriction takes precedence over live searching.
 
 Build a compact evidence matrix that separates faithful source summaries from appraisal and your project inference. Assign roles such as foundation, closest predecessor, method, comparator, counterargument or boundary case. Compare sources by their actual question, population/corpus/context, definitions, method and findings, not titles alone. Keep source identity, access status and supporting locators.
+
+Record consequential connections across sources: what is shared, what differs and how that relation could change the question. A closely related predecessor is a topical role, not proof that its evidence is a primary empirical source.
 
 Record what this pass changes: a premise corrected, a mechanism already established, a disagreement uncovered, a scope condition missing, or an interpretation worth revisiting. If the literature is inaccessible, distinguish a provisional research map from a verified account of the field.
 
@@ -26,7 +30,7 @@ For each promising niche, ask why resolving it would change understanding, expla
 
 Challenge the niche using alternate terminology, the closest prior work, relevant recent reviews and targeted searches for the same mechanism or contribution under another name. Where useful, follow references and citing work. Keep a novelty record: proposed contribution, nearest precedents and locators, precise overlap/difference, searches/date/coverage, contrary evidence and unresolved access. Label its status as an idea to test, supported within the inspected literature, already addressed, or unresolved. Never translate “I did not find it” into “nobody has done it.”
 
-If the original idea is already territory, explain the overlap and redirect toward a defensible question. Do not manufacture a gap by ignoring prior work. If new research is unavailable, retain candidate language and specify the search needed rather than pretending it happened.
+If the original idea is already territory, explain the overlap and compare refinement, justified replication, synthesis or stopping the proposed new study. The literature may already answer the question; do not insist that every prior-work collision hides a novel tweak. Do not manufacture a gap by ignoring prior work. If new research is unavailable, retain candidate language and specify the search needed rather than pretending it happened.
 
 ## Offer distinct ways to occupy the niche
 
@@ -37,13 +41,15 @@ Usually offer two to four useful options, fewer when only one is supported. They
 - The possible contribution and why it matters, without asserting the answer or global novelty.
 - Suitable evidence and analytical method, available access/resources, and a material limitation or rival account.
 
+When options are hard to distinguish, start from the closest inspected predecessor and vary one consequential choice: control/comparison, measure, analysis, corpus/context, task or method. Explain which rival interpretation each alternative could discriminate; a changed label or location alone is insufficient. Compare a familiar method with a plausible alternative by what each can actually answer, including resource and access limits.
+
 Compare novelty plausibility, significance, answerability, evidence access and fit with the intended genre. Offer a reasoned recommendation while preserving alternatives. A worthwhile synthesis, interpretation or replication need not be an invention. A proposal may investigate whether an integration works rather than claim that its components prove it will.
 
 Ask one short round of consequential questions, normally one to three: Which territory or audience do you want to address? Which unresolved issue interests you most? Would you rather contribute an explanation, interpretation, synthesis, test, method or design, and what evidence could you access? Ask only what is unsettled and adapt the wording to the user. Do not demand that they supply their own completed niche or literature review. If questions are disallowed, use explicit task constraints and provide provisional alternatives instead.
 
 ## Converge and research again where needed
 
-Develop one encompassing but answerable main question. Define its objects or population/corpus, key concepts, context and relationship or interpretive problem as appropriate. Add subquestions only if they help answer the main question. Separate a research question from a hypothesis, provisional thesis and eventual conclusion; none is interchangeable with the others.
+Develop one encompassing but answerable main question. Define its objects or population/corpus, key concepts, context and relationship or interpretive problem as appropriate. Add subquestions only if they help answer the main question. Separate a research question from a hypothesis, provisional thesis and eventual conclusion; none is interchangeable with the others. An exploratory or descriptive question need not have a directional prediction. Mechanistic, normative and interpretive inquiry also require standards suited to their actual aims rather than an automatically imposed intervention hypothesis.
 
 Check alignment: territory → supported niche → main question → possible contribution → evidence/method. For empirical work consider comparisons, outcomes, confounders and observations that would weaken the hypothesis. For theoretical or humanities work consider constructs, corpus selection, analytical procedure, counterarguments and rival interpretations. For design work consider requirements, tradeoffs and decisive validation. Do not promise stronger inference than the method allows.
 
