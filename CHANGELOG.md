@@ -1,5 +1,12 @@
 # Changes
 
+## MIT licensing and discovery — 2026-10-26
+
+- Licensed original code, skill instructions and documentation under MIT, with the notice included in the installable skill and generated portable copy.
+- Preserved third-party source rights and aggregate example-data CC0 provenance.
+- Added relevant repository topics for research, academic writing and agent skills.
+- Research workflow and version remain 0.4.0; this is a licensing and metadata update.
+
 ## 0.4.0 — 2026-10-26
 
 - Strengthened question development: retain useful connections, compare alternative methods and predecessor variations, and allow descriptive questions without forced directional hypotheses. Stop or revise when existing research already answers the question.
