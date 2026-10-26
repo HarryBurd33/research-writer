@@ -38,6 +38,12 @@ Adapt these prompts to your topic and audience. Replace the example destination 
 
 > Use Research Writer to synthesize research on neighborhood repair initiatives, develop an explanatory model, and propose a study that tests it. Create a new Google Doc for an interdisciplinary research audience. Distinguish the evidence review, original hypothesis and proposed investigation.
 
+## Prepare an article for publication
+
+> Use Research Writer to prepare my theory article for a peer-reviewed journal. Deliver a revised draft and preparation checklist here in chat. Help assess venue fit, align each aim with its supporting argument or evidence, and identify missing authorship, funding, ethics and availability information. Do not invent declarations or submit anything.
+
+For empirical manuscripts, provide the actual methods and results. Missing results stay missing; proposed studies remain proposals. The skill treats journal requirements as venue-specific and checks current guidance when a venue is selected.
+
 ## Set boundaries and depth
 
 Useful additions include the audience, length, relevant disciplines, date range, exclusions, source access and practical constraints. Specify “use only these materials” when outside research would be inappropriate. For exploratory work, state an effort limit or ask for an initial bounded search followed by the most consequential unresolved questions. More sources alone do not establish deeper research.
