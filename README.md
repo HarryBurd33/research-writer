@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-This branch contains the **0.3.0 preview**. The stable version remains 0.2.0 on `main`. The requested expanded workflow passed its cases, but paired testing did not demonstrate a performance gain over the prior version; see the validation report.
+**Version 0.4.0** adds stronger research-question development and a conditional journal-preparation workflow. It passed a paired comparison with the installed v0.3.0 baseline; see the [validation report](docs/validation.md) for evidence and limits.
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
@@ -29,9 +29,11 @@ Try:
 
 The workflow checks the idea's premises, chooses an appropriate method, verifies sources, develops the argument, writes the artifact and audits its claims. It distinguishes evidence, interpretation, hypotheses and proposed work. It does not invent citations, experimental results or statistical analyses to make a draft look complete.
 
+For an article intended for a journal, the skill also checks venue fit, alignment between aims and evidence, and missing authorship, funding, ethics, availability and submission information. It preserves the chosen genre and never invents results or declarations.
+
 ## Start using it
 
-See the [usage guide](docs/usage.md) for prompts covering question development, synthesis, theory, proposals and humanities writing. The [evidence tests](docs/validation.md#2026-10-18-evidence-reliability-check) now include eight executed cases and a reproducible fictional quantitative example.
+See the [usage guide](docs/usage.md) for prompts covering question development, synthesis, theory, proposals and humanities writing. The [validation report](docs/validation.md) includes executed behavioral comparisons, native Google Docs delivery, a complex scientific proposal, and a reproducible review and meta-analytic reanalysis of 36 real study sites.
 
 
 The installable skill is in [`skills/research-writer`](skills/research-writer). Use your agent's supported skill installer to install that complete folder, keeping its references and template together. The entry point is [`SKILL.md`](skills/research-writer/SKILL.md). This repository does not automatically install or activate it.
@@ -68,6 +70,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.3.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.4.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. No public-distribution license has been selected. Project-specific research and private development notes are excluded from this repository.
