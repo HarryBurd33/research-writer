@@ -28,4 +28,4 @@ Browsing or a scholarly connector enables live discovery and verification. Full 
 
 Research quality depends on accessible evidence, tool capabilities and expert judgment. A polished draft is not evidence that a hypothesis is true or that a manuscript meets all requirements for publication.
 
-All workflow text in this package is newly authored. Referenced methodological sources retain their own rights. No third-party source text is redistributed. No public-distribution license has been selected; choose one before publishing this package for others to reuse.
+All workflow text in this package is newly authored. Referenced methodological sources retain their own rights. No third-party source text is redistributed. This original skill package is licensed under the [MIT License](LICENSE).

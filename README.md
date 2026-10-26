@@ -72,4 +72,4 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 Version 0.4.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
-The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. No public-distribution license has been selected. Project-specific research and private development notes are excluded from this repository.
+The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. Original code, workflow instructions and documentation are licensed under the [MIT License](LICENSE). The aggregate example data retains its documented CC0 provenance. Project-specific research and private development notes are excluded from this repository.

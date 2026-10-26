@@ -1,6 +1,7 @@
 ---
 name: research-writer
 description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, syntheses, systematic reviews or meta-analyses when feasible, theory, experimental/design proposals, and humanities analysis. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
+license: MIT
 metadata:
   version: "0.4.0"
 ---
