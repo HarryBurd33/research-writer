@@ -2,7 +2,7 @@
 name: research-writer
 description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, syntheses, systematic reviews or meta-analyses when feasible, theory, experimental/design proposals, and humanities analysis. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
 metadata:
-  version: "0.3.0"
+  version: "0.4.0"
 ---
 
 # Research Writer
@@ -39,7 +39,7 @@ Restate the desired outcome separately from the proposed explanation or implemen
 
 For a novel proposal, build a short dependency map: what must be true, what has been demonstrated, what transfers only by analogy, and what remains speculative. Connect evidence synthesis to proposal choices. Do not equate “not found in this search” with novelty or impossibility.
 
-Choose the applicable route in [writing modes](references/modes.md). Hybrid work may need several routes, such as synthesis → theory → experimental proposal. Keep their different evidence standards visible. A systematic review, meta-analysis, qualitative synthesis and humanities interpretation are not interchangeable labels.
+Choose the applicable route in [writing modes](references/modes.md). Hybrid work may need several routes, such as synthesis → theory → experimental proposal. Keep their different evidence standards visible. A systematic review, meta-analysis, qualitative synthesis and humanities interpretation are not interchangeable labels. Descriptive or exploratory work can have a clear question without a directional hypothesis; choose the method for the question rather than force the question into a familiar tool.
 
 ## 4. Research with an auditable trail
 
@@ -54,6 +54,8 @@ If browsing, full texts, data or statistical execution are unavailable, say what
 ## 5. Develop the argument and write
 
 Organize around the question and audience, not the order sources were found. Build a claim-to-evidence map, an outline and the requested draft. Keep internal scaffolding out of a short finished artifact unless requested. A broad task should produce substantive work, not stop at an outline unless that is the target or an unresolved dependency prevents honest completion.
+
+For publication-oriented work or a submission-readiness handoff, use [publication preparation](references/publication-workflow.md). Keep every aim aligned with its evidence, method, actual result and interpretation; make missing preparation facts explicit without inventing declarations. In a readiness handoff, account for author approval, each of data/code/materials availability, relevant ethics versus unknown institutional claims, and venue-dependent cover material; a nonapplicable field needs a reason rather than silent omission. A theory, review or humanities manuscript keeps its own genre.
 
 Use [argument and synthesis guidance](references/argument-and-synthesis.md) to connect claims, evidence and warrants, represent disagreements fairly and align question, contribution and method. Adapt territory → niche → contribution to the introduction when useful; it is a reasoning aid, not a universal heading scheme or a license to invent findings.
 
