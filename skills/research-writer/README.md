@@ -1,6 +1,10 @@
-# Research Writer — version 0.2.0
+# Research Writer — version 0.4.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
+
+It also helps develop the research question itself. It maps the territory, investigates possible niches, compares contribution options against the closest prior work and helps decide how to occupy the niche. It revises the question as evidence changes and distinguishes possible novelty from a verified difference within the inspected literature.
+
+Publication-oriented work also uses a conditional [preparation guide](references/publication-workflow.md): it checks aim–method–result alignment, venue fit, tables and abstract consistency, and missing authorship or declaration facts. Exploratory work need not invent a hypothesis, and journal conventions do not become universal writing rules.
 
 ## Use
 
@@ -11,6 +15,7 @@ For an agent without skill installation, supply the companion portable Markdown 
 Example requests:
 
 - “Use Research Writer to help develop my idea about public libraries and social connection. Ask me what finished work I want and where it should go.”
+- “Use Research Writer to help turn my idea into a research question. Investigate the territory, help me identify a worthwhile niche, and compare ways I could contribute. Produce a question-development brief here in chat.”
 - “Use Research Writer to write a scholarly synthesis of this literature, then propose a theory in a new Google Doc. My audience is organizational researchers. Show which claims are established and which are new.”
 - “Use Research Writer to assess whether these studies support a meta-analysis. If they do not, give me a useful synthesis and identify the missing data.”
 - “Use Research Writer to write a 1,500-word humanities essay from these texts, engaging a competing interpretation.”

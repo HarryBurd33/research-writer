@@ -2,7 +2,21 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
+**Version 0.4.0** adds stronger research-question development and a conditional journal-preparation workflow. It passed a paired comparison with the installed v0.3.0 baseline; see the [validation report](docs/validation.md) for evidence and limits.
+
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
+
+## Develop the research question
+
+Bring a rough idea as well as a finished question. The skill helps map the **territory** (the conversation and established knowledge), investigate a **niche** (a supported unresolved issue), and decide how to **occupy the niche** (a worthwhile contribution and a way to investigate it).
+
+It researches before fixing the thesis, offers distinct question/contribution options, compares them with the closest prior work, and asks about the choices that matter to you. It expands the conceptual picture before converging on a precise main question and connected subquestions. If the first idea is already well studied, it helps revise the niche instead of manufacturing a novelty claim.
+
+Novelty is assessed within the literature actually inspected. Replication, synthesis, reinterpretation, explanation, meaningful comparisons and feasible design validation may all be worthwhile contributions. A confident first-ever claim is not a requirement.
+
+Try:
+
+> Use Research Writer to develop my idea into a research question. Investigate the territory, help identify a worthwhile niche, and compare ways I could contribute. Produce a question-development brief here in chat and ask me about the choices that would change its direction.
 
 ## What it supports
 
@@ -15,11 +29,16 @@ A reusable agent skill for researching an idea and turning it into the finished 
 
 The workflow checks the idea's premises, chooses an appropriate method, verifies sources, develops the argument, writes the artifact and audits its claims. It distinguishes evidence, interpretation, hypotheses and proposed work. It does not invent citations, experimental results or statistical analyses to make a draft look complete.
 
+For an article intended for a journal, the skill also checks venue fit, alignment between aims and evidence, and missing authorship, funding, ethics, availability and submission information. It preserves the chosen genre and never invents results or declarations.
+
 ## Start using it
+
+See the [usage guide](docs/usage.md) for prompts covering question development, synthesis, theory, proposals and humanities writing. The [validation report](docs/validation.md) includes executed behavioral comparisons, native Google Docs delivery, a complex scientific proposal, and a reproducible review and meta-analytic reanalysis of 36 real study sites.
+
 
 The installable skill is in [`skills/research-writer`](skills/research-writer). Use your agent's supported skill installer to install that complete folder, keeping its references and template together. The entry point is [`SKILL.md`](skills/research-writer/SKILL.md). This repository does not automatically install or activate it.
 
-If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow and its supporting guidance. Skill Forge is not required to use either version.
+If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow and its supporting guidance. Skill Forge is not required to use either version. Regenerate it with `python3 scripts/build_portable.py`; verify it with `python3 scripts/build_portable.py --check` (Python 3.9+, standard library only).
 
 Try:
 
@@ -40,14 +59,17 @@ Live research requires browsing or suitable research tools. Full texts may requi
 ## Files
 
 - [`skills/research-writer/SKILL.md`](skills/research-writer/SKILL.md): main workflow and discovery metadata.
+- [`skills/research-writer/references/question-development.md`](skills/research-writer/references/question-development.md): iterative territory, niche, contribution and novelty workflow.
+- [`skills/research-writer/references/argument-and-synthesis.md`](skills/research-writer/references/argument-and-synthesis.md): source roles, claims, evidence, warrants and fair counterarguments.
 - [`skills/research-writer/references`](skills/research-writer/references): writing modes, source handling, delivery and methodological sources.
 - [`skills/research-writer/templates/research-record.md`](skills/research-writer/templates/research-record.md): optional record for sustained projects.
 - [`portable/research-writer.md`](portable/research-writer.md): single-file version.
+- [`docs/usage.md`](docs/usage.md): practical prompts and ways to guide a sustained project.
 - [`docs/validation.md`](docs/validation.md): test evidence and limitations.
 - [`evals`](evals): synthetic requests used for the behavioral checks.
 
 ## Status and rights
 
-Version 0.2.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.4.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. No public-distribution license has been selected. Project-specific research and private development notes are excluded from this repository.

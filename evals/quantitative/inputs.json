@@ -1,0 +1,10 @@
+{
+  "case_id": "B-shared-control",
+  "data_status": "Fictional supplied trial extraction; endpoint exam scores at week 8, scale 0–100; no missing data; all studies rated some concerns for bias.",
+  "target": "Class of either reminder design versus no reminder",
+  "studies": [
+    {"study": "North", "arms": [{"design": "silent", "n": 60, "mean": 76, "sd": 12}, {"design": "audible", "n": 60, "mean": 78, "sd": 12}], "control": {"n": 60, "mean": 72, "sd": 12}},
+    {"study": "South", "arms": [{"design": "silent", "n": 60, "mean": 75, "sd": 10}], "control": {"n": 60, "mean": 73, "sd": 10}},
+    {"study": "West", "arms": [{"design": "audible", "n": 50, "mean": 74, "sd": 11}], "control": {"n": 50, "mean": 72, "sd": 11}}
+  ]
+}
