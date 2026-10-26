@@ -1,5 +1,15 @@
 # Changes
 
+## 0.4.0 — 2026-10-26
+
+- Strengthened question development: retain useful connections, compare alternative methods and predecessor variations, and allow descriptive questions without forced directional hypotheses. Stop or revise when existing research already answers the question.
+- Added a conditional publication workflow with aim/evidence alignment, current venue fit, missing-fact tracking, separate data/code/material availability, and a cover-letter work item. Preserve genre and prospective status; do not fabricate institutional decisions or results.
+- Used original general principles from two supplied methodological articles, with attribution and without redistributing them. Excluded misleading odds/risk wording and rigid journal or ethics rules.
+- Adopted the second candidate after independent grading: 56/56 required checks versus baseline 52/56; first candidate rejected at 53/56.
+- Completed a real 36-site corpus-restricted review/reanalysis and native Google Docs creation, table insertion, readback and scoped editing; completed an independently checked complex biological research brief.
+- Added aggregate counts and an original reproducibility script for the real-evidence example; no participant records or private research included.
+
+
 ## Portable packaging correction — 2026-10-18
 
 - Corrected the portable header to identify Research Writer and its research/writing purpose.
