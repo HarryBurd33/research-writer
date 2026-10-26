@@ -1,6 +1,6 @@
 # Select the writing method
 
-Read the sections relevant to the request; do not impose every section on every project. Confirm the intended artifact through the core intake before choosing its depth. Reporting checklists help describe work; they do not replace doing it.
+Read the sections relevant to the request; do not impose every section on every project. Confirm the intended artifact through the core intake before choosing its depth. Reporting checklists help describe work; they do not replace doing it. For a requested journal manuscript or publication-readiness assessment, also use [publication preparation](publication-workflow.md), including aim coverage and unresolved author/declaration facts. This route is not required for an ordinary exploratory brief.
 
 If the question or intended contribution is unsettled, use [question development](question-development.md). A proposal, theory and humanities analysis may occupy a niche in different ways; none requires claiming an unprecedented invention. Use [argument and synthesis](argument-and-synthesis.md) to align question, evidence, inference and genre.
 
@@ -36,7 +36,7 @@ Check coherence and whether a supposed explanation simply renames the phenomenon
 
 State the desired function or research question independently of the user's proposed implementation. Map critical dependencies and alternative approaches. For each major design choice, link a supporting source, explicit assumption or engineering constraint. Separate demonstrated components from the novel integration and from hoped-for performance.
 
-For an empirical study specify the hypothesis, comparison/controls, unit of assignment and analysis, outcomes and time points, recruitment/material constraints, allocation or sampling, and blinding when applicable. Specify an analysis plan, exclusions, missing-data handling and success/failure criteria. Justify sample size using explicit assumptions; if inputs are unavailable, offer sensitivity or estimation goals and acknowledge uncertainty rather than inventing power.
+For an empirical study specify the question and, when appropriate, a hypothesis; descriptive or exploratory work need not invent a directional prediction. Specify the comparison/controls, unit of assignment and analysis, outcomes and time points, recruitment/material constraints, allocation or sampling, and blinding when applicable. Specify an analysis plan, exclusions, missing-data handling and success/failure criteria. Justify sample size using explicit assumptions; if inputs are unavailable, offer sensitivity or estimation goals and acknowledge uncertainty rather than inventing power.
 
 For an engineering/design project specify requirements, candidate approaches, tradeoffs, failure modes and staged validation with measurable acceptance criteria. Propose the least costly informative test of the weakest critical assumption. Do not imply that components demonstrated separately will necessarily work together.
 
