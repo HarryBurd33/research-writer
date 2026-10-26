@@ -1,12 +1,54 @@
-# Validation — Research Writer 0.3.0 preview
+# Validation — Research Writer 0.4.0
 
-Updated: 2026-10-18 UTC. Earlier comparison and live research check: 2026-10-17 (America/Denver).
+Updated: 2026-10-26 UTC. Historical checks below retain their original dates.
 
-## Status
+## Current release and comparison — 2026-10-26
 
-The question-development expansion is published for review on `research-question-development`; version 0.2.0 remains stable on `main`. The earlier v0.2.0/v0.3.0 comparison passed both versions without demonstrating a performance gain, so automatic promotion was inconclusive. Subsequently, v0.3.0 was installed by explicit user request. The latest round therefore evaluates the actual installed v0.3.0 baseline.
+Version 0.4.0 supersedes the earlier preview. The update used a 60-minute effort limit and at most three candidates. Two candidates were constructed; the first was rejected. Acceptance criteria and request inputs were frozen before evaluation. Fresh execution contexts read only their skill arm and requests, without the grading rubric. Independent grading evaluated the resulting outputs and inspected the behavior-bearing resources.
 
-This round adds validation assets and a usage guide. It makes no changes to the skill instructions or version; the portable file only refreshes its generated notice for the current builder. It makes no claim of improved model behavior. Independent grading found no failure warranting a targeted behavioral patch.
+| Arm | Required checks | Target question/publication checks | Decision |
+|---|---:|---:|---|
+| Installed v0.3.0 baseline | 52/56 | 30/34 | Retained for comparison/rollback |
+| First v0.4 candidate | 53/56 | 31/34 | Rejected: missing required handoff items |
+| Final v0.4.0 candidate | 56/56 | 34/34 | Adopted: all required checks pass |
+
+Eight cases covered exploratory questions, empirical manuscripts with incomplete facts, theory without participant data, venue-dependent preparation, humanities work, intake/destination behavior and a reserved case. Public fictional development requests are in [publication-inputs.json](../evals/publication-inputs.json). Improvements were concrete: better exploratory method alternatives and explicit coverage of missing authorship/approval, funding/conflicts, ethics and permissions, data/code/material availability, and venue-dependent cover-letter work. No critical failures or regressions were identified. The final resource inspection passed.
+
+Initial baseline/candidate grading used masked A/B labels. The second revision was identifiable as C. Executors inherited the same model settings; exact underlying model version was not exposed. An independently authored reserved case remained unseen by the constructor before both candidate freezes, but was reused for the second comparison: it provides regression/generalization evidence, not a second independent fresh holdout. These are small single executions, not a population estimate of quality.
+
+### Real evidence review and meta-analytic reanalysis
+
+A fresh executor completed a **corpus-restricted review of Many Labs 1 gain/loss framing**, including bounded searches, screening, original-paper/correction inspection, source-data reconciliation, extraction, appraisal, computation and writing. This was not a field-wide systematic review. The protocol was frozen after feasibility scoping and before numerical extraction; it was not externally preregistered.
+
+Eighteen search records were screened: 16 outside the prespecified corpus, one duplicate or mismatched attachment, and one erratum consulted. The primary paper was obtained through source following. The analysis included 36 study sites from one coordinated replication project, not 36 independent publications. The spreadsheet's gain/loss headers were reversed and one column label duplicated. The codebook and original records established the correct orientation, and all site counts were checked against those records. Two aggregate rows were excluded.
+
+The analysis used 6,271 observed responses from 6,344 session identifiers (73 missing; identifiers do not independently prove unique people). The DerSimonian–Laird random-effects odds ratio was **3.3245 (95% normal CI 2.9677–3.7242)**, with Q=37.0116, df=35, and I²=5.4351%. Common-effect OR=3.3113; leave-one-site-out estimates ranged 3.2536–3.3726. Odds ratios are not risk ratios. The simple estimator and interval are disclosed, not prescribed universally.
+
+An independent checker reextracted all 36 count vectors from the original data and recomputed the main results. The original extraction used Python 3.12.14 and openpyxl 3.1.5; the public standard-library reproduction also passed under Python 3.15.0. An independently implemented high-precision calculation corroborated the arithmetic. The 2019 correction was inspected and concerns other tasks, not this framing result. This checks one real research pipeline, not exhaustive correction/retraction discovery across the literature.
+
+Run the original public script, with only aggregate site counts:
+
+```sh
+python3 evals/real-evidence/reproduce.py
+```
+
+See [source and method details](../evals/real-evidence/README.md). No participant records, downloaded papers or upstream analysis code are redistributed.
+
+### Native Google Docs delivery and complex scientific writing
+
+One native Google Doc was created in the user's requested workspace folder, populated with the complete real-evidence report and a separate scientific research brief, and read back through the document API. Verification matched all 43 nonempty body paragraphs, 15 named headings and three native tables containing 57 cells. A scoped text replacement changed exactly one occurrence; full before/after comparison confirmed preservation of unrelated content. The document remained private. This verifies create, placement, structured content and scoped editing in one integration, not every external destination.
+
+A separate bounded live research pass developed the user's complex biological idea through premise correction, source inspection, closest-prior comparison, candidate contributions, feasibility and prospective design. Seven recorded searches and six primary sources informed the brief; one source was available only as a publisher abstract and was treated accordingly. Independent review reopened the sources and checked central claims. A close prior study already covered much of the broad initial idea, so the proposed novelty was narrowed and qualified. No biological experiment, novel protein or world-wide novelty claim was validated. The private idea, report, raw outputs and destination URL are excluded from this repository.
+
+### Method sources, integrity and rollback
+
+All eight pages of the two newly supplied methodological PDFs were read; relevant visual pages were inspected. General ideas about question formation and article preparation were implemented as original instructions with attribution. Fixed paragraph rules, a blanket ban on citations in Results, blanket ethics-approval claims, and an erroneous odds-to-risk interpretation were excluded. Reference documents were treated as source material, not instructions to override the user.
+
+The final skill contains ten files and passed metadata/local-link validation. The standalone portable bundle was regenerated and checked against the canonical source. Baseline and final evaluated directory hashes are listed below. Private snapshots and the prior Git revision support rollback. Public files contain no supplied PDFs, participant-level records, private ideas, account credentials or evaluation transcripts.
+
+## Historical checks
+
+The following records describe earlier versions and the capabilities that were still untested at those dates. The 2026-10-26 results above supersede their pending live-delivery and real-data checks.
 
 ## 2026-10-18 evidence reliability check
 
@@ -80,7 +122,7 @@ All thirteen supplied references were accounted for in the private source record
 
 The executor contexts inherited the same host/model settings, but the exact underlying model version was not exposed. Grading was separate from execution but non-blind to baseline/candidate filenames. Small synthetic cases and one bounded live pass do not establish quality across every discipline. Google Docs creation/editing and an end-to-end real-data systematic review/meta-analysis remain untested. The later fictional calculation check is described separately above.
 
-No stable promotion occurred. `main` remains v0.2.0; the prior version is retained in a private local snapshot. The subsequent explicit installation of preview v0.3.0 is distinct from automatic evidence-gated promotion. This validation/documentation update leaves installed v0.3.0 unchanged. Prior repository files are retained locally for reversing the documentation update.
+At the time of the earlier preview checks, no stable promotion occurred and main remained v0.2.0. The explicit installation of preview v0.3.0 was distinct from automatic promotion. These historical statements do not describe the current v0.4.0 release.
 
 ## File bindings
 
@@ -88,3 +130,5 @@ No stable promotion occurred. `main` remains v0.2.0; the prior version is retain
 - Candidate v0.3.0 skill directory SHA-256: `96e7449fb229b8fb182a6415482547e8fca69ad087dd24d43d19058b9aa9e365`.
 
 Directory hashes identify the files evaluated; they do not authenticate model execution or prove research quality. Raw transcripts, rubric bindings, source coverage and the development brief remain private. Public synthetic requests are in `evals/`.
+
+- Final v0.4.0 skill directory SHA-256: `47c4399676e29ab0b3442f254d265166576473365d45f35b77d5e3bf511d6363`.
