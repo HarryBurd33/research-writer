@@ -16,7 +16,7 @@ def anchor(path):
 
 
 def build():
-    paths = [SKILL / "SKILL.md"]
+    paths = [SKILL / "SKILL.md", SKILL / "LICENSE"]
     for folder in ("references", "templates"):
         paths.extend(sorted((SKILL / folder).rglob("*.md")))
     resources = {p.relative_to(SKILL).as_posix(): p.read_bytes() for p in paths}
