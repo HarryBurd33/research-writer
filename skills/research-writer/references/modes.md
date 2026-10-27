@@ -10,6 +10,12 @@ Define the question and boundaries. Group evidence by claims, mechanisms, method
 
 For qualitative evidence synthesis, identify the qualitative question, sampling approach, appraisal and analytic method. Do not collapse participants' accounts into effect sizes or assume a quantitative reporting checklist governs the work.
 
+## Tutorial or instructional article
+
+Identify the learner, prerequisite knowledge, learning goals, intended use and venue type when relevant. Compare the closest existing tutorial, review or research article for what it already teaches, assumes and leaves difficult. A pedagogical contribution needs a useful improvement in understanding, transfer or practice, not merely simpler wording or a new title.
+
+Build a teaching sequence: motivating problem, essential concepts, justified method choices, worked examples, assumptions and failure modes, exercises or checks where useful, and limits/next reading. Adapt depth and terminology to the reader. Verify technical explanations and calculations, distinguish demonstrations or toy data from observed findings, and do not invent new research results to make the tutorial publishable. Check current venue requirements when a venue is chosen.
+
 ## Systematic review
 
 Record the question, eligibility rules, search sources and full search strings/dates, screening and exclusion decisions, extraction fields, appraisal method and intended synthesis. Save changes from the original plan. Link publications from the same study. Report how many reviewers actually screened or extracted data, what automation did, and whether registration occurred; never invent independent screening or registration.
