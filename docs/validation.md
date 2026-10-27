@@ -1,8 +1,42 @@
-# Validation — Research Writer 0.4.0
+# Validation — Research Writer 0.5.0
 
 Updated: 2026-10-26 UTC. Historical checks below retain their original dates.
 
-## Current release and comparison — 2026-10-26
+## Prewriting gate comparison — 2026-10-26
+
+This update makes the user's requested order explicit: establish actual readers and paper type; identify the publication venue type/readership or no-journal/provisional status; audit the dated search record and renew affected searches; compare the nearest published work; then test the proposed contribution before substantive drafting. Tutorial articles receive a teaching route. The one-sentence prior-to-proposed increment is a gap hypothesis, not proof of novelty.
+
+Skill Forge used a 45-minute effort limit, at most three candidates and four workers: a bounded finder/constructor, independent evaluator, and separate fresh baseline/candidate executors. One candidate was constructed. Criteria and eight development requests were frozen before candidate execution; the independently authored reserved request remained unseen by the constructor and parent until both source arms were frozen. No source, input or criterion changed during execution.
+
+| Development case | Required behavior |
+|---|---|
+| Old hospital-only search, revised community-setting question, tools unavailable | Recognize stale/mismatched coverage, plan renewal and admit unperformed searches; no invented current review |
+| Unclear article purpose/readers | Clarify paper type, readership and consequential venue context before drafting; retain Google Docs destination |
+| Closest paper already performed the proposed design | Reject unsupported gap, frame replication or revise; connect value to readers and assess feasibility |
+| City-change novelty claim | Test substantive difference, importance, conceptual evidence, venue value and practical limits |
+| Fresh adequate same-scope search | Review and reuse it without an identical redundant search |
+| Supplied-only humanities interpretation | Honor corpus boundary and interpretive genre; no forced journal or empirical novelty claim |
+| Practitioner tutorial | Compare existing teaching, plan learner goals and worked examples; label toy data |
+| Punctuation-only correction | Exclude the full research workflow |
+
+Inputs are in [prewriting-inputs.json](../evals/prewriting-inputs.json); all source packets and scenarios are fictional. The eight paired requests ran with the same access restrictions: no browsing or external document creation. They test prewriting decisions, source-bound reasoning, honest limitations and appropriate drafting; they do not demonstrate actual live search renewal. The development literature search did run through available web tools, as described below, but that is separate from these behavioral fixtures.
+
+Independent evaluation found the candidate passes every material requirement: **208/208 material points across 9/9 cases**, including the reserved request, plus **32/32 resource-review points**. The baseline scored **206/208** material points across 8/9 passing cases. The baseline was strong and passed seven public cases and the reserved case. In the direct-duplication case, its publication/readership-value and feasibility assessments were partial. The candidate made replication's conditional value to the specified readers explicit and identified missing recruitment, observation, analysis and uncertainty details before promising an adequate study. This is a narrow observed gain on one request, not evidence of general superiority. No critical failure or regression was identified in the candidate.
+
+The evaluator was separate from construction/execution but knew arm labels and inspected their diff; grading was not blinded. Executors inherited the same host/model configuration; the exact underlying model version was not exposed. Each arm ran eight requests in one fresh context, followed by the reserved request in that arm's context. Small single executions do not estimate population reliability or prove research depth across disciplines. The reserved case is now known regression evidence, not a future untouched holdout.
+
+### Foundation renewal, source handling and package checks
+
+A new bounded search used five recorded queries across relevant GitHub skills and primary methodological/editorial resources. The strongest three inspected resources were the ai-skill-scholar literature-review instructions/license, Pautasso's literature-review guidance, and Nature's publication criteria. No upstream code or source prose was adopted and no dependency was added. An inaccessible Nature article and an unverified GitHub immutable revision are recorded as limits; their discovery snippets were not evidence. See [methodological attribution](../skills/research-writer/references/standards.md). The supplied writing-process diagram was read as reference material; its image and source wording are excluded from the package. General reading, planning, revision, style and reference principles were preserved without requiring every pictured section.
+
+The final skill contains 12 files. Metadata and 24 relative links passed static validation, the canonical portable instructions were regenerated and checked, and source/criterion/output bindings were retained privately. Existing MIT notices, source-only and destination boundaries, publication-fact handling, and statistical/interpretive standards are preserved. No claim is made that this round repeated the prior real-data analysis or Google Docs integration tests; those remain historical evidence below.
+
+- Evaluated installed v0.4.0 baseline SHA-256: `aaebc6c91400cc57fb221014140b5f83f78ea11d4a1e0af61cf35534342228d0`.
+- Evaluated v0.5.0 candidate SHA-256: `381666300a1889cf60593370e4240329136c0c9d4d47eb53a51d407f04486ced`.
+
+Private baseline snapshots and prior Git revisions permit rollback. Managed updates compare the installed recorded base and preserve any customization conflict rather than force-overwriting it. Raw executions, the reserved scenario and private development records are not published.
+
+## Earlier v0.4.0 release and comparison — 2026-10-26
 
 Version 0.4.0 supersedes the earlier preview. The update used a 60-minute effort limit and at most three candidates. Two candidates were constructed; the first was rejected. Acceptance criteria and request inputs were frozen before evaluation. Fresh execution contexts read only their skill arm and requests, without the grading rubric. Independent grading evaluated the resulting outputs and inspected the behavior-bearing resources.
 
