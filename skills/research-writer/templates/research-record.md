@@ -6,9 +6,9 @@ Use only fields needed for this task. Store this filled record outside the skill
 
 - Intended finished work and completion criteria:
 - Question or desired function:
-- Audience, genre and length:
+- Actual readers, prior knowledge, use of the work, paper genre and length:
 - Delivery destination, format and exact existing document or new-document choice:
-- Publication/journal requirements, if applicable:
+- Journal type/readership and named venue if chosen, or no-journal/provisional status; requirements actually checked:
 - Scope, source/data access and effort constraints:
 - Confirmed choices / disclosed assumptions / unresolved decisions:
 - Requested source boundaries and confidentiality:
@@ -44,6 +44,19 @@ Use status such as candidate, supported within inspected literature, already add
 
 | Date | Source/index | Exact query and filters | Actual coverage or records | Selection/deviation notes |
 |---|---|---|---|---|
+
+## Prewriting checkpoint
+
+- Draft/revision stage and audience/genre/venue choices settled or still needed:
+- Last actual search date and original scope/coverage/access:
+- Adequate / targeted renewal / rebuild decision and reason:
+- Actual renewal queries/actions/date and sources inspected, or source-bound/tool limits:
+- Changes to question, nearest neighbor, gap, outline or claims after reconciliation:
+- Closest published neighbor, inspected comparison and one-sentence prior → proposed increment:
+- Duplication test and decision: revise / justified replication / stop / proceed within stated scope:
+- Gap hypothesis: significance, venue/readership value, uncertain publishability and feasibility/resources:
+- Disconfirming evidence sought, weakest assumption and next check:
+- Ready within scope / material blocker; unresolved currency or novelty claims:
 
 ## Source and claim ledger
 
