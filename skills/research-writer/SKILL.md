@@ -1,9 +1,9 @@
 ---
 name: research-writer
-description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, tutorials, syntheses, systematic reviews or meta-analyses when feasible, theory, experimental/design proposals, and humanities analysis. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
+description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, tutorials, syntheses, systematic reviews/meta-analyses when feasible, theory, experimental/design proposals, humanities analysis and device-adaptive computational research tools. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
 license: MIT
 metadata:
-  version: "0.5.0"
+  version: "0.6.0"
 ---
 
 # Research Writer
@@ -43,6 +43,16 @@ Restate the desired outcome separately from the proposed explanation or implemen
 For a novel proposal, build a short dependency map: what must be true, what has been demonstrated, what transfers only by analogy, and what remains speculative. Connect evidence synthesis to proposal choices. Do not equate “not found in this search” with novelty or impossibility.
 
 Choose the applicable route in [writing modes](references/modes.md). Hybrid work may need several routes, such as synthesis → theory → experimental proposal. Keep their different evidence standards visible. A systematic review, meta-analysis, qualitative synthesis and humanities interpretation are not interchangeable labels. Descriptive or exploratory work can have a clear question without a directional hypothesis; choose the method for the question rather than force the question into a familiar tool.
+
+## Optional research and computation tools
+
+For substantive literature organization or computational research, use [the computational workflow](references/computational-research.md) and the original runnable tools in [evidence_tools.py](scripts/evidence_tools.py) and [research_tools.py](scripts/research_tools.py). These are optional; do not turn a humanities essay or literature-only request into a molecular experiment. Read [tool usage](references/tool-usage.md) for exact commands. A user-owned runtime profile outside the skill (for example `~/.local/share/research-writer/runtime.json`) can identify that device's interpreter; project-specific choices take precedence. Before relying on a tool, inspect [the capability catalog](references/tool-catalog.json), run the local inventory and read [device-profile guidance](references/device-profiles.md). Adapt to the user's actual OS, architecture, Python environments, CPU/GPU and local/remote setup. A profile is configuration data, not permission, installed software, a successful probe or authorization for remote jobs. Do not assume a particular laptop/GPU, read secrets, or automatically download weights, transmit private sequences or start paid/background work.
+
+The original utilities support project records, DOI/arXiv/PMID normalization, bounded public metadata lookup, context-and-artifact-linked evidence checks, FASTA inspection, RDKit descriptors/conformers and an OpenMM analytic smoke test when the dependencies are present. Keep source-audited, dependency-present, smoke-tested and scientifically validated states separate. Heavy engines are optional preparation routes, not bundled models or guaranteed execution. Code, weights, datasets, output and services may have different terms.
+
+For an actual computational experiment, record the hypothesis, baseline/comparators, data/splits, parameters/seeds, metrics/units, budget and stop rule before execution where possible. Preserve every failed, negative and amended run, command/environment and input/output hashes; bound repair/refine/pivot attempts to the authorized budget. Do not silently select the best trial as confirmatory evidence or modify this installed skill/global memory automatically. Generate result tables from recorded artifacts and match each number to its run/condition/dataset/metric/unit/seed/statistic. A number appearing elsewhere or a verified DOI alone does not support a claim. Review semantic usefulness separately from arithmetic/provenance.
+
+Protein structures, sequence scores, docking, generated molecules and simulations are model outputs. Confidence is not measured affinity; prediction, a converged optimizer or a stable trajectory does not prove biological function. Noncanonical chemistry needs compatible representations, components, topology and parameters in the selected engines. Unsupported residues/cofactors must remain explicit rather than silently mapped to X/canonical residues. Computational outputs require appropriate controls, uncertainty and independent experimental evidence before stronger claims.
 
 ## 4. Research with an auditable trail
 
