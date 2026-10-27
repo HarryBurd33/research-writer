@@ -1,5 +1,14 @@
 # Changes
 
+## 0.5.0 — 2026-10-26
+
+- Added an explicit gate before substantive writing: actual readers/knowledge/use, paper genre, publication venue type/readership when applicable, and scoped readiness.
+- Added a review/renew/reconcile step for dated literature searches before drafting and after consequential changes; preserve fresh adequate searches, source-only boundaries and honest access limits.
+- Made the nearest published comparison, one-sentence increment, duplication challenge and gap-hypothesis assessment explicit. Importance, venue relevance and feasibility are separate from novelty confidence.
+- Added a tutorial route with learner goals, a teaching sequence, worked examples and clear toy-data labeling.
+- Preserved genre-sensitive structure, active reading, substantive revision, style/citation audit, destination intake and MIT notices.
+
+
 ## MIT licensing and discovery — 2026-10-26
 
 - Licensed original code, skill instructions and documentation under MIT, with the notice included in the installable skill and generated portable copy.
