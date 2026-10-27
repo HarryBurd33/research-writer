@@ -44,6 +44,16 @@ Adapt these prompts to your topic and audience. Replace the example destination 
 
 For empirical manuscripts, provide the actual methods and results. Missing results stay missing; proposed studies remain proposals. The skill treats journal requirements as venue-specific and checks current guidance when a venue is selected.
 
+## Refresh and position before drafting
+
+> Use Research Writer to resume this project. Before drafting, confirm the readers, paper type and intended journal type or no-journal status. Review my previous search record, renew the literature where its date or scope requires it, and explain what the new evidence changes. Compare the closest published paper, summarize our proposed increment in one sentence, and challenge duplication, significance and feasibility. Keep novelty provisional where access is incomplete. Deliver the resulting review here in chat.
+
+**Tutorial**
+
+> Use Research Writer to plan a tutorial on evidence synthesis for practitioners who know spreadsheets but not statistics. Deliver the plan here. Compare the closest existing explanations, identify a useful teaching contribution, and build a sequence of concepts, worked examples, pitfalls and exercises. Label toy data and do not invent research results. No journal is intended yet.
+
+The skill reuses choices already supplied. It should not rerun an identical fresh search, browse outside a supplied-only boundary, or claim that a single sentence proves the gap. It may recommend a meaningful replication, a different contribution, or stopping a novelty claim already covered by prior work.
+
 ## Set boundaries and depth
 
 Useful additions include the audience, length, relevant disciplines, date range, exclusions, source access and practical constraints. Specify “use only these materials” when outside research would be inappropriate. For exploratory work, state an effort limit or ask for an initial bounded search followed by the most consequential unresolved questions. More sources alone do not establish deeper research.
