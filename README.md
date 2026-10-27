@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.4.0** adds stronger research-question development and a conditional journal-preparation workflow. It passed a paired comparison with the installed v0.3.0 baseline; see the [validation report](docs/validation.md) for evidence and limits.
+**Version 0.5.0** adds an explicit prewriting gate for audience, paper type, publication context, search renewal and a tested contribution. See the [validation report](docs/validation.md) for actual checks and limits.
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
@@ -18,9 +18,16 @@ Try:
 
 > Use Research Writer to develop my idea into a research question. Investigate the territory, help identify a worthwhile niche, and compare ways I could contribute. Produce a question-development brief here in chat and ask me about the choices that would change its direction.
 
+## Before substantive writing
+
+The skill first establishes the readers, their prior knowledge and intended use; the paper type (including tutorials); and the journal type/readership when publication is intended. A named journal can remain provisional, and nonpublication work does not need one. It then reviews the dated search record, renews affected searches and reconciles new evidence before drafting. An adequate fresh search can be reused; supplied-source restrictions and access limits remain explicit.
+
+For a proposed contribution, it identifies the closest published neighbor, checks what that paper actually established, and states the proposed increment in one sentence. It then challenges duplication and assesses importance, readership/venue value and practical feasibility. A well-phrased gap is a hypothesis to investigate, not proof of novelty or a promise of publication.
+
 ## What it supports
 
 - Exploratory research briefs and literature syntheses.
+- Tutorials and instructional articles with explicit learners and worked examples.
 - Systematic reviews and quantitative meta-analyses when the evidence and tools support them.
 - Theory papers and conceptual arguments.
 - Experimental protocols and engineering/design proposals.
@@ -70,6 +77,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.4.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.5.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. Original code, workflow instructions and documentation are licensed under the [MIT License](LICENSE). The aggregate example data retains its documented CC0 provenance. Project-specific research and private development notes are excluded from this repository.

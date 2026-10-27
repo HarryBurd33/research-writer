@@ -22,6 +22,14 @@ Record consequential connections across sources: what is shared, what differs an
 
 Record what this pass changes: a premise corrected, a mechanism already established, a disagreement uncovered, a scope condition missing, or an interpretation worth revisiting. If the literature is inaccessible, distinguish a provisional research map from a verified account of the field.
 
+## Choose the nearest neighbor and test the increment
+
+Select the single published paper closest to the intended question and contribution, where the inspected evidence supports that choice. Explain why it is closer than merely related work. Compare its question, corpus/population/context, approach, findings or argument, and actual limits against the proposed work. Keep more than one comparator when a hybrid contribution or an unresolved tie requires it; do not invent a single decisive predecessor or infer everything it did not do from an abstract.
+
+Write one evidence-grounded sentence linking prior achievement to the proposed increment: what this paper established, and what the proposed work would add. Keep prospective claims prospective. The sentence summarizes the comparison; being able to phrase it does not establish a defensible gap. Run the duplication test against that neighbor and other close sources: same question, evidence, method, result/argument or teaching function? A new label or city may still be substantively the same work. If overlap defeats the claim, revise the question/contribution, frame an informative replication, or stop that novelty claim.
+
+Treat the gap itself as a hypothesis. Seek evidence that it is already filled or unimportant; assess significance for the intended audience, fit with the journal type when relevant, and feasibility with actual access, data/materials, methods, skills, time and constraints. Record a concrete next check for each weak assumption. Publishability is an uncertain editorial judgment, not a consequence of finding an empty niche. For a review or tutorial, compare existing syntheses or explanations and the value of the proposed synthesis/teaching contribution.
+
 ## Find and challenge possible niches
 
 A niche is an unresolved issue that matters, not merely a topic with few search hits. Look for conflicting evidence or readings, untested mechanisms, unclear concepts, limitations of measurement or method, meaningful boundary conditions, failures of transfer, an integration not evaluated, or a consequential reinterpretation. Continuing a research tradition or replicating an influential result can also be worthwhile.
@@ -55,7 +63,7 @@ Check alignment: territory → supported niche → main question → possible co
 
 Return to research if an important premise, closest precedent or feasibility issue remains unresolved. Use staged passes with an explicit purpose: orientation, comparison, challenge, resolution. Save the reason for revisions and unresolved gaps. Scale the search to the agreed work and tools; do not silently substitute a small convenience search for requested deep research. If resources limit completion, provide the work achieved and the next targeted pass.
 
-When the direction is sufficiently grounded, show a short question/contribution map and proceed within the user's authorization. Do not add a mandatory approval stage. A user who wants collaborative discovery should have a meaningful choice before the skill commits to a final thesis; a user who delegates choices should receive a disclosed provisional selection.
+Before drafting, apply [the prewriting gate](prewriting.md) and renew affected literature searches when the question, elapsed time, evidence or venue changes. When the direction is sufficiently grounded, show a short question/contribution map and proceed within the user's authorization. Do not add a mandatory approval stage. A user who wants collaborative discovery should have a meaningful choice before the skill commits to a final thesis; a user who delegates choices should receive a disclosed provisional selection.
 
 ## Use the positioning in the writing
 

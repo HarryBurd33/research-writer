@@ -10,6 +10,12 @@ When the question is developing, connect search passes to [question development]
 
 Record search source, query, date, filters, coverage and selection rationale at a level proportionate to the artifact. Do not imply that approximate search counts or connector snippets constitute screened records. For bounded exploration, stop when the agreed scope is covered and additional searches cease changing the major claims, while documenting unresolved gaps. For a systematic review, complete the planned searches and screening; thematic saturation is not a substitute.
 
+## Review and renew before drafting
+
+Before substantive writing, review the existing search/reading record: last actual search date, question and scope, indexes/queries/filters, inspected sources and access, closest precedents, contradictions and known coverage gaps. Use [the prewriting gate](prewriting.md) to decide whether the record is adequate, needs a targeted update or needs rebuilding. Renew searches affected by elapsed time, changed scope, new evidence or an uncertain closest predecessor before drafting claims dependent on them. Include recent work, overlooked older work, contrary findings and relevant corrections/retractions where accessible; reconcile additions with previous notes and revise the contribution rather than append citations mechanically.
+
+Record actual queries/actions, date, coverage, included/excluded leads and what changed in the question, outline or claims. Do not invent updates, negative results, full-text access or a field-wide review. A fresh adequate same-scope search may be reused with its scope/date and the reason a duplicate run adds no value. A source-only restriction means audit and reread that supplied corpus, not search outside it. If search tools or material texts are unavailable, identify the unfinished check and provide only a clearly bounded draft or plan supported by accessible evidence; verified currency or novelty remains pending.
+
 ## Verify before citing
 
 For each relied-on source record:
