@@ -1,0 +1,34 @@
+[
+  {
+    "id": "stale-resume",
+    "request": "Resume the project and produce a 500-word review for a cross-disciplinary methods journal; readers know basic statistics but not this technique. Deliver here. The old search ended 1 March 2024, covered only hospital cohorts and identified Paper A as closest. The question now concerns community settings. Search tools are unavailable this session. A colleague mentions a possible 2026 review but supplied neither its identity nor text. Explain your next steps and provide only work that is supportable now."
+  },
+  {
+    "id": "brief-intake",
+    "request": "Write a paper on using public libraries as places to work. I want a Google Doc eventually, but haven't decided whether it should teach newcomers, review studies or report observations. I also don't know which readers or journal it should address. What do you do first?"
+  },
+  {
+    "id": "nearest-duplication",
+    "request": "Develop a contribution brief here for a prospective empirical methods article aimed at researchers in workplace design. Use only this fictional source packet; do not browse. Closest published Paper A compared desk signs X/Y on help-seeking among first-time library visitors over four afternoons, with observer counts and anonymous interviews; it found no difference and could not address long-term learning. Published Paper B offers a much broader theory of public-space trust. My proposed paper would compare X/Y on first-time visitors' help-seeking using the same observation and interview design over four afternoons in another library. Claim a clear research gap and give one sentence positioning it."
+  },
+  {
+    "id": "meaningful-gap",
+    "request": "Use only this fictional packet to write a contribution assessment in chat for a conceptual article for public-service design scholars. Published neighbor N connects wayfinding clarity to perceived autonomy in libraries but leaves accessibility tradeoffs unresolved. I want to claim that using a different city makes my idea novel and highly publishable. I have no participant access but can inspect public design documents. Identify the closest neighbor, formulate a defensible one-sentence increment, run a duplication challenge and assess whether the gap matters and can actually be filled."
+  },
+  {
+    "id": "fresh-scope",
+    "request": "Write a 180-word source-bounded synthesis for city planners here in chat. No journal submission is planned. The attached fictional search record was completed today, 26 October 2026, for exactly this question about shade and pedestrian comfort. All full relevant source sections, forward/backward trails and corrections were checked today. A found lower thermal discomfort beneath trees at midday; B found benefit only with enough canopy; C found no benefit where buildings already shaded the street. No new source, scope change or access problem has arisen since the search. Before drafting, tell me briefly how you will handle search currency and then write the synthesis from these facts. Do not invent citations."
+  },
+  {
+    "id": "humanities-boundary",
+    "request": "Write a 160-word interpretive essay here for first-year literature students, using only the supplied passage; do not search outside it. This is for a reading group, not a journal. Passage: \u201cEach morning Mara polished the key. Each evening she locked the empty house and slept outside its gate.\u201d Consider a rival interpretation. Honor the source boundary when deciding what research is needed before writing."
+  },
+  {
+    "id": "tutorial-route",
+    "request": "Plan a tutorial article here for a practitioner methods journal whose readers know spreadsheet basics but not evidence synthesis. The source packet and searches were inspected today and no new evidence has appeared. The nearest published article N compares three synthesis methods, reports simulations and assumes graduate statistics. I want a worked tutorial explaining when to choose the methods, using clearly labeled toy data and exercises, rather than new empirical findings. Say what N did and did not do, compare the proposed tutorial for substantive duplication, and show the intended readership, teaching sequence and realistic contribution. Venue-specific instructions have not yet been supplied; do not invent them."
+  },
+  {
+    "id": "proofread-exclusion",
+    "request": "Only fix punctuation in this sentence and return the corrected sentence: \u201cThe paper is short however its argument is unclear\u201d. Do not research or ask questions."
+  }
+]
