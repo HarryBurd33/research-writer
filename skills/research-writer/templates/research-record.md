@@ -86,3 +86,17 @@ Use status such as candidate, supported within inspected literature, already add
 |---|---|---|
 
 Use only needed fields: authors/order/contributions, correspondence and author approval; funding and competing interests; data/material/code availability; applicable ethics/consent and AI-use disclosures; venue-required cover material. Unknown is not none. No journal submission or editor contact is implied.
+
+
+## Optional computational work
+
+- Device/profile location (outside skill), observed probe scope/date and environment:
+- Tool/model/release revisions; code, weights, data/output/service terms separately:
+- Representation/protonation/stereochemistry/modified residue/cofactor assumptions:
+- Hypothesis, comparators, dataset/splits/leakage checks, seeds and metrics/units:
+- Time/trial/storage/download/network/spending budget and stop rule:
+- Every attempt, status, protocol amendments and selection rationale (including failures/zeros):
+- Actual argv, working directory, versions, input/output artifact paths and hashes:
+- Context-keyed measurements, claim links and integrity-report path:
+- Capability state: audited / dependency-present / smoke-tested / task-specific validation:
+- Computational interpretation limits, controls and independent evidence still needed:
