@@ -64,6 +64,10 @@ jobs:
         run: python evals/literature_checks.py
       - name: Source-support record contracts
         run: python evals/support_checks.py
+      - name: Optional engine offline contracts
+        run: |
+          python evals/conversion_checks.py
+          python evals/protein_checks.py
       - name: Isolated installed-package smoke
         run: python evals/package_smoke.py
       - name: Portable bundle consistency
@@ -102,22 +106,66 @@ jobs:
         run: python evals/toolkit_checks.py --molecular
       - name: Public regressions with actual molecular controls
         run: python evals/toolkit_regressions.py --molecular
+      - name: Prepare isolated Open Babel runtime
+        run: |
+          python -m venv .venv-openbabel
+          python -c "import os,pathlib,subprocess; b=pathlib.Path('.venv-openbabel')/('Scripts' if os.name=='nt' else 'bin'); subprocess.run([str(b/('python.exe' if os.name=='nt' else 'python')), '-m','pip','install','--only-binary=:all:','openbabel==3.2.1'],check=True)"
+      - name: Actual independently checked conversions
+        run: |
+          python -c "import os,pathlib,subprocess,sys; b=pathlib.Path('.venv-openbabel')/('Scripts' if os.name=='nt' else 'bin'); e=str((b/('obabel.exe' if os.name=='nt' else 'obabel')).absolute()); subprocess.run([sys.executable,'evals/conversion_checks.py','--molecular','--executable',e],check=True); subprocess.run([sys.executable,'evals/package_smoke.py','--molecular','--obabel',e],check=True)"
       - name: Isolated installed-package molecular smoke
         run: python evals/package_smoke.py --molecular
+
+  protein:
+    name: CPU protein (${{ matrix.os }}, Python 3.12)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            architecture: x64
+          - os: windows-latest
+            architecture: x64
+          - os: macos-latest
+            architecture: arm64
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: ${{ matrix.architecture }}
+      - name: Install selected CPU protein runtime
+        run: |
+          python -m pip install --only-binary=:all: torch==2.14.1 --index-url https://download.pytorch.org/whl/cpu
+          python -m pip install --only-binary=:all: transformers==5.21.0
+      - name: Explicitly prepare small pinned MIT model
+        run: python skills/research-writer/scripts/protein_tools.py prepare-model --directory .model-assets --allow-download
+      - name: Actual CPU representation and isolated install controls
+        run: |
+          python evals/protein_checks.py --protein --model-dir .model-assets
+          python -c "import pathlib,subprocess,sys; subprocess.run([sys.executable,'evals/package_smoke.py','--protein-python',sys.executable,'--protein-model-dir',str(pathlib.Path('.model-assets').absolute())],check=True)"
 
   required:
     # Stable aggregate check name; do not rename when extending the matrix.
     name: Research Writer checks
     if: ${{ always() }}
-    needs: [core, molecular]
+    needs: [core, molecular, protein]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     env:
       CORE_RESULT: ${{ needs.core.result }}
       MOLECULAR_RESULT: ${{ needs.molecular.result }}
+      PROTEIN_RESULT: ${{ needs.protein.result }}
     steps:
       - name: Require every matrix job to pass
         shell: bash
         run: |
           test "$CORE_RESULT" = success
           test "$MOLECULAR_RESULT" = success
+          test "$PROTEIN_RESULT" = success
