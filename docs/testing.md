@@ -56,8 +56,9 @@ credentials and bounded job timeouts. The aggregate **Research Writer checks**
 passes only when both matrices succeed. The workflow never changes branch rules.
 
 The molecular jobs use Python 3.12 and the selected versions in
-`extras/cpu-tested-requirements.txt`; these are tested combinations, not a
-universal lockfile. Wheels must exist for the actual architecture. A missing wheel
+`extras/cpu-tested-requirements.txt`; these are selected combinations, not a
+universal lockfile. The pins were exercised locally on macOS; each hosted
+combination requires its own observed CI result. Wheels must exist for the actual architecture. A missing wheel
 fails the job rather than compiling source or hiding a required check behind a
 skip. Runners print their observed runtime, and molecular jobs print versions.
 `.gitattributes` enforces LF text checkouts because the portable builder hashes
