@@ -216,3 +216,18 @@ checkpoint data surviving removal of the original container and client state,
 then an explicitly prepared new application job continuing from restored bytes.
 No kernel-memory snapshot, production external host, GPU, physical power cycle or
 network filesystem is inferred. See [observed validation](durable-checkpoint-validation.md).
+
+## v0.13 verified SSH backups and storage failures
+
+```bash
+python evals/backup_checks.py
+python evals/backup_loopback_checks.py --run-ssh
+python evals/package_smoke.py --checkpoints
+```
+
+Core CI requires the backup contracts on all six OS/Python rows; POSIX loopback
+jobs require actual transfer/recovery. Existing Linux resource and durable
+checkpoint tests remain required. Storage fault injection is deterministic adapter
+testing, separate from the existing actual SQLITE_FULL/hot-journal/process-kill
+controls and from unexecuted physical power/device-loss validation. The installed
+self-check remains offline. See [observed results](off-device-backup-validation.md).
