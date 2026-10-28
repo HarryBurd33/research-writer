@@ -9,6 +9,12 @@ on:
 permissions:
   contents: read
 
+# Explicit Bash enables -e -o pipefail on every runner, including Windows.
+# PowerShell otherwise can mask an early native-command failure in a batch.
+defaults:
+  run:
+    shell: bash
+
 concurrency:
   group: research-writer-ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
