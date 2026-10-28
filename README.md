@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.12.0** adds durable file/application checkpoints in an explicitly selected SQLite store: atomic generation saves, verification, consistent backup, new-location restore and explicit deletion. Local research checkpoints need no Docker. Opted-in Linux jobs can publish cooperative checkpoint files for read-only capture; an explicit new job can continue from restored application data after the original container is gone. No process-memory snapshot, automatic execution or background service is implied. See [checkpoint usage](skills/research-writer/references/durable-checkpoints.md), [validation](docs/durable-checkpoint-validation.md) and [tests](docs/testing.md).
+**Version 0.13.0** adds optional verified SSH backups of consistent SQLite checkpoint stores: explicit destination and byte limits, immutable backup IDs, lost-reply reconciliation, full readback and restoration checks. Source data is retained. The receiver is a trusted POSIX host; ordinary research and local checkpoints require no remote connection. See [backup usage](skills/research-writer/references/off-device-backups.md), [observed validation](docs/off-device-backup-validation.md) and [tests](docs/testing.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
