@@ -17,6 +17,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--molecular', action='store_true')
     parser.add_argument('--skill', type=Path, default=ROOT / 'skills' / 'research-writer')
+    parser.add_argument('--obabel')
+    parser.add_argument('--protein-python')
+    parser.add_argument('--protein-model-dir')
     args = parser.parse_args()
     with tempfile.TemporaryDirectory(prefix='research-writer-package-') as directory:
         root = Path(directory)
@@ -27,8 +30,11 @@ def main():
         command = [sys.executable, str(skill / 'scripts' / 'self_check.py')]
         if args.molecular:
             command.append('--molecular')
+        for flag, value in (('--obabel', args.obabel), ('--protein-python', args.protein_python), ('--protein-model-dir', args.protein_model_dir)):
+            if value:
+                command.extend([flag, value])
         def run():
-            return subprocess.run(command, cwd=work, text=True, capture_output=True, timeout=180,
+            return subprocess.run(command, cwd=work, text=True, capture_output=True, timeout=300,
                                   env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1'})
         result = run()
         if result.returncode:
