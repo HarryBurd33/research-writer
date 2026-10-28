@@ -63,6 +63,16 @@ Use status such as candidate, supported within inspected literature, already add
 | Source ID and verified citation/URL | Version/status and access level | Faithful source claim and locator | Role, limits and contradictions | Project inference or question implication |
 |---|---|---|---|---|
 
+## Declared claim inventory, when needed
+
+| Claim ID and exact claim | Required source IDs/access | Reviewed passages and source hashes/versions | Recorded support/partial/contradiction/uncertainty | Family/status flags, revision or next check |
+|---|---|---|---|---|
+
+- Actual source/family/status evidence and scope of the declared inventory:
+- Missing reviews, contrary versions and reasons for inventory amendments:
+- Record-integrity/coverage report location, distinct from semantic review:
+- Separate reviewer role, actual review limits and unresolved drafting decisions:
+
 ## Argument and work state
 
 - Thesis or hypothesis:
