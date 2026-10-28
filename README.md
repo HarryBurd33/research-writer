@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.7.0** adds two selected executable engine adapters: Open Babel conversion with independent RDKit identity/stereochemistry checks, and bounded ESM-2 protein embeddings using a pinned small MIT-licensed safetensors checkpoint. Dependencies, device choice and model assets remain optional and user-configurable. See [conversion](skills/research-writer/references/molecular-conversion.md), [embeddings](skills/research-writer/references/protein-embeddings.md) and [validation](docs/validation.md).
+**Version 0.8.0** adds bounded SSH job operations: inspect, prepare, submit, status, collect and cancel. Remote settings remain user-configurable, submission attempts are durable, uncertain replies never trigger automatic resubmission, and collected files are hash-checked. Initial execution targets POSIX Python CPU hosts. See [remote execution](skills/research-writer/references/remote-execution.md), [tests](docs/testing.md) and [validation](docs/validation.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
@@ -85,6 +85,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.7.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.8.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. Original code, workflow instructions and documentation are licensed under the [MIT License](LICENSE). The aggregate example data retains its documented CC0 provenance. Project-specific research and private development notes are excluded from this repository.
