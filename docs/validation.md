@@ -1,6 +1,31 @@
-# Validation — Research Writer 0.8.0
+# Validation — Research Writer 0.9.0
 
-Updated: 2026-10-27 UTC. Historical checks below retain their original dates.
+Updated: 2026-10-28 UTC. Historical checks below retain their original dates.
+
+## Phase 5: end-to-end workflow evaluation — 2026-10-28
+
+v0.9.0 adds the public workflow suite and a narrow proposal-mode clarification
+about cross-condition exposure and practical prevention/measurement. The prior
+version had two noncritical partials across84 applicable criteria; the candidate
+meets84/84, with no critical failures or unnecessary questions. Ten main cases
+and two separately frozen followups ran in matched separate contexts for each
+arm. An unmatched combined-context attempt was interrupted before responses
+and excluded. Review was separate, nonblind and agent-based, with exact model
+and effort unavailable. This is small-fixture evidence, not broad quality proof.
+
+All125 local deterministic methods pass with applicable selected engines;
+16 are new arithmetic/fixture controls. The initial loopback listener was refused
+by the sandbox before tests; the identical authorized real fixture then passed
+6/6 outside it. Independent extra controls pass11/11 fixture,9/9 live-source/local
+delivery and7/7 scope checks. Existing installed Python algorithms are unchanged.
+Copied-install engine controls,31-file/55-link metadata and portable consistency
+pass. HostedCI, final GitHub identity and managed-install readback are recorded
+in the release PR when observed, not inferred from the matrix definition.
+
+See the [detailed report](workflow-evaluation.md) for frozen inputs, rubrics,
+actual outputs, exact numerical reference, provenance and comparison limits.
+Remaining provider/semantic-review, external-host/GPU, isolation, Windows,
+scheduler, heavyweight-engine and scientific-validation work remains explicit.
 
 ## Phase 4: bounded SSH lifecycle — 2026-10-28
 

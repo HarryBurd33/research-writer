@@ -1,0 +1,308 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-28",
+  "baseline_version": "0.8.0",
+  "candidate_version": "0.9.0",
+  "status": "local_behavior_gate_pass_hosted_ci_and_install_separate",
+  "main": {
+    "baseline": {
+      "summary": {
+        "scored_criteria": 75,
+        "meets": 74,
+        "partial": 1,
+        "fails": 0,
+        "score": 149,
+        "maximum_score": 150,
+        "critical_failures": 0,
+        "unnecessary_questions": 0
+      },
+      "cases": [
+        {
+          "case_id": "P5-01-intake",
+          "status": "PASS",
+          "fully_met": 4,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-02-quantitative",
+          "status": "PASS",
+          "fully_met": 9,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-03-no-pooling",
+          "status": "PASS",
+          "fully_met": 8,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-04-source-conflict",
+          "status": "PASS",
+          "fully_met": 8,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-05-theory",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-06-tutorial",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-07-humanities",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-08-proposal",
+          "status": "PASS_WITH_NONCRITICAL_PARTIAL",
+          "fully_met": 8,
+          "partial": 1,
+          "failed": 0,
+          "target_evidence": [
+            {
+              "id": "missing-data",
+              "score": 1,
+              "evidence": "Explainsresponse/attendance denominators, missingcount, noindividualimputation. Repeatedattendanceflaggedunresolved butno explicitcross-conditioncontaminationmechanism/mitigation; partialoncombinedrubric."
+            }
+          ]
+        },
+        {
+          "case_id": "P5-09-duplication",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-10-frozen-review",
+          "status": "PASS",
+          "fully_met": 9,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        }
+      ]
+    },
+    "candidate": {
+      "summary": {
+        "scored_criteria": 75,
+        "meets": 75,
+        "partial": 0,
+        "fails": 0,
+        "score": 150,
+        "maximum_score": 150,
+        "critical_failures": 0,
+        "unnecessary_questions": 0
+      },
+      "cases": [
+        {
+          "case_id": "P5-01-intake",
+          "status": "PASS",
+          "fully_met": 4,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-02-quantitative",
+          "status": "PASS",
+          "fully_met": 9,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-03-no-pooling",
+          "status": "PASS",
+          "fully_met": 8,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-04-source-conflict",
+          "status": "PASS",
+          "fully_met": 8,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-05-theory",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-06-tutorial",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-07-humanities",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-08-proposal",
+          "status": "PASS",
+          "fully_met": 9,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-09-duplication",
+          "status": "PASS",
+          "fully_met": 7,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        },
+        {
+          "case_id": "P5-10-frozen-review",
+          "status": "PASS",
+          "fully_met": 9,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        }
+      ]
+    }
+  },
+  "fresh_followup": {
+    "baseline": {
+      "summary": {
+        "criteria": 9,
+        "meets": 8,
+        "partial": 1,
+        "fails": 0,
+        "score": 17,
+        "maximum_score": 18,
+        "critical_failures": 0,
+        "unnecessary_questions": 0
+      },
+      "cases": [
+        {
+          "case_id": "P5-F01-shared-exposure",
+          "status": "PASS_WITH_NONCRITICAL_PARTIAL",
+          "fully_met": 4,
+          "partial": 1,
+          "failed": 0,
+          "target_evidence": [
+            {
+              "id": "practical-response",
+              "score": 1,
+              "evidence": "Identifiesexposureandqualifiesinference, butno concreteprevention/reduction/exposuremeasurementprocedure. Genericredesignifexposurecannotbeseparated andsupervisordryrun do notspecifyhowtolimitorrecordcross-conditionexposure."
+            }
+          ]
+        },
+        {
+          "case_id": "P5-F02-individual-contrast",
+          "status": "PASS",
+          "fully_met": 4,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        }
+      ]
+    },
+    "candidate": {
+      "summary": {
+        "criteria": 9,
+        "meets": 9,
+        "partial": 0,
+        "fails": 0,
+        "score": 18,
+        "maximum_score": 18,
+        "critical_failures": 0,
+        "unnecessary_questions": 0
+      },
+      "cases": [
+        {
+          "case_id": "P5-F01-shared-exposure",
+          "status": "PASS",
+          "fully_met": 5,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": [
+            {
+              "id": "practical-response",
+              "score": 2,
+              "evidence": "Fixedteachingnotes, proposesdelayingchannelsharing subjecttoviability; conditionalanonymousaggregateprior-exposurecounts; explicitlycountsdonotremovecontamination andnoidentitylinkage."
+            }
+          ]
+        },
+        {
+          "case_id": "P5-F02-individual-contrast",
+          "status": "PASS",
+          "fully_met": 4,
+          "partial": 0,
+          "failed": 0,
+          "target_evidence": []
+        }
+      ]
+    }
+  },
+  "review": {
+    "separate_from_construction": true,
+    "human": false,
+    "blind": false,
+    "effective_model": "unknown; inherited",
+    "effective_effort": "unknown; inherited",
+    "grouping": "10cases/maincontext and2cases/followupcontext inbotharms",
+    "diagnostic_combined_candidate": "interrupted_before_responses; excluded",
+    "case_reclassification": "P5-08developmentafterobservedomission;7originalheldoutplus2freshfollowups",
+    "repeated_runs": "onecompletedrunperarm/group; no broadqualityorcausalcostclaim"
+  },
+  "independent_additional_controls": {
+    "arithmetic_fixture": 11,
+    "live_source_and_local_delivery": 9,
+    "static_patch_scope": 7
+  },
+  "deterministic_public_methods": {
+    "existing": 109,
+    "new_fixture": 16,
+    "total": 125,
+    "local": "allpass with selectedengines; initialSSHbindsandboxrefusalrecoveredbyidenticalauthorizedloopbackfixture"
+  },
+  "input_sha256": "5ab4c73ba7430d80595989765f05fed74dc1318f1c92b5dbf983571597b270b4",
+  "followup_input_sha256": "5536a01858675f36993ee8d23c7992cc146d680a5974708f589758299989037e",
+  "modes_sha256": "511a550dc482392657f10b6a68362f054ee6933f9d5a2fa39a8d07862fa66fa1",
+  "scope_limits": [
+    "smallshortsyntheticwritingcases; realpairedreviewreceivesnotesonly",
+    "nonpairedliveboundedresearchisnotfieldwidecoverage",
+    "noexternalproductionhost/GPU/Windowsremote/scheduler/hardisolationacceptance",
+    "novelty/scientifictruth/biologicalperformanceareunproven"
+  ]
+}

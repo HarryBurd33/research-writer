@@ -1,10 +1,10 @@
 # Research Writer: remaining work and acceptance plan
 
-Plan dated 2026-10-27. This is a roadmap, not a claim that its proposed features or tests have run. The starting release is v0.6.0; see [validation](validation.md), [runtime setup](runtime-setup.md) and [tool catalog](../skills/research-writer/references/tool-catalog.json). Preserve the user's device-adaptable design, genre/audience/destination intake, renewed literature search before substantive writing, and tested prior behavior.
+Plan begun 2026-10-27; status reviewed 2026-10-28. Proposed work is distinct from executed acceptance. Phases 1–4 were delivered through v0.8.0; phase 5 bounded evaluation is delivered in v0.9.0. The historical starting release is v0.6.0; see [validation](validation.md), [runtime setup](runtime-setup.md) and [tool catalog](../skills/research-writer/references/tool-catalog.json). Preserve the user's device-adaptable design, genre/audience/destination intake, renewed literature search before substantive writing, and tested prior behavior.
 
 ## Phase 1 implementation status
 
-v0.6.1 adds the CI workflow, public regressions and installed-package self-check described below. Local executed checks and hosted-matrix status are recorded in [validation](validation.md); defined matrix jobs are not automatically passing jobs. Later phases remain planned.
+v0.6.1 adds the CI workflow, public regressions and installed-package self-check described below. Local executed checks and hosted-matrix status are recorded in [validation](validation.md); defined matrix jobs are not automatically passing jobs. Phases 2–4 have subsequent implementation notes below; unvalidated extensions remain planned.
 
 ## Starting point
 
@@ -52,6 +52,8 @@ Acceptance: mocked transport first, then an authorized disposable real job. Test
 
 ### 5. Expand end-to-end research and writing evaluation
 
+v0.9.0 delivers the bounded initial suite: ten main cases and two fresh design contrasts, actual paired execution, independent numerical reference and separate nonblind agent review. See [the detailed evaluation](workflow-evaluation.md). Wider domains, long manuscripts and expert validation remain future work; published cases become known regressions.
+
 Create new held-out cases in separate contexts before changing behavior. Cover a real bounded literature review, a feasible quantitative synthesis, theory, tutorial, humanities interpretation, experimental/design proposal and a duplication case that invalidates the original gap. Include ambiguous audience/genre/destination, conflicting source families, supplied-only work and an unavailable-service case.
 
 Acceptance: freeze protocol, sources, rubric and exclusions before evaluation; compare against v0.6; assign review independently from construction; report nonblind review and sample limits. For synthesis, verify screening, extraction, dependencies, effect-size calculations, uncertainty and conclusions with an independent reference calculation. Renew searches and test the nearest-neighbor gap before drafting. For delivery, re-read a newly created document and verify formatting, references and destination; never publish or message others merely to test. Prior delivery evidence can be reused as regression history, not claimed as a new integration run.
@@ -72,3 +74,28 @@ Adopt only after relevant regressions and the package-specific gate pass. Versio
 ## Limits that cannot be eliminated by packaging
 
 No finite search guarantees novelty or completeness. Statistical pooling depends on suitable evidence and methods; insufficient data may require a review or proposal instead. Prediction scores, simulations and generated candidates need task-specific validation and often experiments. External availability, access rights, model licenses and hardware limits remain real constraints. The appropriate response is a documented evidence boundary or alternative workflow, not a claim that every limitation has been solved.
+
+
+## Continuation after the phase-5 evaluation
+
+The following are remaining work, not completed acceptance. Keep local research
+and writing usable without hardware, services or paid providers.
+
+| Priority | Deliverable | Acceptance and external dependency |
+|---|---|---|
+| 6: literature/source support | Expand providers and accessible full-text/version/correction handling where concrete cases expose coverage gaps; improve claim-to-passage review. | Frozen failure contracts plus bounded live controls; independent supported/partial/contradicted/uncertain passage review. Access and source rights remain explicit. |
+| 7: remote isolation/recovery | Optional enforced Linux limits and filesystem restrictions with a documented threat model; improve controller/host failure reconciliation. | Disposable-host tests of actual memory, CPU/process, storage and wall limits plus interrupted recovery; never infer isolation from configuration. Existing mode remains trusted-task only. |
+| 8: external host and GPU | Portable host acceptance and one real GPU route using an existing small workload first. | Needs a selected trusted machine, permitted files/task, compatible runtime/assets and resource bounds. Verify actual device, numerical output, cancellation and collection. Loopback cannot establish this. |
+| 9: selected scientific engines | One task-appropriate docking and one larger prediction route, then optional task-justified engines/pipelines. | Recheck distinct rights; isolate environments; official small control and negative control; independent output parsing and a predefined licensed benchmark before performance claims. Large downloads/paid services need explicit bounds. |
+| 10: Windows remote/schedulers | Separate remote Windows implementation and selected scheduler lifecycle adapter. | Actual compatible Windows host and scheduler test environment, including uncertain-submit recovery and cancellation. Mock contracts alone do not establish support. |
+
+Every package retains baseline/rollback, freezes criteria before changes, uses
+review separate from construction, passes relevant regressions and hosted CI,
+and verifies the managed installation. Keep protected-main promotion separate
+from branch upload and local installation. Do not create permanent services or
+paid calls to demonstrate a capability without current authorization.
+
+Finite searches cannot prove completeness or worldwide novelty. Appropriate
+statistics depend on suitable evidence; model predictions require task-specific
+and often experimental validation. These boundaries must be managed honestly
+rather than marked solved by a packaging upgrade.

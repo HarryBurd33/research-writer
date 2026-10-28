@@ -3,7 +3,7 @@ name: research-writer
 description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, tutorials, syntheses, systematic reviews/meta-analyses when feasible, theory, experimental/design proposals, humanities analysis and device-adaptive computational research tools. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
 license: MIT
 metadata:
-  version: "0.8.0"
+  version: "0.9.0"
 ---
 
 # Research Writer
