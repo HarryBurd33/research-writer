@@ -1,5 +1,13 @@
 # Changes
 
+## 0.9.0 — 2026-10-28
+
+- Added ten frozen workflow cases plus two fresh proposal-design contrasts, fixed rubrics and an independently checkable synthetic quantitative control.
+- Clarified proposal guidance on cross-condition exposure, shared people/facilitators/materials, practical prevention or measurement, and remaining dependence limits; independent individual designs remain valid.
+- Added sixteen deterministic fixture/arithmetic tests to core CI; these do not execute or grade an LLM.
+- Separated actual paired writing evaluation, nonpaired live research, source-support judgment, local artifact readback and package checks in release evidence.
+- Corrected stale CI/roadmap coverage descriptions and retained all prior tools, device profiles and scientific boundaries.
+
 ## 0.8.0 — 2026-10-28
 
 - Added optional bounded SSH remote-job lifecycle operations and a POSIX Python controller.
