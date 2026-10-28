@@ -66,6 +66,27 @@ with drop ALL. Added negative controls reject extra, duplicate, malformed and
 double-prefixed names. No resource, privilege or frozen acceptance bound changed.
 See the release pull request for the fresh hosted outcome on the repaired head.
 
+## Executed Linux controls on the repaired production code
+
+[CI run 22](https://github.com/HarryBurd33/research-writer/actions/runs/40767307846)
+passes all 10 actual methods in 53.519 seconds on Ubuntu 24.04.5 x86_64,
+Docker 28.0.4 and cgroupv2, at production head
+`af2153d2f121163ac017b8184e92965668f3cd52`.
+The selected Python image ID was
+`sha256:37ccb536022bb36c4570856b55ebfa85bf07827e3c2fa3eba37f0dac62eebc05`;
+its recorded repository digest was
+`sha256:e697c81897302a4c4333bade000d98038fbb21eb064f8ee1fd42d02ebcd9d337`.
+
+Observed controls include 64 MiB memory/zero swap, CPU quota 250 millis with actual
+throttling, PID 16 pressure rejection, actual OOM-kill counter 1, read-only
+root/metadata, bounded scratch bytes/inodes, UID/capability/control protections,
+collection/cancellation, client exit before ID persistence, timeout and
+nonresubmitting recovery, loss honesty and cleanup. Production cleanup completed.
+Two additive test-only refinements explicitly attempt the external connection
+and confirm escaped-child readiness; their fresh current-head outcome and the
+complete required matrix are recorded in the release pull request before adoption.
+This observed Linux configuration does not establish other backend support.
+
 ## Remaining boundaries
 
 Only the tested Docker Linux/cgroup-v2 CPU configuration is an enforcement claim.
