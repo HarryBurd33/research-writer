@@ -12,6 +12,8 @@ python evals/protein_checks.py
 python evals/remote_client_checks.py
 python evals/remote_worker_checks.py
 python evals/remote_loopback_checks.py
+python evals/workflow_checks.py
+python evals/workflow/reproduce_quantitative.py
 python evals/package_smoke.py
 python scripts/build_portable.py --check
 ```
@@ -56,11 +58,12 @@ recording another interpreter in a profile does not switch the running process.
 
 ## Continuous integration
 
-The GitHub Actions workflow runs six core OS/Python combinations and three CPU
-molecular combinations, with fail-fast disabled. It uses pinned checkout and
+The GitHub Actions workflow runs six core OS/Python combinations, three CPU
+molecular combinations, three CPU protein combinations and two POSIX loopback
+SSH combinations, with fail-fast disabled. It uses pinned checkout and
 setup-python revisions, read-only contents permissions, no persisted checkout
 credentials and bounded job timeouts. The aggregate **Research Writer checks**
-passes only when both matrices succeed. The workflow never changes branch rules.
+passes only when all four matrices succeed. The workflow never changes branch rules.
 
 The molecular jobs use Python 3.12 and the selected versions in
 `extras/cpu-tested-requirements.txt`; these are selected combinations, not a
@@ -72,8 +75,10 @@ skip. Runners print their observed runtime, and molecular jobs print versions.
 source bytes. Check [validation](validation.md) and actual Actions logs for the
 latest executed results; a matrix definition alone establishes no platform pass.
 
-No current matrix covers GPU backends, remote execution, heavy research engines,
-all Python versions or all CPU architectures. Source metadata, deterministic
+The remote matrix covers disposable loopback SSH on Linux and macOS. It does
+not establish external-host support. No current matrix covers GPU backends,
+production remote hosts, heavy research engines, all Python versions or all CPU
+architectures. Source metadata, deterministic
 integrity checks and even successful installation tests do not establish source
 entailment, research completeness, novelty or scientific validity.
 
@@ -124,3 +129,21 @@ sshd privilege-separation directory. Windows clients receive contract tests;
 Windows remote servers, GPU dispatch and schedulers need separate acceptance.
 Resource limits are cooperative bounds for trusted jobs, not an OS security sandbox.
 See [the remote guide](../skills/research-writer/references/remote-execution.md).
+
+## End-to-end research/writing evaluation
+
+The ten public [workflow cases](../evals/workflow/inputs.json) cover intake,
+quantitative synthesis and refusal, conflicting/corrected evidence, theory,
+tutorials, close reading, a prospective proposal, duplication and a bounded
+primary-source review. See the [execution protocol](../evals/workflow/README.md).
+The source notes in the review packet are evaluator-inspected paraphrases;
+executors must not describe them as personal full-text access.
+
+`python evals/workflow_checks.py` runs sixteen deterministic fixture/arithmetic
+methods. They include an independently frozen numerical reference, report-order
+invariance, effect shifts, uncertainty scaling, family-conflict refusal and
+missing/invalid data. These CI checks never execute or grade a language model.
+Behavioral results require saved actual model outputs and separate review under
+a frozen rubric; live retrieval and destination integrations are separate gates.
+Published cases are known regressions for future work, not permanently held-out
+benchmarks or proof of scientific validity.
