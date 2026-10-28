@@ -11,6 +11,7 @@ import argparse
 import csv
 import hashlib
 import json
+import math
 import os
 from pathlib import Path
 import re
@@ -23,12 +24,14 @@ CONTEXT = ('run', 'condition', 'dataset', 'metric', 'unit', 'seed', 'statistic',
 REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/research_tools.py', 'scripts/self_check.py',
             'scripts/literature_tools.py', 'scripts/support_tools.py',
+            'scripts/conversion_tools.py', 'scripts/protein_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
                 'device-profiles', 'modes', 'prewriting', 'publication-workflow',
                 'question-development', 'research-and-sources', 'standards',
-                'tool-usage', 'testing', 'literature-retrieval', 'source-support')))
+                'tool-usage', 'testing', 'literature-retrieval', 'source-support',
+                'molecular-conversion', 'protein-embeddings')))
 
 
 def require(condition, message):
@@ -125,6 +128,8 @@ def core_check(work):
     # These help calls import both optional tools without any HTTP request.
     run_cli(work, 'literature_tools.py', ['--help'])
     run_cli(work, 'support_tools.py', ['--help'])
+    run_cli(work, 'conversion_tools.py', ['--help'])
+    run_cli(work, 'protein_tools.py', ['--help'])
     source = work / 'source.txt'
     text = 'Fictional control: the observed signal was zero.'
     source.write_text(text, encoding='utf-8')
@@ -179,10 +184,49 @@ def molecular_check(work):
                 'Molecular measurement hash mismatch')
 
 
+def conversion_check(work, executable):
+    source, output, report = work / 'conversion.smi', work / 'conversion.sdf', work / 'conversion.json'
+    source.write_text('C[C@H](O)C(=O)O chiral_control\nF/C=C/F trans_control\n', encoding='utf-8')
+    run_cli(work, 'conversion_tools.py', ['convert', '--executable', executable,
+            '--input', source, '--input-format', 'smi', '--output', output,
+            '--output-format', 'sdf', '--report', report])
+    require(load(report)['passed'], 'Conversion identity control failed')
+    from rdkit import Chem
+    molecules = list(Chem.SDMolSupplier(str(output)))
+    expected = [Chem.MolFromSmiles(s) for s in ('C[C@H](O)C(=O)O', 'F/C=C/F')]
+    require(len(molecules) == 2 and all(m is not None for m in molecules) and
+            [Chem.MolToSmiles(m, isomericSmiles=True) for m in molecules] ==
+            [Chem.MolToSmiles(m, isomericSmiles=True) for m in expected],
+            'Independent stereo conversion parse failed')
+
+
+def protein_check(work, python, model_dir):
+    source, report, artifact = work / 'protein.fa', work / 'protein.json', work / 'embeddings.json'
+    source.write_text('>canonical_control\nACDEFGHIKLMNPQRSTVWY\n', encoding='utf-8')
+    result = subprocess.run([python, str(ROOT / 'scripts' / 'protein_tools.py'), 'embed',
+            '--input', str(source), '--model-dir', model_dir, '--device', 'cpu',
+            '--output', str(report), '--embedding-output', str(artifact), '--timeout', '120'],
+            cwd=work, capture_output=True, text=True, timeout=180,
+            env={**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'HF_HUB_OFFLINE': '1'})
+    require(result.returncode == 0, 'Protein control failed: ' + result.stderr[-1000:])
+    metadata, data = load(report), load(artifact)
+    values = data['records'][0]['embedding']
+    require(metadata['dimension'] == 320 and data['device'] == 'cpu' and len(values) == 320 and
+            all(isinstance(v, (int, float)) and not isinstance(v, bool) and math.isfinite(v) for v in values),
+            'Protein vector dimension/finite/device control failed')
+    require(hashlib.sha256(artifact.read_bytes()).hexdigest() == metadata['artifact']['sha256'],
+            'Protein output hash mismatch')
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--molecular', action='store_true', help='Require, execute and validate optional CPU controls')
+    parser.add_argument('--obabel', help='Explicit Open Babel executable; require actual independently checked conversion')
+    parser.add_argument('--protein-python', help='Separate protein runtime interpreter')
+    parser.add_argument('--protein-model-dir', help='Verified local small ESM-2 assets; paired with --protein-python')
     args = parser.parse_args()
+    if bool(args.protein_python) != bool(args.protein_model_dir):
+        parser.error('--protein-python and --protein-model-dir must be supplied together')
     checks = []
     try:
         package_check()
@@ -196,6 +240,16 @@ def main():
                 checks.append({'name': 'molecular', 'status': 'passed'})
             else:
                 checks.append({'name': 'molecular', 'status': 'skipped', 'reason': 'not requested'})
+            if args.obabel:
+                conversion_check(work, args.obabel)
+                checks.append({'name': 'conversion', 'status': 'passed'})
+            else:
+                checks.append({'name': 'conversion', 'status': 'skipped', 'reason': 'not requested'})
+            if args.protein_python:
+                protein_check(work, args.protein_python, args.protein_model_dir)
+                checks.append({'name': 'protein', 'status': 'passed'})
+            else:
+                checks.append({'name': 'protein', 'status': 'skipped', 'reason': 'not requested'})
     except Exception as exc:
         print(json.dumps({'passed': False, 'checks': checks, 'error': f'{type(exc).__name__}: {exc}'}))
         return 1
