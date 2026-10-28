@@ -167,3 +167,27 @@ complete audit plus a missing-review refusal. Live anonymous OpenAlex and pinned
 arXiv retrieval, source interpretation and writing behavior remain separate
 acceptance records. See [the detailed validation](deeper-literature-validation.md).
 No deterministic test semantically verifies a paper or authenticates a reviewer.
+
+
+## v0.11 Linux isolation and recovery
+
+Portable/offline contracts (no engine probe, no image download):
+
+```sh
+python evals/controller_recovery_checks.py
+python evals/linux_checks.py
+```
+
+Actual integration requires an explicitly selected existing Docker Linux/cgroup-v2
+engine and immutable compatible local image. It fails if the requested engine is
+unavailable; there is no skip-as-success fallback:
+
+```sh
+python evals/linux_integration_checks.py --docker /usr/bin/docker --context default --image-id sha256:ACTUAL_64_HEX_IMAGE_ID
+```
+
+CI separately provisions an official Python image on a disposable Ubuntu runner,
+records its resolved local ID/digest, and passes the immutable ID to this command.
+The runtime tool itself never pulls. The stable required aggregate now depends
+on this job as well as every earlier matrix. See [observed validation](linux-isolation-validation.md)
+and the [runtime/threat model](../skills/research-writer/references/linux-isolation.md).
