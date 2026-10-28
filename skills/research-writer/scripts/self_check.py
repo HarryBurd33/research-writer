@@ -28,7 +28,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/remote_tools.py', 'scripts/remote_worker.py',
             'scripts/discovery_tools.py', 'scripts/claim_audit.py',
             'scripts/linux_tools.py', 'scripts/linux_supervisor.py',
-            'scripts/checkpoint_tools.py',
+            'scripts/checkpoint_tools.py', 'scripts/backup_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
@@ -36,7 +36,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
                 'question-development', 'research-and-sources', 'standards',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
                 'molecular-conversion', 'protein-embeddings', 'remote-execution',
-                'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints')))
+                'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints', 'off-device-backups')))
 
 
 def require(condition, message):
@@ -233,6 +233,14 @@ def checkpoint_check(work):
             '--report', work / 'checkpoint-restored.json'])
     require((restored / 'state/empty.bin').read_bytes() == b'' and
             (restored / '.checkpoint.json').is_file(), 'Durable checkpoint restore differs')
+    # Selected checkpoint checks also verify the offline backup restore-drill API.
+    import importlib.util
+    spec = importlib.util.spec_from_file_location('installed_backup_control', ROOT / 'scripts/backup_tools.py')
+    helper = importlib.util.module_from_spec(spec); spec.loader.exec_module(helper)
+    drill = helper.drill_store(backup)
+    require(drill.get('full_restore_drill') is True and drill.get('generations') == 1,
+            'Offline backup restore drill failed')
+    run_cli(work, 'backup_tools.py', ['--help'])
     source.write_bytes(b'changed')
     run_cli(work, 'checkpoint_tools.py', ['save', '--store', store,
             '--manifest', packet, '--allow-save', '--report', work / 'checkpoint-rejected.json'], expected=2)
