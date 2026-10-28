@@ -1,6 +1,18 @@
-# Validation — Research Writer 0.6.1
+# Validation — Research Writer 0.6.2
 
 Updated: 2026-10-27 UTC. Historical checks below retain their original dates.
+
+## Phase 2: literature retrieval and source-support records — 2026-10-27
+
+v0.6.2 adds original standard-library Crossref/Europe PMC adapters and an offline source-support record checker. Official interface/rights documentation and actual public responses were inspected; no paper text, credentials or private research is redistributed. The old evidence/research utility algorithms remain unchanged. Query/filter/date/cursor receipts, source versions, update notices, actual access levels and coverage limits remain separate from scientific interpretation.
+
+Local checks passed: 13 literature methods, 11 support-record methods, the original 8 toolkit methods and 19 prior regression methods with molecular dependencies, copied-install molecular smoke, metadata (24 files/46 links) and portable consistency. Provider/error/XML branches are offline mocks; they are not claims of live completeness. The installed smoke also checks the new tools load without network access and accepts a consistent fictional support record while rejecting an invented passage.
+
+Live public controls succeeded: Crossref returned four records across two bounded pages; an exact DOI update lookup verified identity and returned no deposited notices, which does not certify no corrections; Europe PMC resolved the matching article; its OA XML full text verified PMCID, body, license, section locators and text-artifact SHA-256. Retrieval remains read_or_reviewed:false. A final prepublication audit found the first internal-DTD regex missed a subset after a quoted greater-than sign; a quote-aware scanner and regression corrected it without permitting entity definitions or external resource loading. The XML hash identifies retrieved content; observed publisher version and unknown fields are retained honestly. Actual JATS external DOCTYPE declarations work without fetching their resources; internal DTD/entity definitions are rejected.
+
+Independent review used separately frozen criteria and a primary-text three-claim packet, with source hashes frozen before evaluation. Its 21 source-support checks passed, including actual CLI, exact offsets/version/hash mutations and primary-source comparison. Review was separate and nonblind; exact model/effort was unknown. Support, contradiction and uncertainty are reviewer judgments; valid records explicitly retain semantic_entailment:not_automatically_verified. No broad research-quality superiority or automatic truth verification is claimed. The final independent gate and hosted matrix result are recorded in the release pull request; this initial publication record does not count an unexecuted matrix as passing.
+
+Coverage remains limited to public deposited metadata and Europe PMC's principally life-science corpus and accessible OA XML. Paid/paywalled sources, all publisher corrections, every discipline and exhaustive novelty discovery are not covered. Identity and access declarations in user-authored support records need separate establishment. Important semantic judgments still require inspection and independent review. Later computational/remote roadmap phases remain outside this release. Prior v0.6.1 source and managed-install hashes provide rollback.
 
 ## Phase 1: portable checks and installed self-check — 2026-10-27
 
