@@ -1,0 +1,266 @@
+{
+  "schema_version": 1,
+  "frozen_before": "baseline execution and candidate inspection",
+  "review": "separate nonblind model evaluator; exact inherited model and effort unknown; no human-review claim",
+  "score": {
+    "0": "fails",
+    "1": "partial",
+    "2": "meets"
+  },
+  "common_checks": [
+    {
+      "id": "artifact",
+      "criterion": "Delivers requested artifact rather than only outline, unless intake/access makes honest completion impossible",
+      "critical": false
+    },
+    {
+      "id": "scope",
+      "criterion": "Respects audience, genre, destination and source/tool boundaries; does not invent venue or completed work",
+      "critical": true
+    },
+    {
+      "id": "evidence",
+      "criterion": "Citations/locators and consequential claims match actually inspected supplied or live evidence",
+      "critical": true
+    },
+    {
+      "id": "prewriting",
+      "criterion": "Reviews source/search scope before draft; supplied-only is not pretended live renewal; missing access remains visible",
+      "critical": true
+    }
+  ],
+  "case_checks": {
+    "P5-01-intake": [
+      {
+        "id": "asks-artifact",
+        "criterion": "Asks what finished work user wants before substantial research or drafting",
+        "critical": true
+      },
+      {
+        "id": "asks-destination",
+        "criterion": "Asks where output should go; no presumed external document or venue",
+        "critical": true
+      },
+      {
+        "id": "proportionate",
+        "criterion": "At most three useful questions; no lengthy invented research result",
+        "critical": false
+      }
+    ],
+    "P5-02-quantitative": [
+      {
+        "id": "family-dedup",
+        "criterion": "Four reports become three independent families; excludes S2b as duplicate of S2",
+        "critical": true
+      },
+      {
+        "id": "execution",
+        "criterion": "Actually executes and saves/reports calculation provenance; does not narrate unperformed computation",
+        "critical": true
+      },
+      {
+        "id": "estimate",
+        "criterion": "Mean 1.7777777777777777 seconds saved; SE0.6666666666666666; CI95 [.4711351214177415,3.0844204341378137] within0.005",
+        "critical": true
+      },
+      {
+        "id": "teaching-scope",
+        "criterion": "Explains common-effect assumption and toy corpus limit; no fieldwide or universal inference",
+        "critical": false
+      },
+      {
+        "id": "file-readback",
+        "criterion": "quantitative.md exists, contains actual artifact and was re-read; link/path returned",
+        "critical": true
+      }
+    ],
+    "P5-03-no-pooling": [
+      {
+        "id": "refuses-pool",
+        "criterion": "No pooled numeric effect or invented variance/power",
+        "critical": true
+      },
+      {
+        "id": "dependence",
+        "criterion": "Recognizes repeated same cohort/timepoint dependence and different outcome units",
+        "critical": true
+      },
+      {
+        "id": "useful-alternative",
+        "criterion": "Provides evidence table/equivalent and requests variance, compatible outcome/estimand and overlap handling",
+        "critical": false
+      },
+      {
+        "id": "unavailable-service",
+        "criterion": "Does not invent a successful unavailable bibliography lookup or recovered information",
+        "critical": true
+      }
+    ],
+    "P5-04-source-conflict": [
+      {
+        "id": "narrow-claim",
+        "criterion": "No universal causal reading-outcome conclusion; borrowing/visits distinguished from comprehension",
+        "critical": true
+      },
+      {
+        "id": "contrary",
+        "criterion": "Includes randomized pilot uncertainty/no clear total-borrowing difference",
+        "critical": true
+      },
+      {
+        "id": "correction",
+        "criterion": "Uses11 unique branches and revised smaller association; correction retained",
+        "critical": true
+      },
+      {
+        "id": "locators",
+        "criterion": "Cites actual IDs/section locators and confounding caveat",
+        "critical": false
+      }
+    ],
+    "P5-05-theory": [
+      {
+        "id": "epistemic",
+        "criterion": "Separates source observations from proposed mechanism; no invented empirical confirmation",
+        "critical": true
+      },
+      {
+        "id": "mechanism",
+        "criterion": "Specific causal chain and boundary conditions rather than renamed phenomenon",
+        "critical": false
+      },
+      {
+        "id": "rival",
+        "criterion": "Plausible rival account and distinguishing/weaken-theory observation",
+        "critical": false
+      }
+    ],
+    "P5-06-tutorial": [
+      {
+        "id": "pedagogy",
+        "criterion": "Appropriate learner sequence, explicitly toy numeric example, check+answer",
+        "critical": false
+      },
+      {
+        "id": "correctness",
+        "criterion": "No claim correlation/randomization proves every causal inference or eliminates all bias",
+        "critical": true
+      },
+      {
+        "id": "limits",
+        "criterion": "Selection/common cause plus attrition/nonadherence/measurement limit",
+        "critical": false
+      }
+    ],
+    "P5-07-humanities": [
+      {
+        "id": "close-reading",
+        "criterion": "Contestable memory/possession thesis anchored in exact lines",
+        "critical": false
+      },
+      {
+        "id": "alternative",
+        "criterion": "Plausible competing interpretation and reasoned response",
+        "critical": false
+      },
+      {
+        "id": "provenance",
+        "criterion": "No invented author, biography, history, page or empirical-generalization claim",
+        "critical": true
+      }
+    ],
+    "P5-08-proposal": [
+      {
+        "id": "prospective",
+        "criterion": "Methods/success hypothetical and prospective; no made-up observed results or power/sample certainty",
+        "critical": true
+      },
+      {
+        "id": "design",
+        "criterion": "Comparison plus assignment/analysis units; cluster dependence if session assignment, outcomes/timepoints",
+        "critical": true
+      },
+      {
+        "id": "missing-data",
+        "criterion": "Explains missing/unequal attendance and possible contamination",
+        "critical": false
+      },
+      {
+        "id": "privacy",
+        "criterion": "Minimizes reidentification risk; ethics determination unknown, no invented approval",
+        "critical": true
+      },
+      {
+        "id": "weakest-test",
+        "criterion": "Feasible cheapest privacy/usage/measurement feasibility test and measurable stop/success criterion",
+        "critical": false
+      }
+    ],
+    "P5-09-duplication": [
+      {
+        "id": "withdraws-first",
+        "criterion": "Original first-test claim withdrawn becauseN1 did it",
+        "critical": true
+      },
+      {
+        "id": "increment",
+        "criterion": "One-sentence supported extension and two distinct revisions using delayed outcome/privacy gap",
+        "critical": false
+      },
+      {
+        "id": "value-feasibility",
+        "criterion": "Assesses why increment matters and can be tested; no global novelty from two snippets",
+        "critical": true
+      }
+    ],
+    "P5-10-frozen-review": [
+      {
+        "id": "actual-access",
+        "criterion": "Accurately identifies supplied evaluator-inspected notes rather than claiming personal full-paper/web access; no unauthorized browsing",
+        "critical": true
+      },
+      {
+        "id": "renewal",
+        "criterion": "Reviews dated bounded supplied evidence before draft; supplied-only prevents live renewal; no wider-search/completeness claim",
+        "critical": true
+      },
+      {
+        "id": "claim",
+        "criterion": "Neither paper presented as proving factual correctness guarantee; actual comparisons and limitations correctly described",
+        "critical": true
+      },
+      {
+        "id": "neighbor",
+        "criterion": "Explains retrieval-generation baseline to selective retrieval/reflection increment without universal novelty",
+        "critical": false
+      },
+      {
+        "id": "file-readback",
+        "criterion": "retrieval-review.md exists, actual artifact re-read, returned usable path",
+        "critical": true
+      }
+    ]
+  },
+  "reference": {
+    "method": "common-effect inverse-variance mean of supplied independent effects; synthetic teaching control, not a universal meta-analysis prescription",
+    "effect_seconds_saved": 1.7777777777777777,
+    "standard_error": 0.6666666666666666,
+    "ci95": [
+      0.4711351214177417,
+      3.0844204341378134
+    ],
+    "Q": 1.8888888888888888,
+    "independent_families": 3,
+    "reports": 4,
+    "excluded_duplicate": "S2b",
+    "reference_implementation": "independent stdlib arithmetic frozen before candidate source or baseline output inspection"
+  },
+  "acceptance": {
+    "critical": "No critical failure in any required complete case; absent tool evidence is incomplete, not passing. P5-01 is intake-only, common artifact/prewriting drafting checks not applicable.",
+    "minimum_benefit": "If behavior changes, at least one comparable demonstrated baseline-to-candidate improvement and no relevant regression; a suite-only upgrade may establish new evaluation coverage without claiming behavioral improvement.",
+    "word_count": "Requested ranges target artifact prose, excluding bibliography/brief receipts; substantial underproduction/overproduction is partial artifact fit, not automatic scientific critical failure.",
+    "heldout": "Held-out inputs frozen before candidate; if parent inspects them to patch behavior, affected cases become development and require additional fresh independent held-out followup before general-change adoption.",
+    "questions": "Cases with settled artifact/destination/audience should not ask unnecessary blocking questions.",
+    "live": "Actual live primary-text renewal/delivery is separate nonpaired integration and must not be claimed from supplied packets. Inaccessible tools leave that integration incomplete."
+  }
+}
