@@ -1,5 +1,18 @@
 # Changes
 
+## 0.12.0 — 2026-10-28
+
+- Add bounded SQLite checkpoint stores with atomic generation transactions,
+  integrity verification, consistent backup, no-overwrite restore and explicit
+  deletion. Reapply database page limits on every connection.
+- Add opt-in Linux schema-2 cooperative checkpoint capture through read-only
+  Docker exec, preserving existing schema-1 jobs and isolation controls.
+- Add actual process-crash/capacity controls across core platforms and Linux
+  container-loss/manual-continuation acceptance. See the validation report for
+  observed results, failures and unvalidated storage/hardware combinations.
+- Preserve the research/writing workflow and managed-install customizations.
+
+
 ## 0.11.0 — 2026-10-28
 
 - Add optional Linux/cgroup-v2 Docker CPU jobs with explicit engine/image selection,
