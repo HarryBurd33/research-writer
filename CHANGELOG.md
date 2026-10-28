@@ -1,5 +1,17 @@
 # Changes
 
+## 0.11.0 — 2026-10-28
+
+- Add optional Linux/cgroup-v2 Docker CPU jobs with explicit engine/image selection,
+  kernel resource limits, bounded temporary storage and finite result retention.
+- Add immutable-container recovery that never resubmits, bounded verified
+  collection, cancellation and owned-container cleanup.
+- Add read-only legacy SSH recovery and stable crash-releasing RPC file locks;
+  preserve trusted-task limits and refuse unresolved old directory locks.
+- Add portable contracts, independent review and required actual Linux CI tests.
+  See the validation report for executed evidence and remaining limitations.
+
+
 ## 0.10.0 — 2026-10-28
 
 - Added bounded anonymous OpenAlex first-page search, exact work/DOI lookup and reference-ID leads. Provider flags remain metadata.
