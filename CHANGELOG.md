@@ -4,6 +4,7 @@
 
 - Optional explicit-destination SSH checkpoint backup with bounded whole-store transfer, immutable identity and reconciliation after uncertain publication.
 - Receiver verification, fresh readback and data-only restore drills; storage-failure and loopback transport controls.
+- Windows backup flush handles use the required access mode; explicit Bash fail-fast CI prevents native-command failures being masked.
 - SQLite format1 and existing research/writing and execution contracts preserved; path guards now reject parent traversal components before containment checks. Actual second-device and physical power-loss acceptance remain operator work.
 
 ## 0.12.0 — 2026-10-28
