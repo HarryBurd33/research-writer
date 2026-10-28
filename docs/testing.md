@@ -7,6 +7,8 @@ python evals/toolkit_checks.py
 python evals/toolkit_regressions.py
 python evals/literature_checks.py
 python evals/support_checks.py
+python evals/discovery_checks.py
+python evals/claim_audit_checks.py
 python evals/conversion_checks.py
 python evals/protein_checks.py
 python evals/remote_client_checks.py
@@ -147,3 +149,21 @@ Behavioral results require saved actual model outputs and separate review under
 a frozen rubric; live retrieval and destination integrations are separate gates.
 Published cases are known regressions for future work, not permanently held-out
 benchmarks or proof of scientific validity.
+
+
+## Deeper retrieval and declared-claim inventory
+
+The added discovery and audit suites run offline using synthetic provider/HTML
+fixtures, temporary text artifacts and actual CLI invocations. They cover
+provider errors and malformed counts, exact work/version identity, metadata-only
+access, structural HTML identity traps, partial/conflicting reviews, required-pair
+coverage, publication/family declarations, tampering and no-overwrite behavior.
+POSIX named-pipe controls use bounded child processes and cleanup; those specific
+controls explicitly skip where named pipes are unavailable. Other contracts run
+across the core OS/Python matrix.
+
+The installed self-check loads discovery without HTTP and executes a fictional
+complete audit plus a missing-review refusal. Live anonymous OpenAlex and pinned
+arXiv retrieval, source interpretation and writing behavior remain separate
+acceptance records. See [the detailed validation](deeper-literature-validation.md).
+No deterministic test semantically verifies a paper or authenticates a reviewer.
