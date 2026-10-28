@@ -1,6 +1,18 @@
-# Validation — Research Writer 0.6.0
+# Validation — Research Writer 0.6.1
 
 Updated: 2026-10-27 UTC. Historical checks below retain their original dates.
+
+## Phase 1: portable checks and installed self-check — 2026-10-27
+
+This infrastructure release retains the v0.6.0 evidence/research utility algorithms and research-writing workflow. It adds a packaged offline self-check, an isolated copied-install smoke, 19 public regression methods promoted from known edge cases, and a pinned GitHub Actions matrix. These are regression and installation checks, not a new held-out demonstration of research quality.
+
+Local macOS arm64 checks passed: Python 3.12.14 with RDKit 2026.09.1/OpenMM 8.6.1 ran the original eight methods and all 19 added methods, including real molecular controls. System Python 3.15 ran seven original methods plus 17 added methods, explicitly skipping one and two optional molecular methods respectively. Copied installs from unrelated directories passed with both interpreters; the missing-catalog negative control failed as required. Independent review also removed a required script and SKILL.md, confirmed nonzero failures, verified stale-bundle detection, and tested managed-install customization refusal. Explicitly requested molecular checks failed with a nonzero status when dependencies were absent, rather than silently skipping.
+
+The first local self-check run exposed an incorrect catalog wrapper key in the newly authored check; it was corrected before acceptance. No production utility algorithm changed. Metadata validation passed for 20 skill files and 41 links; portable generation/consistency passed. Independent review and construction used separate contexts but were not blinded. Exact model/effort and task inference cost were not exposed. No writing-behavior comparison is claimed for this test-focused patch.
+
+The CI workflow defines six core jobs across Linux, Windows and macOS/Python 3.10 and 3.12, plus three selected Python 3.12 CPU molecular jobs. The stable aggregate is **Research Writer checks**. Current official action interfaces, immutable pins, runner labels and package wheel inventories were inspected. A matrix definition and available wheels do not establish execution success. At initial publication, hosted results are pending; consult the [Actions runs](https://github.com/HarryBurd33/research-writer/actions) for actual per-job outcomes. Existing branch protection is preserved and not reconfigured by this patch. See [commands and limits](testing.md).
+
+GPU backends, remote jobs, heavyweight models, literature-provider expansion, semantic support review and broad scientific performance remain outside phase 1. Later roadmap phases remain planned. No secrets, private source documents, personal paths, weights or paid services are added to the public package. The prior v0.6.0 directory and managed installation marker provide the rollback base.
 
 ## Device-adaptive research tools — 2026-10-27
 
