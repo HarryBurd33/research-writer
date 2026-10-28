@@ -154,6 +154,24 @@ class LinuxContracts(unittest.TestCase):
         changed = copy.deepcopy(obj); changed['Mounts'][0]['RW'] = True
         with self.assertRaises(ValueError): mod.check_container(state, changed)
 
+    def test_docker_prefixed_capabilities_preserve_exact_allowlist(self):
+        state = self.prepared(); obj = fake_inspect(state)
+        obj['HostConfig']['CapAdd'] = ['CAP_SETUID', 'CAP_SETGID', 'CAP_KILL', 'CAP_DAC_OVERRIDE']
+        self.assertEqual(mod.check_container(state, obj), obj)
+        for values in (['CAP_SETUID', 'CAP_SETGID', 'CAP_KILL', 'CAP_DAC_OVERRIDE', 'CAP_SYS_ADMIN'],
+                       ['CAP_CAP_SETUID', 'CAP_SETGID', 'CAP_KILL', 'CAP_DAC_OVERRIDE'],
+                       ['CAP_SETUID', 'SETUID', 'CAP_SETGID', 'CAP_KILL', 'CAP_DAC_OVERRIDE'],
+                       ['cap_setuid', 'CAP_SETGID', 'CAP_KILL', 'CAP_DAC_OVERRIDE'],
+                       ['CAP_SETUID', 'CAP_SETGID', 'CAP_KILL', True],
+                       'CAP_SETUID'):
+            changed = copy.deepcopy(obj); changed['HostConfig']['CapAdd'] = values
+            with self.subTest(values=values), self.assertRaises(ValueError):
+                mod.check_container(state, changed)
+        for values in (['CAP_ALL'], ['ALL', 'ALL'], [], None):
+            changed = copy.deepcopy(obj); changed['HostConfig']['CapDrop'] = values
+            with self.subTest(drop=values), self.assertRaises(ValueError):
+                mod.check_container(state, changed)
+
     def test_identity_changes_refused(self):
         state = self.prepared(); obj = fake_inspect(state)
         for field, value in [('Id', 'x'), ('Image', 'sha256:' + '0' * 64), ('Name', '/other')]:
