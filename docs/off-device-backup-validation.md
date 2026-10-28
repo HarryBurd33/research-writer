@@ -28,7 +28,7 @@ Observed on the development macOS arm64 client:
 
 | Check | Result |
 | --- | --- |
-| New backup contracts | 31/31 passed; storage syscall faults are injected |
+| New backup contracts | 32/32 passed; storage syscall faults are injected |
 | Actual isolated SSH backup controls | 5/5 passed; source/staged-copy removal, empty payload, receiver termination during staging and after publication, host-key/identity refusal and lost initialization reply |
 | Existing SQLite checkpoint contracts | 32/32 passed, including actual transaction FULL/hot-journal/process-crash controls |
 | Prior offline regression suites | 14 suites passed; 235 methods, with 8 optional dependency methods explicitly skipped in that invocation |
@@ -39,7 +39,7 @@ five actual SSH groups on both Linux and macOS, alongside existing Linux isolati
 and durable checkpoint acceptance and CPU scientific controls. The stable
 `Research Writer checks` aggregate remains mandatory. Release promotion requires
 all current-head jobs to pass; the pull request records their actual outcome.
-Windows skips the 12 POSIX receiver cases explicitly while running the 19 portable
+Windows skips the 12 POSIX receiver cases explicitly while running the 20 portable
 backup client contracts. It does not imply a Windows receiver. No physical second
 device is represented by the loopback results.
 
@@ -52,7 +52,7 @@ Independent review is a nonblind agent review, not an expert security audit.
 ## Independent review and repairs
 
 A separate nonblind agent froze 24 criteria before candidate evaluation and ran
-27 independent methods, all passing on candidate2. These include actual receiver
+28 independent methods, all passing locally on candidate3. These include actual receiver
 SIGKILL during staging and after publication, concurrent conflicting uploads,
 SQLite payload corruption with a recomputed transport hash, syscall fault
 injection and read-only recovery. This is not an expert security audit.
@@ -65,6 +65,14 @@ network activity or source modification. Earlier construction also repaired
 orphan-stage naming and failed success-report publication; failure evidence was
 retained. One initial SSH negative fixture expected ValueError where a correct
 refusal raised TransportError; accepting either refusal changed no safe outcome.
+
+Candidate2 also failed actual Windows acceptance: a read-only file descriptor
+could not be flushed by the Windows runtime. Inspection of the raw test log found
+this despite a green job, because PowerShell continued after the failed native
+command. Candidate3 uses a writable handle for Windows flushing, retains the
+POSIX read-only path, and makes Bash fail-fast behavior explicit for every runner.
+Local fd-selection controls supplement, rather than replace, the required actual
+Windows roundtrip. No tests, skips or branch-protection requirements were weakened.
 
 ## Remaining operational acceptance
 
