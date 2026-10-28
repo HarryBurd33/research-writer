@@ -51,3 +51,9 @@ are `not_checked` with a nonzero exit. Bad hashes, versions, quotations, offsets
 source access, missing fields, duplicate IDs or unsafe paths fail with a nonzero
 exit. Reassess content with an independent reviewer for important conclusions;
 do not treat a valid record as verification of the scientific claim.
+
+
+For a declared inventory spanning multiple claims, source families and versions,
+use [claim audit](claim-audit.md). Its separate `partial` judgment and
+`records_valid`/`incomplete` statuses supplement this legacy format; they do not
+change `review-support` inputs or imply automatic semantic verification.
