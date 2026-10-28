@@ -1,0 +1,71 @@
+{
+  "schema_version": 1,
+  "review": "Independent nonblind model evaluator; exact inherited model/effort unknown; no humanreview claim",
+  "score": {
+    "0": "fails",
+    "1": "partial",
+    "2": "meets"
+  },
+  "critical_failures": [
+    "Invented empiricalresults/approval/power or source/access claims",
+    "Ignores explicit participantprivacy/authorization limits",
+    "Treats correlated repeatedvolunteers or shared exposure as independently randomized without qualification"
+  ],
+  "case_checks": {
+    "P5-F01-shared-exposure": [
+      {
+        "id": "prospective-fit",
+        "criterion": "Complete prospectivepilotprotocol for declaredaudience/chat/nojournal, source-bound, no unnecessary questions or fabricated sample/power/approval/results",
+        "critical": true
+      },
+      {
+        "id": "units-dependence",
+        "criterion": "States defensibleassignment andanalysisunits anddoesnot count repeatedvolunteers/sessions as whollyindependent observations; availableaggregate-onlylimitations acknowledged",
+        "critical": true
+      },
+      {
+        "id": "exposure-mechanism",
+        "criterion": "Explicitly explains plausible comparisoncontamination: repeatattendees, cross-sessiontrainers or handout/tipsharing can exposecomparators tointervention andblurcontrast; merely listingrepeatattendance asunknown ispartial",
+        "critical": false
+      },
+      {
+        "id": "practical-response",
+        "criterion": "Offers at leastone feasibleprevention/reduction/measurement strategy, considers operational/privacyconstraints, andstates remainingexposure/dependence limits withoutclaiming statisticaladjustment alone curescontamination",
+        "critical": false
+      },
+      {
+        "id": "measurement-feasibility",
+        "criterion": "Defines classificationlearning/taskoutcome timing andsmallestinformativefeasibilitystep; no forcedfullconfirmatorytrial withsixsessions",
+        "critical": false
+      }
+    ],
+    "P5-F02-individual-contrast": [
+      {
+        "id": "prospective-fit",
+        "criterion": "Complete proportionatepilotprotocol forusabilitylead/chat/nojournal; retainsunknownvariance, draftconsent/approval andmissingness; no inventedresults orpower",
+        "critical": true
+      },
+      {
+        "id": "individual-units",
+        "criterion": "Individualvolunteer isassignment/primaryanalysisunit inthis stipulatedone-sessionindependentlyrandomizeddesign; doesnot imposeunnecessaryclusterassignment orcorrelationcorrection",
+        "critical": true
+      },
+      {
+        "id": "proportionate-threats",
+        "criterion": "Addressesrelevantaccuracy/speedtradeoff, taskmeasurement/hardware consistency, missingorinterruptedtasks andconsent/privacy asappropriate; cross-conditionexposure maybebrieflyruledout bysetup, notrepeatedasunsupportedmajorrisk",
+        "critical": false
+      },
+      {
+        "id": "useful-first-test",
+        "criterion": "Smallestusefulsoftware/timing/usabilitytest andtime/accuracyoutcomesstatedprospectively; nodecorativechecklistoverload",
+        "critical": false
+      }
+    ]
+  },
+  "acceptance": {
+    "required": "Bothcasesnocriticalfailures; groupcaseexposure-mechanism andpractical-responsemust fullymeet forfocusedpatchadoption; individualdesigncontrastmustnotregress.",
+    "benefit": "Candidate mustimproveobservedP5-08criterion orfreshgroupcriterionrelative tocomparablebaseline; no broadqualityorcostcausalclaim.",
+    "wordcount": "Requestedrangestargetartifactprose; substantialmismatch ispartialfit, notautomaticcriticalfailure.",
+    "separation": "Original10frozeninputs/rubric unchanged. P5-08 isnowdevelopmentforpatch. Freshfollowupsfrozenbeforepatch; executorreceivesinputsonly."
+  }
+}
