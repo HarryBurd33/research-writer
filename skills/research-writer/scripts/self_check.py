@@ -26,13 +26,15 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/literature_tools.py', 'scripts/support_tools.py',
             'scripts/conversion_tools.py', 'scripts/protein_tools.py',
             'scripts/remote_tools.py', 'scripts/remote_worker.py',
+            'scripts/discovery_tools.py', 'scripts/claim_audit.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
                 'device-profiles', 'modes', 'prewriting', 'publication-workflow',
                 'question-development', 'research-and-sources', 'standards',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
-                'molecular-conversion', 'protein-embeddings', 'remote-execution')))
+                'molecular-conversion', 'protein-embeddings', 'remote-execution',
+                'deeper-retrieval', 'claim-audit')))
 
 
 def require(condition, message):
@@ -159,6 +161,45 @@ def core_check(work):
     require(not load(support_fail)['passed'], 'Invented passage accepted')
 
 
+def deeper_check(work):
+    # Loading the optional discovery CLI must make no network request.
+    run_cli(work, 'discovery_tools.py', ['--help'])
+    run_cli(work, 'claim_audit.py', ['--help'])
+    source = work / 'audit-source.txt'
+    text = 'Synthetic installation control: the signal was zero.'
+    source.write_text(text, encoding='utf-8')
+    digest = hashlib.sha256(source.read_bytes()).hexdigest()
+    claim = 'The synthetic control signal was zero.'
+    packet = {'schema_version': 1,
+              'sources': [{'id': 's', 'version': 'control-v1', 'access': 'full_text',
+                           'identity_status': 'identity_verified', 'path': source.name,
+                           'sha256': digest, 'locator': 'synthetic control',
+                           'study_family': 'control-family', 'publication_status': 'current'}],
+              'claims': [{'id': 'c1', 'text': claim, 'required_source_ids': ['s'],
+                          'required_access': 'full_text'}],
+              'reviews': [{'id': 'r', 'claim_id': 'c1', 'claim': claim,
+                           'source_id': 's', 'source_version': 'control-v1',
+                           'source_sha256': digest, 'start': 0, 'end': len(text),
+                           'passage': text, 'locator': 'synthetic control',
+                           'judgment': 'supports', 'rationale': 'Explicit statement in fictional control.',
+                           'reviewer': 'installation-control', 'reviewed_at': '2026-01-01T00:00:00Z'}]}
+    manifest, report = work / 'claims.json', work / 'claim-audit.json'
+    write(manifest, packet)
+    run_cli(work, 'claim_audit.py', ['audit-claims', '--input', manifest, '--output', report])
+    result = load(report)
+    require(result['status'] == 'records_valid' and
+            result['semantic_entailment'] == 'not_automatically_verified' and
+            result['drafting_clearance'] == 'not_granted',
+            'Claim audit confused record integrity with drafting clearance')
+    packet['claims'].append({'id': 'c2', 'text': 'An additional unreviewed claim.',
+                             'required_source_ids': ['s'], 'required_access': 'full_text'})
+    write(manifest, packet)
+    incomplete = work / 'claim-audit-incomplete.json'
+    run_cli(work, 'claim_audit.py', ['audit-claims', '--input', manifest,
+                                  '--output', incomplete], expected=2)
+    require(load(incomplete)['status'] == 'incomplete', 'Missing declared review was accepted')
+
+
 def molecular_check(work):
     output = work / 'ethanol.json'
     run_cli(work, 'research_tools.py', ['rdkit-descriptors', '--smiles', 'CCO', '--output', output])
@@ -237,6 +278,8 @@ def main():
             work = Path(directory)
             core_check(work)
             checks.append({'name': 'core', 'status': 'passed'})
+            deeper_check(work)
+            checks.append({'name': 'deeper_retrieval_and_claim_inventory', 'status': 'passed'})
             if args.molecular:
                 molecular_check(work)
                 checks.append({'name': 'molecular', 'status': 'passed'})
