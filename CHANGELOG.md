@@ -1,5 +1,13 @@
 # Changes
 
+## 0.6.2 — 2026-10-27
+
+- Added bounded optional Crossref/Europe PMC retrieval with pagination receipts, access distinctions, version/update metadata and honest coverage/failure states.
+- Added confined, hash/version/passage-linked source-support review records with explicit support, contradiction and uncertainty judgments; deterministic checks do not certify semantic entailment.
+- Added offline tests and live public-source controls, expanded installed self-check and retained existing regression/CI coverage.
+- Preserved source-only restrictions, prewriting renewal, audience/genre/destination choices and distinct scientific inference limits. No paid service, account token or arbitrary-URL full-text scraper is bundled.
+
+
 ## 0.6.1 — 2026-10-27
 
 - Added read-only GitHub Actions CI for core Linux/Windows/macOS combinations and optional CPU molecular controls, with pinned actions and a stable aggregate check.
