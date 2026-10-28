@@ -24,6 +24,8 @@ Acceptance: fresh-checkout and installed-copy execution; all identifier, provide
 
 ### 2. Strengthen literature retrieval and source support
 
+v0.6.2 implements bounded public-index adapters and source-support record integrity checks. See [validation](validation.md) for actual executed coverage and remaining semantic-review limits. Broader provider coverage, exhaustive discovery and automatic scientific truth verification are not claimed.
+
 Implement optional adapters one at a time for suitable scholarly indexes, open full-text sources and correction/retraction information after checking current official interfaces and terms. Record query, date, filters, pagination, database coverage, source identity, versions and actual access level. Search renewal must follow the question's changed scope rather than a fixed age rule. Preserve supplied-only restrictions.
 
 Add a separate claim-to-passage review record with source version, page/section, supporting passage locator, support/contradiction/uncertain judgment and reviewer rationale. This supplements the numeric verifier; it must not relabel deterministic checks as semantic proof. Respect access rights and quotation limits; do not bypass paywalls.
