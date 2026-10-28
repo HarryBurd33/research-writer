@@ -288,7 +288,12 @@ class RegressionChecks(unittest.TestCase):
                                           accelerator="cuda", python="unprobed-python")), encoding="utf-8")
         source = self.root / "request.json"
         source.write_text("{}", encoding="utf-8")
-        with patch.object(R.subprocess, "run", side_effect=AssertionError("Must not execute")):
+        # Python 3.10 on Windows may legitimately spawn `ver` for local OS
+        # metadata. Isolate that metadata lookup; engine/remote execution must
+        # still fail unconditionally rather than blanket-allowing subprocesses.
+        with patch.object(R.platform, "system", return_value="fixture-os"), \
+                patch.object(R.platform, "machine", return_value="fixture-arch"), \
+                patch.object(R.subprocess, "run", side_effect=AssertionError("Must not execute")):
             doctor = R.doctor(argparse.Namespace(profile=str(profile), probe_gpu=True))
             plan = R.plan(argparse.Namespace(profile=str(profile), input=str(source), tool="boltz"))
         self.assertEqual(doctor["gpu"]["status"], "not_probed")
@@ -300,7 +305,11 @@ class RegressionChecks(unittest.TestCase):
         self.assertEqual(plan["input"]["sha256"], hashlib.sha256(b"{}").hexdigest())
 
     def test_local_inventory_and_profile_validation(self):
-        with patch.object(R.subprocess, "run", side_effect=AssertionError("No probe requested")):
+        # Keep Windows' local OS metadata probe outside this no-engine-execution
+        # assertion, while retaining an unconditional subprocess prohibition.
+        with patch.object(R.platform, "system", return_value="fixture-os"), \
+                patch.object(R.platform, "machine", return_value="fixture-arch"), \
+                patch.object(R.subprocess, "run", side_effect=AssertionError("No probe requested")):
             result = R.doctor(argparse.Namespace(profile=None, probe_gpu=False))
         self.assertEqual(result["gpu"]["status"], "not_probed")
         self.assertTrue(all(not e["execution_tested"] for e in result["engines"]))
