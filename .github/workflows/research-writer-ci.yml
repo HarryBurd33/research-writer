@@ -76,6 +76,8 @@ jobs:
         run: |
           python evals/remote_client_checks.py
           python evals/remote_worker_checks.py
+          python evals/controller_recovery_checks.py
+          python evals/linux_checks.py
           python evals/remote_loopback_checks.py
       - name: Workflow fixture arithmetic and integrity (no model evaluation)
         run: |
@@ -192,11 +194,36 @@ jobs:
       - name: Require disposable real SSH lifecycle controls
         run: python evals/remote_loopback_checks.py --run-ssh
 
+  isolation:
+    name: Linux isolation and recovery (Docker, Python 3.12)
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: x64
+      - name: Explicitly provision disposable official Python image and record local identity
+        shell: bash
+        run: |
+          docker --context default pull python:3.12-slim-bookworm
+          docker --context default image inspect --format '{{.Id}} {{json .RepoDigests}}' python:3.12-slim-bookworm
+      - name: Require actual Linux resource and interrupted-recovery controls
+        shell: bash
+        run: |
+          IMAGE_ID=$(docker --context default image inspect --format '{{.Id}}' python:3.12-slim-bookworm)
+          python evals/linux_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
+
   required:
     # Stable aggregate check name; do not rename when extending the matrix.
     name: Research Writer checks
     if: ${{ always() }}
-    needs: [core, molecular, protein, remote]
+    needs: [core, molecular, protein, remote, isolation]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     env:
@@ -204,6 +231,7 @@ jobs:
       MOLECULAR_RESULT: ${{ needs.molecular.result }}
       PROTEIN_RESULT: ${{ needs.protein.result }}
       REMOTE_RESULT: ${{ needs.remote.result }}
+      ISOLATION_RESULT: ${{ needs.isolation.result }}
     steps:
       - name: Require every matrix job to pass
         shell: bash
@@ -212,3 +240,4 @@ jobs:
           test "$MOLECULAR_RESULT" = success
           test "$PROTEIN_RESULT" = success
           test "$REMOTE_RESULT" = success
+          test "$ISOLATION_RESULT" = success
