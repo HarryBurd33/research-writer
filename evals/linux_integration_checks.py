@@ -96,7 +96,7 @@ class LinuxActual(unittest.TestCase):
         return result, destination
 
     def test_01_actual_limits_privileges_readonly_network_nested_collection(self):
-        code = """import json,os,socket
+        code = """import errno,json,os,socket
 from pathlib import Path
 status=dict(line.split(':',1) for line in Path('/proc/self/status').read_text().splitlines() if ':' in line)
 assert Path('data/input.txt').read_text()=='control'
@@ -112,6 +112,15 @@ try:
  Path('/control/task-forgery').write_text('x')
  raise AssertionError('task wrote private status')
 except PermissionError: pass
+connection=socket.socket(socket.AF_INET,socket.SOCK_STREAM)
+connection.settimeout(0.2)
+try:
+ connection.connect(('192.0.2.1',9))
+ raise AssertionError('network-disabled task reached an external address')
+except OSError as exc:
+ assert exc.errno==errno.ENETUNREACH, ('expected no route, got',exc.errno)
+finally:
+ connection.close()
 out={'uid':os.getuid(),'gid':os.getgid(),'caps':status['CapEff'].strip(),'no_new_privileges':status['NoNewPrivs'].strip(),'interfaces':socket.if_nameindex()}
 Path('data/result.json').write_text(json.dumps(out))
 """
@@ -192,11 +201,16 @@ Path('result.json').write_text(json.dumps(out))
     def test_06_lost_client_reply_recovers_same_container_and_wall_kills_setsid(self):
         code = """import subprocess,sys,time
 from pathlib import Path
-subprocess.Popen([sys.executable,'-c',"import time;from pathlib import Path;Path('escaped.pid').write_text(str(__import__('os').getpid()));time.sleep(60)"],start_new_session=True)
+subprocess.Popen([sys.executable,'-c',"import time;from pathlib import Path;Path('escaped.tmp').write_text(str(__import__('os').getpid()));Path('escaped.tmp').rename('escaped.pid');time.sleep(60)"],start_new_session=True)
+marker_deadline=time.monotonic()+2
+while not Path('escaped.pid').exists():
+ assert time.monotonic()<marker_deadline, 'escaped-session child never started'
+ time.sleep(0.02)
+assert int(Path('escaped.pid').read_text())>0
 Path('result.json').write_text('started')
 time.sleep(60)
 """
-        state = self.job(code, {'wall_seconds': 2}, submit=False)
+        state = self.job(code, {'wall_seconds': 4}, outputs=['result.json', 'escaped.pid'], submit=False)
         helper = """import importlib.util,os,sys
 s=importlib.util.spec_from_file_location('client',sys.argv[1]);m=importlib.util.module_from_spec(s);s.loader.exec_module(m)
 original=m.docker
@@ -218,7 +232,9 @@ m.operate('submit',sys.argv[2],allow_execute=True)
         saved = mod.read_json(state / 'state.json')
         raw = mod.docker(self.p, ['exec', first_id, '/usr/local/bin/python', '-c', "from pathlib import Path;print([p.name for p in Path('/proc').iterdir() if p.name.isdigit() and p.stat().st_uid==65534])"])
         self.assertEqual(raw.strip(), b'[]')
-        summary, _ = self.collected(state); self.assertTrue(summary['partial'])
+        summary, dest = self.collected(state); self.assertTrue(summary['partial'])
+        self.assertEqual((dest / 'result.json').read_text(), 'started')
+        self.assertGreater(int((dest / 'escaped.pid').read_text()), 0)
 
     def test_07_actual_cancel_log_and_output_bounds(self):
         state = self.job("import sys,time;from pathlib import Path;Path('result.json').write_text('partial');sys.stdout.write('x'*100000);sys.stdout.flush();time.sleep(30)")
