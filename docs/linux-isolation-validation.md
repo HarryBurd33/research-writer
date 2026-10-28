@@ -55,6 +55,17 @@ session cleanup; cancellation, log/output bounds and unsafe files; retention and
 PID1 loss; and changed identity refusal. Disposable objects are cleaned finally.
 The stable required aggregate includes this job and every earlier matrix.
 
+## First hosted candidate and interface repair
+
+The first actual Linux job (CI run 19, head 52a32ddd0ab20dcdffaa401d06de27259d636791)
+failed at capability configuration comparison. Docker 28.0.4 reports normalized
+`CAP_`-prefixed names; the checker expected unprefixed names. No Linux acceptance
+was inferred from that failed run. The repair canonicalizes one documented
+optional prefix and still requires exactly SETUID, SETGID, KILL and DAC_OVERRIDE
+with drop ALL. Added negative controls reject extra, duplicate, malformed and
+double-prefixed names. No resource, privilege or frozen acceptance bound changed.
+See the release pull request for the fresh hosted outcome on the repaired head.
+
 ## Remaining boundaries
 
 Only the tested Docker Linux/cgroup-v2 CPU configuration is an enforcement claim.
