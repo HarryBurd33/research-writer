@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.9.0** adds reproducible end-to-end research/writing evaluation cases and a focused proposal-design improvement: assess material cross-condition exposure and give a practical response without imposing group assignment on independent tasks. The evaluation separates actual writing, source support, arithmetic, live retrieval and delivery checks. See [workflow evaluation](docs/workflow-evaluation.md), [tests](docs/testing.md) and [validation](docs/validation.md). Existing device-adaptive tools and bounded SSH operations remain available.
+**Version 0.10.0** adds bounded anonymous OpenAlex search/work/reference lookup, official version-pinned arXiv HTML retrieval and an offline declared-claim audit. It preserves source families, versions, access and partial/conflicting judgments, detects missing reviews, and keeps record validity separate from scientific support or drafting clearance. See [deeper retrieval](skills/research-writer/references/deeper-retrieval.md), [claim audit](skills/research-writer/references/claim-audit.md), [validation](docs/deeper-literature-validation.md) and [tests](docs/testing.md). No new runtime dependency or API key is required.
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
