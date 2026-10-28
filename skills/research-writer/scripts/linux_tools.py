@@ -302,6 +302,23 @@ def run_arguments(state):
     return args + [m['image_id'], '/runner/linux_supervisor.py', 'run']
 
 
+def normalize_capabilities(values):
+    """Accept Docker's legacy/plain or CAP_ inspect spelling, without extras."""
+    if not isinstance(values, list):
+        raise ValueError('Capabilities must be an explicit string list')
+    normalized = []
+    for value in values:
+        if not isinstance(value, str) or not re.fullmatch('[A-Z][A-Z0-9_]{0,63}', value):
+            raise ValueError('Invalid capability representation')
+        name = value[4:] if value.startswith('CAP_') else value
+        if not name or name.startswith('CAP_') or name == 'ALL' and value != 'ALL':
+            raise ValueError('Invalid repeated/special capability prefix')
+        normalized.append(name)
+    if len(set(normalized)) != len(normalized):
+        raise ValueError('Duplicate capability representation')
+    return set(normalized)
+
+
 def check_container(state, obj):
     p, m, r = state['profile'], state['manifest'], state['manifest']['resources']
     if not re.fullmatch('[0-9a-f]{64}', obj.get('Id', '')) or state.get('container_id') and obj['Id'] != state['container_id']:
@@ -321,8 +338,11 @@ def check_container(state, obj):
         raise ValueError('Effective isolation configuration changed')
     if host.get('RestartPolicy', {}).get('Name') != 'no' or host.get('LogConfig', {}).get('Type') != 'none' or host.get('Devices') or host.get('DeviceRequests'):
         raise ValueError('Unexpected restart/log/device configuration')
-    if set(host.get('CapDrop') or []) != {'ALL'} or set(host.get('CapAdd') or []) != {'SETUID', 'SETGID', 'KILL', 'DAC_OVERRIDE'}:
-        raise ValueError('Capabilities changed')
+    drop = normalize_capabilities(host.get('CapDrop'))
+    added = normalize_capabilities(host.get('CapAdd'))
+    if drop != {'ALL'} or added != {'SETUID', 'SETGID', 'KILL', 'DAC_OVERRIDE'}:
+        # Only validated bounded capability names enter diagnostics, never env/config.
+        raise ValueError('Capabilities changed: add=' + repr(sorted(added)) + ', drop=' + repr(sorted(drop)))
     if set(host.get('SecurityOpt') or []) != {'no-new-privileges'}:
         raise ValueError('Security options changed')
     expected_tmpfs = {target: f'rw,nosuid,nodev,size={size},mode={mode},nr_inodes={128 if target == "/control" else 1024}' for target, size, mode in (
