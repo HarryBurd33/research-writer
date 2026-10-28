@@ -191,3 +191,28 @@ records its resolved local ID/digest, and passes the immutable ID to this comman
 The runtime tool itself never pulls. The stable required aggregate now depends
 on this job as well as every earlier matrix. See [observed validation](linux-isolation-validation.md)
 and the [runtime/threat model](../skills/research-writer/references/linux-isolation.md).
+
+
+## v0.12 durable checkpoints
+
+Portable tests run actual local SQLite transactions and subprocess failure controls:
+
+```sh
+python evals/checkpoint_checks.py
+python evals/package_smoke.py --checkpoints
+```
+
+The core CI matrix requires these controls on Linux, Windows and macOS with the
+selected Python versions. Existing optional-engine and source-support tests remain.
+The required Linux job runs both the existing isolation suite and the separate
+durable integration suite against an explicitly provisioned immutable image:
+
+```sh
+python evals/durable_integration_checks.py --docker /usr/bin/docker --context default --image-id sha256:ACTUAL_64_HEX_IMAGE_ID
+```
+
+This explicit suite must fail when its requested engine is unavailable. It tests
+checkpoint data surviving removal of the original container and client state,
+then an explicitly prepared new application job continuing from restored bytes.
+No kernel-memory snapshot, production external host, GPU, physical power cycle or
+network filesystem is inferred. See [observed validation](durable-checkpoint-validation.md).
