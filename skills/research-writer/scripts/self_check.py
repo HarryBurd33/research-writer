@@ -28,6 +28,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/remote_tools.py', 'scripts/remote_worker.py',
             'scripts/discovery_tools.py', 'scripts/claim_audit.py',
             'scripts/linux_tools.py', 'scripts/linux_supervisor.py',
+            'scripts/checkpoint_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
@@ -35,7 +36,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
                 'question-development', 'research-and-sources', 'standards',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
                 'molecular-conversion', 'protein-embeddings', 'remote-execution',
-                'deeper-retrieval', 'claim-audit', 'linux-isolation')))
+                'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints')))
 
 
 def require(condition, message):
@@ -203,6 +204,40 @@ def deeper_check(work):
     require(load(incomplete)['status'] == 'incomplete', 'Missing declared review was accepted')
 
 
+def checkpoint_check(work):
+    """Require actual SQLite save/backup/restore without an engine or network."""
+    run_cli(work, 'checkpoint_tools.py', ['--help'])
+    store, backup = work / 'checkpoint-store', work / 'checkpoint-backup'
+    run_cli(work, 'checkpoint_tools.py', ['init', '--store', store,
+            '--max-store-bytes', '4194304', '--max-generations', '2',
+            '--report', work / 'checkpoint-init.json'])
+    source = work / 'checkpoint-empty.bin'
+    source.write_bytes(b'')
+    identity = '1' * 32
+    manifest = {'schema_version': 1, 'checkpoint_id': identity,
+                'application': {'format': 'installation-control', 'version': '1', 'resume_notes': ''},
+                'files': [{'source': source.name, 'path': 'state/empty.bin', 'size': 0,
+                           'sha256': hashlib.sha256(b'').hexdigest()}]}
+    packet = work / 'checkpoint-manifest.json'
+    write(packet, manifest)
+    for report in ('checkpoint-save.json', 'checkpoint-save-retry.json'):
+        run_cli(work, 'checkpoint_tools.py', ['save', '--store', store,
+                '--manifest', packet, '--allow-save', '--report', work / report])
+    run_cli(work, 'checkpoint_tools.py', ['backup', '--store', store,
+            '--destination', backup, '--allow-copy', '--report', work / 'checkpoint-backup.json'])
+    run_cli(work, 'checkpoint_tools.py', ['verify', '--store', backup,
+            '--checkpoint-id', identity, '--report', work / 'checkpoint-verified.json'])
+    restored = work / 'checkpoint-restored'
+    run_cli(work, 'checkpoint_tools.py', ['restore', '--store', backup,
+            '--checkpoint-id', identity, '--destination', restored, '--allow-restore',
+            '--report', work / 'checkpoint-restored.json'])
+    require((restored / 'state/empty.bin').read_bytes() == b'' and
+            (restored / '.checkpoint.json').is_file(), 'Durable checkpoint restore differs')
+    source.write_bytes(b'changed')
+    run_cli(work, 'checkpoint_tools.py', ['save', '--store', store,
+            '--manifest', packet, '--allow-save', '--report', work / 'checkpoint-rejected.json'], expected=2)
+
+
 def molecular_check(work):
     output = work / 'ethanol.json'
     run_cli(work, 'research_tools.py', ['rdkit-descriptors', '--smiles', 'CCO', '--output', output])
@@ -267,6 +302,7 @@ def protein_check(work, python, model_dir):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--molecular', action='store_true', help='Require, execute and validate optional CPU controls')
+    parser.add_argument('--checkpoints', action='store_true', help='Require actual local SQLite checkpoint controls')
     parser.add_argument('--obabel', help='Explicit Open Babel executable; require actual independently checked conversion')
     parser.add_argument('--protein-python', help='Separate protein runtime interpreter')
     parser.add_argument('--protein-model-dir', help='Verified local small ESM-2 assets; paired with --protein-python')
@@ -278,11 +314,16 @@ def main():
         package_check()
         checks.append({'name': 'package', 'status': 'passed'})
         with tempfile.TemporaryDirectory(prefix='research-writer-check-') as directory:
-            work = Path(directory)
+            work = Path(directory).resolve()
             core_check(work)
             checks.append({'name': 'core', 'status': 'passed'})
             deeper_check(work)
             checks.append({'name': 'deeper_retrieval_and_claim_inventory', 'status': 'passed'})
+            if args.checkpoints:
+                checkpoint_check(work)
+                checks.append({'name': 'durable_checkpoints', 'status': 'passed'})
+            else:
+                checks.append({'name': 'durable_checkpoints', 'status': 'skipped', 'reason': 'not requested'})
             if args.molecular:
                 molecular_check(work)
                 checks.append({'name': 'molecular', 'status': 'passed'})
