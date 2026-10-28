@@ -11,7 +11,7 @@ documentation checks. Both writing arms meet14/14 criteria; this is preservation
 not prose superiority. Actual no-key search/work and pinned-text controls passed,
 including 47 section offsets and final actual claim-coverage CLI checks.
 
-All 178 local methods pass with selected engines, including 53 new methods and
+All 179 local methods pass with selected engines, including 54 new methods and
 six actual loopback SSH cases. Full copied-install smoke, 35-file/66-link metadata
 and portable consistency pass. Four reproduced failure scenarios were repaired:
 malformed counts reported empty, harmless presentation-title duplication refused,
@@ -37,8 +37,8 @@ and effort unavailable. This is small-fixture evidence, not broad quality proof.
 All125 local deterministic methods pass with applicable selected engines;
 16 are new arithmetic/fixture controls. The initial loopback listener was refused
 by the sandbox before tests; the identical authorized real fixture then passed
-6/6 outside it. Independent extra controls pass11/11 fixture, 9/9 live-source/local
-delivery and 7/7 scope checks. Existing installed Python algorithms are unchanged.
+6/6 outside it. Independent extra controls pass11/11 fixture,9/9 live-source/local
+delivery and7/7 scope checks. Existing installed Python algorithms are unchanged.
 Copied-install engine controls,31-file/55-link metadata and portable consistency
 pass. HostedCI, final GitHub identity and managed-install readback are recorded
 in the release PR when observed, not inferred from the matrix definition.
