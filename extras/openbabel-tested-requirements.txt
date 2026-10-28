@@ -1,0 +1,2 @@
+# Official external executable package; separate environment recommended.
+openbabel==3.2.1
