@@ -1,4 +1,4 @@
-# Research Writer — version 0.7.0
+# Research Writer — version 0.8.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -21,6 +21,10 @@ Use [bounded retrieval](references/literature-retrieval.md) for public literatur
 ## Selected executable engines
 
 [Open Babel conversion](references/molecular-conversion.md) uses a separately supplied executable and independent RDKit checks. [Small ESM-2 embeddings](references/protein-embeddings.md) use a separate compatible interpreter and pinned local model assets. Model preparation is explicit; inference is local-only. Device availability is measured at execution, and unsupported explicit accelerators fail rather than silently change device. These routes do not establish docking, folding or biological function.
+
+## Optional remote execution
+
+[Remote execution](references/remote-execution.md) separates host inspection, approved transfer, one submission attempt, status reconciliation, verified collection and controller-owned cancellation. It requires an explicitly selected existing SSH connection and compatible POSIX Python host. Local work needs none of these. Profile data is not authorization, and uncertain state never means that no job started.
 
 ## Installation checks
 
