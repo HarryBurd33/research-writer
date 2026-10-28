@@ -1,5 +1,11 @@
 # Changes
 
+## 0.13.0
+
+- Optional explicit-destination SSH checkpoint backup with bounded whole-store transfer, immutable identity and reconciliation after uncertain publication.
+- Receiver verification, fresh readback and data-only restore drills; storage-failure and loopback transport controls.
+- SQLite format1 and existing research/writing and execution contracts preserved; path guards now reject parent traversal components before containment checks. Actual second-device and physical power-loss acceptance remain operator work.
+
 ## 0.12.0 — 2026-10-28
 
 - Add bounded SQLite checkpoint stores with atomic generation transactions,
