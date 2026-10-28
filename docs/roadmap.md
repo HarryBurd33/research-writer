@@ -110,3 +110,21 @@ on retention expiry, PID1/host failure or OOM. A later durable-storage/checkpoin
 route needs its own capacity, ownership, cleanup and failure tests. CPU quota is a
 rate limit, not an aggregate CPU-time allowance. Docker administrator, image and
 kernel trust, scientific validation and access rights remain external boundaries.
+
+
+## Durable checkpoint continuation — v0.12
+
+The user selected durable storage before external-host/GPU acceptance. v0.12 adds
+local file/application checkpoint stores and opt-in cooperative Linux capture;
+see [observed checkpoint validation](durable-checkpoint-validation.md). This is a
+separate continuation of phase 7, not evidence that roadmap item 8's production
+host or GPU has been selected or tested.
+
+A store commit can preserve approved checkpoint files after container/client
+state loss. Restore is data-only and requires an explicit new application/job to
+continue. Process memory, automatic background scheduling, replicated storage,
+physical power-loss/device-failure guarantees, distributed writers and network
+filesystems remain outside this stage. Future durable replication needs authorized
+destinations, rights/privacy, transfer verification, ownership and failure tests.
+External-host/GPU, scheduler and scientific-engine acceptance remain separately
+bounded work. Current device profiles and writing workflows stay optional.
