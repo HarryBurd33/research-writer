@@ -1,6 +1,22 @@
-# Validation — Research Writer 0.7.0
+# Validation — Research Writer 0.8.0
 
 Updated: 2026-10-27 UTC. Historical checks below retain their original dates.
+
+## Phase 4: bounded SSH lifecycle — 2026-10-28
+
+v0.8.0 adds optional inspect/prepare/submit/status/collect/cancel operations over an existing SSH connection and a POSIX Python controller. Profiles declare an alias, selected interpreter/root and expected host/user; they contain no credentials and confer no execution authority. Strict host-key verification, a short quoted bootstrap and bounded JSON stdin keep SSH shell quoting separate from task arguments. User authorization for this acceptance was explicitly isolated loopback SSH, not an external machine.
+
+Local public checks pass: 16 client methods, 13 worker methods and six actual loopback SSH methods, plus all 74 prior methods with applicable selected engines. Worker jobs and the real SSH fixture use disposable directories. The fixture binds only 127.0.0.1 with private temporary host/client keys, its own config/known-hosts file and an owned foreground daemon; cleanup removes them. Actual controls cover success and verified collection, host-key/identity refusal, duplicate-submit guard, timeout, cancellation and altered outputs. No global SSH configuration or permanent service is changed. Default tests explicitly skip the real-server fixture.
+
+Independent criteria and fresh job/failure cases were frozen before source review. The final gate passes 65/65 checks: 25 worker, 26 client and 14 actual reserved loopback controls. A real SSH submit was accepted, then its reply deliberately discarded at the client boundary: the state became uncertain, a second submit was refused, and fresh-process status/collection recovered the exact reserved values and hash. This is fault injection around a real accepted request, not a claim of simulated network-packet loss. Review was separate and nonblind; exact executing model/effort was unknown.
+
+Three prepublication defects were reproduced and corrected without changing the acceptance rules. Exceptional artifact validation could bypass final log truncation; cleanup now bounds available logs in finally without following replaced symlinks. Directory locks could survive client death; stable kernel file locks now release on death while durable submission intent remains. Persisting base64 collection payloads could exceed the saved-state reader's bound; only receipt metadata and hashes now persist, and a 900 KB artifact plus 900 KB log recovery regression passes. Initial reproductions and final controls remain private evidence.
+
+The worker uses atomic submission receipts, a live owning controller for child cancellation, wall-time and log bounds, input/work-tree/output checks and confined hash-verified collection. Failed/timed-out/cancelled jobs retain their state and partial-artifact/missing lists. Unknown transport outcomes never authorize automatic resubmission. Thread settings are environment hints, not hard CPU quotas. Limits are cooperative for trusted tasks, not an OS/filesystem sandbox; controller/host failure or escaped malicious descendants can require operator investigation. The RPC never signals a stored PID as proof of ownership.
+
+Metadata validation passes 31 installed-skill files/55 links and portable generation/consistency passes. Existing local-engine self-checks remain intact; loading the remote client during an installed check makes no connection. The workflow adds actual loopback acceptance on selected Linux/macOS runners and client contracts on the core matrix. The release pull request records actual hosted results and final installation/file identities; an unexecuted job is not counted as passing.
+
+Remaining limitations: no production external host, Windows remote server, scheduler, remote GPU engine, paid service or hard resource isolation was validated. A real target still needs an existing trusted connection, compatible runtime/assets, explicit file/task authorization and a bounded host-specific test. No remote profile is installed by default. Local research, literature retrieval and selected CPU adapters remain usable without SSH. The prior v0.7.0 package and managed hash provide rollback.
 
 ## Phase 3 selected execution adapters — 2026-10-28
 

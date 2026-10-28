@@ -44,6 +44,8 @@ Acceptance per adapter: isolated environment; version and asset hashes; input va
 
 ### 4. Add bounded remote/device execution only when needed
 
+v0.8.0 adds the SSH client and POSIX controller lifecycle described below. Acceptance uses an explicitly authorized disposable loopback server; this is not proof that a particular external machine, GPU or scheduler is configured. See [validation](validation.md) for actual outcomes and remaining host-specific work.
+
 Keep local planning usable on ordinary devices. If remote execution is requested, introduce inspect, prepare, submit, status, collect and cancel as distinct operations. Use existing authenticated connections, a user-selected host and output directory, data-transfer consent and explicit resource limits. Credentials must remain outside profiles and published artifacts. Paid services require an explicit spending boundary.
 
 Acceptance: mocked transport first, then an authorized disposable real job. Test remote identity, unsupported backend, insufficient space, connection loss after submission, duplicate-resume prevention, cancellation, partial outputs, checksums and restart recovery. A dropped connection must become an uncertain job requiring reconciliation, not an automatic resubmission. No remote hardware is required to use the core skill.

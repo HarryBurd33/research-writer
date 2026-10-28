@@ -1,5 +1,14 @@
 # Changes
 
+## 0.8.0 — 2026-10-28
+
+- Added optional bounded SSH remote-job lifecycle operations and a POSIX Python controller.
+- Added explicit transfer/execution/cancel choices, strict host-key and identity checks, durable single-submit intent, restart/status reconciliation and uncertain-state handling.
+- Added input/output hashing, confined artifact collection, cooperative resource bounds and cancellation through the owning controller.
+- Added mock/adversarial tests and explicitly requested disposable loopback SSH acceptance; no user SSH configuration or permanent service is installed.
+- Retained device-adaptive local engines and prior research/evidence workflows; remote Windows, schedulers, paid services and GPU dispatch are outside initial verification.
+
+
 ## 0.7.0 — 2026-10-28
 
 - Added selected optional Open Babel conversion and small ESM-2 representation adapters with actual engine execution, independent controls and provenance.

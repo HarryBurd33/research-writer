@@ -9,6 +9,9 @@ python evals/literature_checks.py
 python evals/support_checks.py
 python evals/conversion_checks.py
 python evals/protein_checks.py
+python evals/remote_client_checks.py
+python evals/remote_worker_checks.py
+python evals/remote_loopback_checks.py
 python evals/package_smoke.py
 python scripts/build_portable.py --check
 ```
@@ -104,3 +107,20 @@ separate Open Babel environment; protein jobs use the official CPU PyTorch index
 an explicit small-model preparation command and actual local-only inference.
 No GPU, remote service or arbitrary model is tested. See [engine setup](engine-setup.md),
 actual CI logs and [validation](validation.md) for observed outcomes.
+
+## Remote execution controls
+
+Client contract tests use mocked SSH responses, including lost acknowledgments;
+worker tests use disposable local POSIX controller jobs. The optional loopback
+suite requires explicit `--run-ssh` and an available OpenSSH server/client/keygen.
+It creates private temporary host/client keys, binds only 127.0.0.1 on an
+unprivileged port, uses its own known-hosts file and SSH config, and removes the
+owned daemon and files afterward. It does not change the user's SSH configuration
+or install a permanent service. Default execution skips the real server fixture.
+
+Run `python evals/remote_loopback_checks.py --run-ssh` only on a selected compatible
+POSIX test host. Hosted Linux fixtures may need the standard ephemeral runner's
+sshd privilege-separation directory. Windows clients receive contract tests;
+Windows remote servers, GPU dispatch and schedulers need separate acceptance.
+Resource limits are cooperative bounds for trusted jobs, not an OS security sandbox.
+See [the remote guide](../skills/research-writer/references/remote-execution.md).

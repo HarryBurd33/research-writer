@@ -42,3 +42,8 @@ For protein representations, supply both `--protein-python PATH` and
 interpreter. No model preparation happens in this self-check. Missing runtime or
 assets fails rather than silently skipping. Default runs mark these optional
 checks skipped. Successful installation controls are not scientific benchmarks.
+
+The default installed check also loads the remote client without connecting or
+transferring anything. Remote host/job acceptance is separate and requires an
+explicitly selected profile and bounded test; local package success is not proof
+that a remote host or GPU is configured.

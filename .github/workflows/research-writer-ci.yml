@@ -68,6 +68,11 @@ jobs:
         run: |
           python evals/conversion_checks.py
           python evals/protein_checks.py
+      - name: Remote client and worker contracts
+        run: |
+          python evals/remote_client_checks.py
+          python evals/remote_worker_checks.py
+          python evals/remote_loopback_checks.py
       - name: Isolated installed-package smoke
         run: python evals/package_smoke.py
       - name: Portable bundle consistency
@@ -151,17 +156,46 @@ jobs:
           python evals/protein_checks.py --protein --model-dir .model-assets
           python -c "import pathlib,subprocess,sys; subprocess.run([sys.executable,'evals/package_smoke.py','--protein-python',sys.executable,'--protein-model-dir',str(pathlib.Path('.model-assets').absolute())],check=True)"
 
+  remote:
+    name: Loopback SSH (${{ matrix.os }}, Python 3.12)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            architecture: x64
+          - os: macos-latest
+            architecture: arm64
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: ${{ matrix.architecture }}
+      - name: Prepare ephemeral Linux privilege-separation directory
+        if: runner.os == 'Linux'
+        run: sudo install -d -m 0755 /run/sshd
+      - name: Require disposable real SSH lifecycle controls
+        run: python evals/remote_loopback_checks.py --run-ssh
+
   required:
     # Stable aggregate check name; do not rename when extending the matrix.
     name: Research Writer checks
     if: ${{ always() }}
-    needs: [core, molecular, protein]
+    needs: [core, molecular, protein, remote]
     runs-on: ubuntu-latest
     timeout-minutes: 2
     env:
       CORE_RESULT: ${{ needs.core.result }}
       MOLECULAR_RESULT: ${{ needs.molecular.result }}
       PROTEIN_RESULT: ${{ needs.protein.result }}
+      REMOTE_RESULT: ${{ needs.remote.result }}
     steps:
       - name: Require every matrix job to pass
         shell: bash
@@ -169,3 +203,4 @@ jobs:
           test "$CORE_RESULT" = success
           test "$MOLECULAR_RESULT" = success
           test "$PROTEIN_RESULT" = success
+          test "$REMOTE_RESULT" = success
