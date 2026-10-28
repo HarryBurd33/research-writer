@@ -69,7 +69,16 @@
   "public_test_methods": {
     "existing": 125,
     "discovery": 28,
-    "claim_audit": 25,
-    "total_local": 178
+    "claim_audit": 26,
+    "total_local": 179
+  },
+  "hosted_portability_correction": {
+    "original_head": "47c401e01dc8cbdafb5b0256eb8719561eab988f",
+    "initial_run": 40749634361,
+    "failure": "Windows fixture wrote CRLF but declared LF hash",
+    "fix": "explicitUTF8bytes + hash from samebytes + byteinvariant",
+    "production_code": "unchanged",
+    "acceptance_rules": "unchanged",
+    "hosted_rerun": "required before promotion"
   }
 }
