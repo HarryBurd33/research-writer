@@ -1,6 +1,6 @@
 # Research Writer: remaining work and acceptance plan
 
-Plan begun 2026-10-27; status reviewed 2026-10-28. Proposed work is distinct from executed acceptance. Phases 1–4 were delivered through v0.8.0; phase 5 bounded evaluation is delivered in v0.9.0. The historical starting release is v0.6.0; see [validation](validation.md), [runtime setup](runtime-setup.md) and [tool catalog](../skills/research-writer/references/tool-catalog.json). Preserve the user's device-adaptable design, genre/audience/destination intake, renewed literature search before substantive writing, and tested prior behavior.
+Plan begun 2026-10-27; status reviewed 2026-10-28. Proposed work is distinct from executed acceptance. Phases 1–4 were delivered through v0.8.0; phase 5 bounded evaluation is delivered in v0.9.0, and the next bounded retrieval/inventory stage is delivered in v0.10.0. The historical starting release is v0.6.0; see [validation](validation.md), [runtime setup](runtime-setup.md) and [tool catalog](../skills/research-writer/references/tool-catalog.json). Preserve the user's device-adaptable design, genre/audience/destination intake, renewed literature search before substantive writing, and tested prior behavior.
 
 ## Phase 1 implementation status
 
@@ -83,7 +83,7 @@ and writing usable without hardware, services or paid providers.
 
 | Priority | Deliverable | Acceptance and external dependency |
 |---|---|---|
-| 6: literature/source support | Expand providers and accessible full-text/version/correction handling where concrete cases expose coverage gaps; improve claim-to-passage review. | Frozen failure contracts plus bounded live controls; independent supported/partial/contradicted/uncertain passage review. Access and source rights remain explicit. |
+| 6: literature/source support | v0.10.0 delivers anonymous bounded OpenAlex discovery/reference leads, pinned arXiv HTML and declared-claim coverage auditing. Broader provider/full-text/correction coverage and expert semantic review remain open. | See [executed validation](deeper-literature-validation.md). Valid records are not scientific truth; anonymous paging, HTML availability and article rights remain bounded. |
 | 7: remote isolation/recovery | Optional enforced Linux limits and filesystem restrictions with a documented threat model; improve controller/host failure reconciliation. | Disposable-host tests of actual memory, CPU/process, storage and wall limits plus interrupted recovery; never infer isolation from configuration. Existing mode remains trusted-task only. |
 | 8: external host and GPU | Portable host acceptance and one real GPU route using an existing small workload first. | Needs a selected trusted machine, permitted files/task, compatible runtime/assets and resource bounds. Verify actual device, numerical output, cancellation and collection. Loopback cannot establish this. |
 | 9: selected scientific engines | One task-appropriate docking and one larger prediction route, then optional task-justified engines/pipelines. | Recheck distinct rights; isolate environments; official small control and negative control; independent output parsing and a predefined licensed benchmark before performance claims. Large downloads/paid services need explicit bounds. |
