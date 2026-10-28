@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "purpose": "Fresh independent followup frozen after baselineP5-08partial but before proposal-guidancepatch; not replacementfororiginal10cases",
+  "substitution": "No substitutions required. Chat artifacts captured in assignedrun directory.",
+  "synthetic_notice": "All suppliedrecords invented for evaluation; not scientific evidence.",
+  "cases": [
+    {
+      "id": "P5-F01-shared-exposure",
+      "split": "fresh-followup",
+      "tools": "supplied-only; no browsing, recruitment or experiment; response captured as chat artifact",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 250–350 word prospective pilot protocol in chat for a public-library volunteer training manager, no journal intended. Compare a new worked-example handout against the current handout for learning to classify incoming requests. Use only the synthetic feasibility memo. Explain the comparison, assignment and analysis units, measurement timing, important validity threats and a practical smallest first step. State assumptions rather than inventing staff numbers, power, approvals or results.",
+      "source_packet": [
+        {
+          "id": "F-M1",
+          "locator": "Synthetic operations memo §1",
+          "text": "Six scheduled group training sessions can use the same classification task and scoring rubric. Several volunteers attend more than one session, two supervisors teach across sessions, and volunteers usually exchange handouts and tips in a shared messaging channel. The manager can retain session-level attendance totals and aggregate task scores. No individual tracking consent, variance estimates or institutional ethics determination is established."
+        },
+        {
+          "id": "F-M2",
+          "locator": "Synthetic operations memo §2",
+          "text": "Either handout can be delivered to a whole session. The new handout adds worked examples; the comparison handout gives the existing rules. Session times and trainers are scheduled for operational reasons, so changing them has a cost."
+        }
+      ]
+    },
+    {
+      "id": "P5-F02-individual-contrast",
+      "split": "fresh-followup",
+      "tools": "supplied-only; no browsing, recruitment or experiment; response captured as chat artifact",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 220–320 word prospective pilot protocol in chat for a usability research lead, no journal intended. Compare two on-screen button layouts for completing a simple sorting task. Use only the synthetic setup below. Choose defensible assignment and analysis units, outcomes and timing, the most relevant validity threats, and a practical first test. Keep the protocol proportionate to this setup; do not invent observed results, power calculations or institutional approvals.",
+      "source_packet": [
+        {
+          "id": "F-I1",
+          "locator": "Synthetic setup memo §1",
+          "text": "Each consenting volunteer completes one private computer session once, is independently randomized by software to layout A or B and sees only that layout. Volunteers cannot communicate during the task. There are no classes, shared facilitators or repeat sessions. The software records one completion time, one accuracy score and missing or interrupted sessions under a randomly generated research ID. Recruitment volume and outcome variance are not yet known."
+        },
+        {
+          "id": "F-I2",
+          "locator": "Synthetic setup memo §2",
+          "text": "Task instructions, hardware and timing rules can be held constant. Consent language and the data-retention plan are drafts awaiting the organization’s review; formal approval has not been established."
+        }
+      ]
+    }
+  ]
+}
