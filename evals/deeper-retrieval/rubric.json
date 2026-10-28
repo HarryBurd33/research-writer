@@ -1,0 +1,356 @@
+{
+  "schema_version": 1,
+  "frozen_before_candidate": true,
+  "review": "Separate nonblind agent review; exact model/effort unknown, inherited.",
+  "scoring": "0 fails,1 partial,2 meets; critical failures block adoption and cannot be averaged away.",
+  "behavioral": [
+    {
+      "case_id": "P6-B01-cross-source",
+      "criteria": [
+        {
+          "id": "artifact",
+          "critical": true,
+          "expect": "Complete brief for stated reader/chat/genre, supplied-only and no unnecessary questions."
+        },
+        {
+          "id": "all-claims",
+          "critical": true,
+          "expect": "Every C1–C4 is explicitly assessed, including unresolved C4 rather than disappearing."
+        },
+        {
+          "id": "correction-family",
+          "critical": true,
+          "expect": "B supersedes A for pilot values; A+B are one pilot family, not two independent experiments; original mean gain not retained."
+        },
+        {
+          "id": "scope",
+          "critical": true,
+          "expect": "C1 not universal causal willingness; survey association and no pilot willingness measure distinguished; C2 corrected zero difference."
+        },
+        {
+          "id": "contrary",
+          "critical": true,
+          "expect": "C3 conflicts with actual concerns; qualitative nonprevalence scope retained, privacy cannot be declared absent."
+        },
+        {
+          "id": "access-status",
+          "critical": true,
+          "expect": "Abstract-only C and unknown D status remain such; no invented methods/retraction certification."
+        },
+        {
+          "id": "tool-limit",
+          "critical": true,
+          "expect": "Any audit pass described only as declared coverage/record integrity, not semantic truth or independent human review."
+        },
+        {
+          "id": "usefulness",
+          "critical": false,
+          "expect": "Claim-to-source mapping and specific retained/narrowed/unresolved conclusions with practical next evidence needs."
+        }
+      ]
+    },
+    {
+      "case_id": "P6-B02-access-failure",
+      "criteria": [
+        {
+          "id": "artifact-readback",
+          "critical": true,
+          "expect": "Actual local Markdown artifact250–350words saved/readback, with matching receipt/hash; no external delivery claim."
+        },
+        {
+          "id": "search-scope",
+          "critical": true,
+          "expect": "Two returned records of125hits are first page only, not screened entire corpus or evidence absence."
+        },
+        {
+          "id": "version-access",
+          "critical": true,
+          "expect": "v2 response does not verify requestedv1; no silent replacement or fulltext/read claim."
+        },
+        {
+          "id": "metadata-limits",
+          "critical": true,
+          "expect": "OAflag/link and retractionfalse do not certify retrieved text or unretracted status; licenseunknown stays unknown; referenceIDs are leads not read papers."
+        },
+        {
+          "id": "guarantee",
+          "critical": true,
+          "expect": "Abstract comparative gains do not establish universal error-free answers; no invented fulltext specifics."
+        },
+        {
+          "id": "renewal",
+          "critical": false,
+          "expect": "Prewriting scope review and concrete next permitted retrieval/version/status/passage checks; no invented actual renewal."
+        }
+      ]
+    }
+  ],
+  "deterministic": [
+    {
+      "id": "D01",
+      "group": "discovery",
+      "rule": "OpenAlex boundedfirstpage",
+      "input": "searchlimit2 withmeta.count125 and2validrecords",
+      "expected": "Only2records returned; coveragebounded; requestcontainsper_page2/page1 andnoapikey/cursor; no exhaustive/fullyreadclaim"
+    },
+    {
+      "id": "D02",
+      "group": "discovery",
+      "rule": "emptyvsunavailable",
+      "input": "validemptyresults/meta.count0 vs429/timeout",
+      "expected": "empty differs fromunavailable; retry-after retained, no retryloop"
+    },
+    {
+      "id": "D03",
+      "group": "discovery",
+      "rule": "searchbounds",
+      "input": "empty/oversizequery; bool/0/21limit",
+      "expected": "Rejectbeforeanynetwork"
+    },
+    {
+      "id": "D04",
+      "group": "discovery",
+      "rule": "workidentity",
+      "input": "requestedW7654321 returnedW7654322",
+      "expected": "Failidentitynotverified"
+    },
+    {
+      "id": "D05",
+      "group": "discovery",
+      "rule": "DOIidentity",
+      "input": "requestedDOI10.9999/a returned10.9999/b",
+      "expected": "Failnotcanonicalizedaway"
+    },
+    {
+      "id": "D06",
+      "group": "discovery",
+      "rule": "citationleads",
+      "input": "workwithrepeatedreferencedIDs/OAtrue/retractedfalse/licensenull",
+      "expected": "PreservevalidIDs/provenance; no read/independence/statuscertification; unknownrights"
+    },
+    {
+      "id": "D07",
+      "group": "discovery",
+      "rule": "malformedprovider",
+      "input": "nonobject/invalidid/missingresults/badcount/malformedJSON",
+      "expected": "Failure, neveremptysuccess"
+    },
+    {
+      "id": "D08",
+      "group": "discovery",
+      "rule": "endpointboundary",
+      "input": "localhost/credentials/http/wrongport/thirdparty redirects",
+      "expected": "Refusewithoutunapprovednetwork"
+    },
+    {
+      "id": "D09",
+      "group": "discovery",
+      "rule": "bodybound",
+      "input": "responseMAX_BYTES+1",
+      "expected": "Failwithboundedreceipt"
+    },
+    {
+      "id": "D10",
+      "group": "discovery",
+      "rule": "realstructuralHTML",
+      "input": "watermark-tr exactversion beforearticle.ltx_document withheadings/paragraphs/Unicode",
+      "expected": "Identityverified; nonemptyUTF8text; raw/extractedhashesandlocators consistent; readfalse"
+    },
+    {
+      "id": "D11",
+      "group": "discovery",
+      "rule": "bibliographytrap",
+      "input": "wrongfrontID andrequestedIDonlybibliography",
+      "expected": "Failpinnedidentity"
+    },
+    {
+      "id": "D12",
+      "group": "discovery",
+      "rule": "versiontrap",
+      "input": "rightunversionedID butwrongvn; unversionedrequest",
+      "expected": "Failwithoutlatestfallback"
+    },
+    {
+      "id": "D13",
+      "group": "discovery",
+      "rule": "metadataerrorbody",
+      "input": "abstract/error/htmlpagewithoutarticle/substantivebody",
+      "expected": "Notfulltext"
+    },
+    {
+      "id": "D14",
+      "group": "discovery",
+      "rule": "activecontent",
+      "input": "script/style/navwithfakeevidence andexternalassetlinks",
+      "expected": "Noexecution/assetsrequests; extractedtext excludesactive/navcontent"
+    },
+    {
+      "id": "D15",
+      "group": "discovery",
+      "rule": "headeralternative",
+      "input": "exactversionedheaderabstract/PDFlinks beforearticle, no watermark",
+      "expected": "Onlyrecognizedstructuralidentityqualifies; arbitrarybodylinknotidentity"
+    },
+    {
+      "id": "D16",
+      "group": "discovery",
+      "rule": "malformedHTML",
+      "input": "truncatedunclosedarticle orconflictingfrontidentity",
+      "expected": "Failclosed, nofulltextsuccess"
+    },
+    {
+      "id": "D17",
+      "group": "discovery",
+      "rule": "arxivboundsrate",
+      "input": "multipleownedrequests orcrossproviderredirect",
+      "expected": "Serialization/spacing>=3seconds withinutility; no assets; caller-globalresponsibilityexplicit"
+    },
+    {
+      "id": "D18",
+      "group": "discovery",
+      "rule": "CLIoutputs",
+      "input": "existingJSON/textpath orsamepath",
+      "expected": "Preserveexistingbytesbeforenetwork; nofalsecompletedartifact"
+    },
+    {
+      "id": "A01",
+      "group": "audit",
+      "rule": "completeinventory",
+      "input": "twoexplicitclaims/requiredpairs withvalidexactreviews",
+      "expected": "records_valid/coveragecomplete; semantic_entailment not_automatically_verified; drafting_clearance not_granted"
+    },
+    {
+      "id": "A02",
+      "group": "audit",
+      "rule": "missingpair",
+      "input": "oneclaimnames2sources butonly1review",
+      "expected": "incomplete andmissingpair listed"
+    },
+    {
+      "id": "A03",
+      "group": "audit",
+      "rule": "missingclaim",
+      "input": "declaredclaimwithnoreview",
+      "expected": "Doesnotdisappear; incomplete"
+    },
+    {
+      "id": "A04",
+      "group": "audit",
+      "rule": "orphanbinding",
+      "input": "reviewunknownclaim_id orclaimtextdiffers",
+      "expected": "failed"
+    },
+    {
+      "id": "A05",
+      "group": "audit",
+      "rule": "partial",
+      "input": "exactvalidpartialreview",
+      "expected": "Preservepartialnotupgradefullsupports; reviewneededflag"
+    },
+    {
+      "id": "A06",
+      "group": "audit",
+      "rule": "contrary",
+      "input": "supportsandcontradicts recordsforoneclaim",
+      "expected": "Preserveboth; conflict/reviewneededflag"
+    },
+    {
+      "id": "A07",
+      "group": "audit",
+      "rule": "familyversions",
+      "input": "2sourcereportsdeclareonefamily/differentversions",
+      "expected": "One declared family; records/versionsremainvisible; not2independentstudies"
+    },
+    {
+      "id": "A08",
+      "group": "audit",
+      "rule": "requiredaccess",
+      "input": "claimrequiresfull_text butsourceabstract",
+      "expected": "Failor incompleteaccessrequirement; cannotpromote"
+    },
+    {
+      "id": "A09",
+      "group": "audit",
+      "rule": "publicationstatus",
+      "input": "corrected/retracted/withdrawn/unknownsource",
+      "expected": "Visiblecontentreviewflags; notselfcertifiedcurrent"
+    },
+    {
+      "id": "A10",
+      "group": "audit",
+      "rule": "bytes",
+      "input": "changedsourceafterhash",
+      "expected": "failed"
+    },
+    {
+      "id": "A11",
+      "group": "audit",
+      "rule": "version",
+      "input": "reviewversionstale",
+      "expected": "failed"
+    },
+    {
+      "id": "A12",
+      "group": "audit",
+      "rule": "passage",
+      "input": "inventedpassage orwrongoffset",
+      "expected": "failed"
+    },
+    {
+      "id": "A13",
+      "group": "audit",
+      "rule": "unsafe",
+      "input": "outside/traversal/Windowsdrive path",
+      "expected": "failedwithoutreadingescapedfile"
+    },
+    {
+      "id": "A14",
+      "group": "audit",
+      "rule": "duplicates",
+      "input": "duplicateclaim/source/reviewIDs orrequiredsourceids",
+      "expected": "failed"
+    },
+    {
+      "id": "A15",
+      "group": "audit",
+      "rule": "malformedlimits",
+      "input": "boolschema;32+sources/100+claims/500+reviews/oversizetotal",
+      "expected": "Rejectboundedly"
+    },
+    {
+      "id": "A16",
+      "group": "audit",
+      "rule": "empty",
+      "input": "no declaredclaims/reviews",
+      "expected": "not_checked nonzero; no pass"
+    },
+    {
+      "id": "A17",
+      "group": "audit",
+      "rule": "validzero",
+      "input": "sourcepassagevalue0 ornegativeeffect",
+      "expected": "No automaticmissing/failureduetozero; integritybasedonexacttext"
+    },
+    {
+      "id": "A18",
+      "group": "audit",
+      "rule": "no-network",
+      "input": "arbitrarysourceurlmetadata present",
+      "expected": "Offlineauditmakesnonetworkcalls"
+    },
+    {
+      "id": "A19",
+      "group": "audit",
+      "rule": "CLIoverwrite",
+      "input": "existingoutput oroutputequalsinput",
+      "expected": "Preservebytes andfailbeforewrite"
+    },
+    {
+      "id": "A20",
+      "group": "audit",
+      "rule": "limits-honesty",
+      "input": "allrecords reviewerlabelsupports",
+      "expected": "Neverautomaticallycertifyentailment/scientifictruth/undeclaredclaimcoverage"
+    }
+  ]
+}
