@@ -1,0 +1,244 @@
+{
+  "schema_version": 1,
+  "purpose": "fresh phase5 behavioral cases; prompts supplied to executors without rubric",
+  "substitution": "Replace {RUN_DIR} only with assigned private run directory; do not change content otherwise.",
+  "synthetic_notice": "All records except P5-10 are test fixtures; no real scientific studies/citations asserted.",
+  "cases": [
+    {
+      "id": "P5-01-intake",
+      "split": "regression",
+      "tools": "no browsing or external writes",
+      "max_unnecessary_questions": 0,
+      "request": "Use Research Writer to explore whether shared public workspaces change how people ask for help. I have not decided what I want to produce or where it should go. Do not start researching until you know what I want.",
+      "source_packet": []
+    },
+    {
+      "id": "P5-02-quantitative",
+      "split": "development",
+      "tools": "local calculation and local Markdown creation; supplied-only, no browsing",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 300–450 word quantitative teaching synthesis for graduate methods students, no journal intended. Save it to {RUN_DIR}/quantitative.md and read the saved file back before reporting completion. Use only the synthetic source packet. Explain and execute a common-effect inverse-variance synthesis of seconds saved by interface B versus A, assuming the three independent studies estimate the same effect for this teaching control. Compute a normal 95% interval. Preserve the sign convention and distinguish this demonstration from field evidence. Include the study/family decision and limitations; do not claim systematic coverage.",
+      "source_packet": [
+        {
+          "id": "S1",
+          "type": "synthetic independent randomized study",
+          "family": "F1",
+          "effect_seconds_saved": 2,
+          "standard_error": 1,
+          "setting": "adult volunteers, same sorting task and endpoint; 40 participants",
+          "locator": "synthetic extraction row S1"
+        },
+        {
+          "id": "S2",
+          "type": "synthetic independent randomized study",
+          "family": "F2",
+          "effect_seconds_saved": 4,
+          "standard_error": 2,
+          "setting": "adult volunteers, same sorting task and endpoint; 60 participants",
+          "locator": "synthetic extraction row S2"
+        },
+        {
+          "id": "S2b",
+          "type": "synthetic secondary report",
+          "family": "F2",
+          "effect_seconds_saved": 4,
+          "standard_error": 2,
+          "setting": "same participants and endpoint as S2; not independent",
+          "locator": "synthetic extraction row S2b"
+        },
+        {
+          "id": "S3",
+          "type": "synthetic independent randomized study",
+          "family": "F3",
+          "effect_seconds_saved": 1,
+          "standard_error": 1,
+          "setting": "adult volunteers, same sorting task and endpoint; 40 participants",
+          "locator": "synthetic extraction row S3"
+        }
+      ]
+    },
+    {
+      "id": "P5-03-no-pooling",
+      "split": "heldout",
+      "tools": "supplied-only; no browsing, statistical package or external service",
+      "max_unnecessary_questions": 0,
+      "request": "Produce a 250–350 word feasibility assessment in chat for a nonprofit program evaluator, no journal intended. I hoped to get a pooled effect of an orientation program. Use only these synthetic records. Say whether the records permit that now, give a practical evidence table or equivalent, and identify what must be obtained. You may not invent missing information. The bibliography service is unavailable in this test; do not invent a successful lookup or recovered variance.",
+      "source_packet": [
+        {
+          "id": "O1",
+          "family": "one-cohort",
+          "finding": "mean wellbeing score increased by 4 units at 2 weeks",
+          "n": 30,
+          "variance": "not reported",
+          "comparison": "no concurrent comparator"
+        },
+        {
+          "id": "O2",
+          "family": "one-cohort",
+          "finding": "mean wellbeing score increased by 5 units at 4 weeks",
+          "n": 30,
+          "variance": "not reported",
+          "comparison": "same people as O1, not independent"
+        },
+        {
+          "id": "O3",
+          "family": "different-cohort",
+          "finding": "participants completed training 12 minutes faster than controls",
+          "n": 50,
+          "variance": "not reported",
+          "comparison": "different outcome and scale"
+        }
+      ]
+    },
+    {
+      "id": "P5-04-source-conflict",
+      "split": "heldout",
+      "tools": "supplied-only; no browsing",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 250–350 word evidence brief in chat for a municipal library director, no journal intended. Assess the sentence: “Longer opening hours cause better reading outcomes for every community.” Use only the synthetic excerpts below and cite their IDs and section locators near claims. Explain what is defensible and what is not; include contrary evidence.",
+      "source_packet": [
+        {
+          "id": "L1",
+          "type": "synthetic observational study",
+          "locator": "Results §2",
+          "text": "Among 12 urban branches, branches with longer hours had higher annual borrowing counts. Staffing and neighborhood income were not adjusted for. Reading comprehension was not measured."
+        },
+        {
+          "id": "L2",
+          "type": "synthetic randomized pilot",
+          "locator": "Results §3",
+          "text": "Six branches were assigned to extend evening hours and six to retain existing hours for eight weeks. Evening visits increased in extended-hours branches. No clear difference in total monthly borrowing was detected; interval estimates were wide. Reading outcomes were not assessed."
+        },
+        {
+          "id": "L3",
+          "type": "synthetic correction to L1",
+          "locator": "Correction §1",
+          "text": "One branch was counted twice in the original table; 11 distinct branches remain. The revised association is smaller. The study remains observational."
+        }
+      ]
+    },
+    {
+      "id": "P5-05-theory",
+      "split": "heldout",
+      "tools": "supplied-only; no browsing",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 300–400 word conceptual theory note in chat for organizational-behavior graduate students, no journal intended. Propose a mechanism connecting visible uncertainty statements to help-seeking, grounded only in the synthetic source packet. Distinguish premises from conjecture, give a rival explanation, boundary conditions and an observation that would weaken your account. No results have been collected for your proposed mechanism.",
+      "source_packet": [
+        {
+          "id": "T1",
+          "locator": "Synthetic interview summary §1",
+          "text": "In interviews at two teams, some novices said admitting uncertainty felt socially costly. Interview sampling was purposive; prevalence was not estimated."
+        },
+        {
+          "id": "T2",
+          "locator": "Synthetic lab task summary §2",
+          "text": "Participants viewing a colleague ask a question were more likely to ask one themselves during a short task. The study did not manipulate uncertainty statements or measure long-term learning."
+        }
+      ]
+    },
+    {
+      "id": "P5-06-tutorial",
+      "split": "heldout",
+      "tools": "supplied-only, optional local arithmetic; no browsing",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 300–400 word tutorial in chat for first-year social-science undergraduates, no journal intended. Teach why correlation alone does not establish a treatment effect. Include a clearly labeled toy numerical example, one learner check with an answer and a failure mode. Use only the synthetic source note and your explicitly stated logical demonstration. Do not call this new empirical research.",
+      "source_packet": [
+        {
+          "id": "U1",
+          "locator": "Synthetic methods note §1",
+          "text": "Group differences may reflect treatment, selection or common causes. Random allocation can reduce confounding in expectation; it does not by itself solve attrition, nonadherence or every measurement problem."
+        }
+      ]
+    },
+    {
+      "id": "P5-07-humanities",
+      "split": "heldout",
+      "tools": "supplied-only; no browsing or biography",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 300–400 word close-reading essay in chat for literature undergraduates, no journal intended. Use only this invented passage. Develop a contestable thesis about memory and possession, consider a competing reading, and cite the supplied line numbers. Do not invent page numbers, authorship, publication history or historical context.",
+      "source_packet": [
+        {
+          "id": "H1",
+          "title": "The Empty Shelf (synthetic passage, composed for this test; no external author or publication)",
+          "text": "[1] I left a space for the cup after the cup was gone.\n[2] Visitors called the shelf empty. I called it careful.\n[3] Every morning I dusted the circle that no longer showed.\n[4] When my sister brought another cup, I placed it by the window.\n[5] The shelf remained ready, though I could not say for whom."
+        }
+      ]
+    },
+    {
+      "id": "P5-08-proposal",
+      "split": "heldout",
+      "tools": "supplied-only; no actual recruitment or experiment",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 300–450 word prospective pilot-study proposal in chat for a university teaching-and-learning committee, no journal intended. Test whether an optional preclass question form increases students’ willingness to ask questions during a workshop. Use only the synthetic packet. Specify comparison, assignment and analysis units, outcomes/time points, missing data, relevant consent/privacy considerations, a success criterion and the weakest-assumption test. Do not invent a powered sample size or observed results; label unchosen design assumptions.",
+      "source_packet": [
+        {
+          "id": "D1",
+          "locator": "Synthetic feasibility memo §1",
+          "text": "The committee can offer four workshop sessions and can record anonymous aggregate question counts. It has no established variance estimates, attendance forecast or institutional ethics determination. Individual identifiable question tracking is not authorized."
+        },
+        {
+          "id": "D2",
+          "locator": "Synthetic interview note §2",
+          "text": "A few students said a private way to submit a question might help; others worried instructors could infer who submitted it. This is preliminary qualitative feedback, not evidence of intervention effectiveness."
+        }
+      ]
+    },
+    {
+      "id": "P5-09-duplication",
+      "split": "heldout",
+      "tools": "supplied-only; no browsing",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 250–350 word research-positioning memo in chat for an HCI research group, no journal selected. My original plan was to be the first to test whether an optional anonymous question form increases workshop questions. Use only these synthetic nearest-neighbor summaries to run the duplication test and offer two defensible revised directions. State the contribution increment in one sentence and assess significance and feasibility. Do not assume absence from this tiny packet proves worldwide novelty.",
+      "source_packet": [
+        {
+          "id": "N1",
+          "title": "Synthetic published closest-neighbor paper",
+          "locator": "Methods §2; Results §3",
+          "text": "Randomized 16 workshops to an optional anonymous preclass question form versus no form. It counted spoken and submitted questions and measured perceived comfort. Immediate question counts increased; no delayed outcome or privacy-risk comparison was studied."
+        },
+        {
+          "id": "N2",
+          "title": "Synthetic related methods paper",
+          "locator": "Discussion §4",
+          "text": "Anonymous classroom feedback tools can still expose participants through timing and unusual wording. It proposes privacy evaluation criteria but does not compare question-form variants experimentally."
+        }
+      ]
+    },
+    {
+      "id": "P5-10-frozen-review",
+      "split": "heldout",
+      "tools": "supplied frozen primary-source notes only, no browsing for paired comparison; local report creation/readback",
+      "max_unnecessary_questions": 0,
+      "request": "Write a 300–450 word bounded narrative review for graduate machine-learning students, no journal intended. Save it to {RUN_DIR}/retrieval-review.md and read the saved file back. Question: do the two specified primary papers establish that adding retrieval guarantees factual answers? For this paired test use only the supplied frozen source notes; do not browse or imply you personally accessed the full papers. Before drafting, review and record the actual available evidence/search scope and whether any update is possible within this supplied-only boundary. Cite the provided source URLs and section locators near claims, compare what was tested and what remains unsupported, and identify the closest-neighbor increment within this two-paper corpus. This is not a fieldwide systematic review. State that source access is evaluator-inspected notes, with verification against full texts still needed for wider claims.",
+      "source_packet": [
+        {
+          "id": "RAG2020",
+          "url": "https://arxiv.org/html/2005.11401v1",
+          "title": "Lewis et al., Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks",
+          "version": "arXiv:2005.11401v1",
+          "access": "Evaluator inspected official primary HTML, abstract, introduction, methods and selected experiment/results sections on 2026-10-28. Executor receives original paraphrased notes only.",
+          "locators": [
+            "§§1–2",
+            "§§3.3–3.4",
+            "§§4.1–4.3, Tables1–3"
+          ],
+          "notes": "The system combines a dense Wikipedia retriever with a pretrained sequence generator. RAG-Sequence conditions the output on one latent passage, whereas RAG-Token permits passage changes across tokens. Evaluation covers open-domain question answering, abstractive answers, question generation and fact verification. Several question-answering benchmarks improve over comparators. For Jeopardy generation the authors compare outputs with BART using automatic scores and pairwise human judgments. Results favor RAG comparatively, while Table3 includes outputs judged poor for both systems. Qualitative discussion describes fewer hallucinations than BART, not error-free generation. These task-specific comparisons do not test correctness for every possible query."
+        },
+        {
+          "id": "SELFRAG2023",
+          "url": "https://arxiv.org/html/2310.11511v1",
+          "title": "Asai et al., Self-RAG: Learning to Retrieve, Generate, and Critique through Self-Reflection",
+          "version": "arXiv:2310.11511v1",
+          "access": "Evaluator inspected official primary HTML abstract, introduction, related work and inference section on2026-10-28. Executor receives original paraphrased notes only; full tables not extracted.",
+          "locators": [
+            "Abstract",
+            "§§1–2",
+            "§3.3"
+          ],
+          "notes": "The paper identifies drawbacks of unconditional fixed-count retrieval: irrelevant passages may impair responses, and generated text need not follow retrieved evidence. Self-RAG trains reflection tokens to decide when retrieval is useful and assess relevance, support and usefulness during generation. Its inference procedure can adjust retrieval thresholds and rank segment continuations using critique-token scores. The abstract and introduction report improvements over named language-model and retrieval baselines on multiple tasks, including factuality and citation measures. These sections describe empirical gains rather than a universal correctness proof. This packet does not contain the complete numerical results or all experimental details."
+        }
+      ]
+    }
+  ],
+  "protocol": "Frozen identical source packets for both arms. Actual fresh web renewal is a separately recorded nonpaired integration check, not evidence of paired retrieval improvement."
+}
