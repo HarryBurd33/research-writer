@@ -42,3 +42,22 @@ The supplied writing-process diagram informed general coverage of active reading
 All 13 user-supplied repositories were inspected through primary README, implementation/interface, packaging and license files at the revisions retained in [the capability catalog](tool-catalog.json). The supplied [AutoResearchClaw paper, arXiv v2](https://arxiv.org/abs/2605.20025v2) was inspected in its relevant methods, evaluation and failure-analysis sections. Its benchmark scores and autonomous-research claims are author-reported and were not reproduced here. Numeric equality and resolved citations do not establish per-condition support or scientific validity.
 
 AutoResearchClaw inspired bounded experiment refinement and artifact-based reporting; Beeblio informed ordinary project/source workspace patterns. The toolkit and guidance here are original. No upstream code, models, paper prose/figures or datasets are redistributed. Beeblio is PolyForm Noncommercial, not an MIT dependency. AF3 code rights differ from its restrictive weight/output terms. Boltz and DiffDock explicitly license code/weights MIT at the inspected revisions. Current Biohub ESM terms differ from older releases; Meta ESM is archived and its checkpoint-specific terms remain separately scoped. OpenMM components, Open Babel and GNINA also carry distinct licensing. The catalog records uncertainty, official evidence and interface mismatches rather than promising universal execution. Recheck terms and selected releases before use.
+
+
+## Research-writing evaluation — 2026-10-28
+
+A bounded fresh foundation review inspected [ALCE](https://github.com/princeton-nlp/ALCE),
+including its evaluation code, human-evaluation guidance and MIT notice. It
+informed the distinction between useful writing, citation coverage and actual
+claim support; no upstream code, models or evaluation datasets are bundled.
+The [Cochrane chapter10](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-10)
+and [PRISMA2020 explanation](https://pmc.ncbi.nlm.nih.gov/articles/PMC8005925/)
+were inspected for study dependence, uncertainty, and accurate reporting of
+records, reports, studies and actual reviewer roles. These inform an original
+small evaluation suite, not universal writing rules or methodological certification.
+
+A focused proposal-design clarification also consulted [Cochrane chapter23,
+sections23.1.1–23.1.3](https://www.cochrane.org/authors/handbooks-and-manuals/handbook/current/chapter-23):
+shared settings can allow cross-condition contamination, and analysis must account
+for relevant dependence. This informs a conditional design check, not a universal
+requirement to assign groups or use one statistical model. No source prose is copied.
