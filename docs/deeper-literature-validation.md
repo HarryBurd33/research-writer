@@ -28,7 +28,7 @@ search-renewal, nearest-neighbor and device-adaptation rules remain in force.
 |---|---|---|
 | Frozen independent contracts |38/38 pass| Bounded provider/parser and inventory contracts on reserved cases |
 | Additional repair/boundary controls |9/9 pass| Targeted failures fixed, including actual FIFOs and official HTML |
-| Public local methods |178 pass: prior 125 + discovery 28 + audit 25| Selected local regressions, with applicable engines and six real loopback SSH cases |
+| Public local methods |179 pass: prior 125 + discovery 28 + audit 26| Selected local regressions, with applicable engines and six real loopback SSH cases |
 | Writing cases |Both arms 14/14 criteria,28/28 points; zero critical failures/unnecessary questions| Preservation across two fresh supplied-source briefs; no measured prose gain |
 | Actual arXiv conversion |HTTP 200, pinned identity,69,881 text characters,47 valid section offsets| This version's HTML was retrieved/extracted, not universally accurate conversion |
 | Actual declared-claim CLI |2/2 pairs valid; partial/unknown-status flags retained; missing review1/2 yields `incomplete`| Integrity and coverage, not automatic judgment validity |
@@ -73,6 +73,15 @@ response requirement, and the initial history remains visible in private records
 Final checks reran the 38 contracts and repair variants. Writing cases ran before
 the final manifest-I/O-only repair; the writing core was unchanged, and the
 final affected I/O, CLI, package and integrity checks were rerun.
+
+## Hosted portability fixture correction
+
+The first hosted run passed the other matrix jobs but both Windows core jobs
+failed an audit fixture: default text writing produced CRLF while its declared
+hash described LF bytes. The fixture now writes explicit UTF-8 bytes and derives
+its digest from those same bytes, with a direct byte/hash invariant regression.
+Production code and the frozen integrity rules are unchanged. The complete
+hosted matrix must pass again on the corrected revision before promotion.
 
 ## Remaining limits
 
