@@ -34,6 +34,8 @@ Acceptance: frozen mock responses for rate limits, timeouts, pagination, malform
 
 ### 3. Turn selected preparation routes into optional executable adapters
 
+v0.7.0 implements the first selected routes: independently checked Open Babel conversion and small ESM-2 protein embeddings. Their actual acceptance evidence is recorded in [validation](validation.md). The suggested docking and task-specific larger-engine extensions below remain unimplemented or unvalidated; this release does not install the full catalog.
+
 Start with a small CPU conversion control for Open Babel, then one useful engine selected for a real task. Do not install every engine into one environment. Before each adapter, recheck its pinned interface and separate code, weights, data, output and service terms. Inspect the user's actual device, memory, storage, backend and available environment. Do not promise CUDA, ROCm or MPS support based on a profile declaration.
 
 Suggested sequence after the CPU control: one protein prediction/representation route, one docking route, then task-justified DeepChem or REINVENT workflows. AlphaFold, Boltz and the two ESM implementations require separate compatibility decisions; DiffDock and GNINA scores require separate interpretation. AutoResearchClaw and Beeblio integration remain optional projects with their own provider, license and compute requirements, not mandatory runtime dependencies.
