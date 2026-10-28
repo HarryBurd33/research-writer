@@ -73,6 +73,10 @@ jobs:
           python evals/remote_client_checks.py
           python evals/remote_worker_checks.py
           python evals/remote_loopback_checks.py
+      - name: Workflow fixture arithmetic and integrity (no model evaluation)
+        run: |
+          python evals/workflow/reproduce_quantitative.py
+          python evals/workflow_checks.py
       - name: Isolated installed-package smoke
         run: python evals/package_smoke.py
       - name: Portable bundle consistency
