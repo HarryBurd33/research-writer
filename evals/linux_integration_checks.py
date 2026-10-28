@@ -80,6 +80,8 @@ class LinuxActual(unittest.TestCase):
                 if last['state'] in mod.TERMINAL | {'artifacts_unavailable'}:
                     print(json.dumps({'control': self.id(), 'container_id': last.get('container_id'),
                                       'state': last['state'], 'reason': last.get('reason'),
+                                      'container_exit_code': last.get('container_exit_code'),
+                                      'oom_killed': last.get('oom_killed'),
                                       'effective_limits': last.get('effective_limits'),
                                       'cgroup_counters': last.get('cgroup_counters')}), flush=True)
                     return last
@@ -253,7 +255,9 @@ m.operate('submit',sys.argv[2],allow_execute=True)
 
     def test_08_actual_unsafe_and_oversized_outputs(self):
         for code in ("import os;os.symlink('/etc/hosts','result.json')", "from pathlib import Path;Path('result.json').write_bytes(b'x'*65537)", "import os;from pathlib import Path;Path('other').write_text('x');os.link('other','result.json')"):
-            state = self.job(code); result = self.terminal(state)
+            # Keep headroom for PID1, task, and concurrent read-only Python exec.
+            # This fixture isolates artifact validation; test03 retains 64MiB OOM pressure.
+            state = self.job(code, {'memory_bytes': 128 * 1024**2}); result = self.terminal(state)
             self.assertEqual(result['state'], 'failed'); self.assertEqual(result['artifacts'], [])
             with self.assertRaises(ValueError): self.collected(state)
 
