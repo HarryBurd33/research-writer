@@ -1,0 +1,75 @@
+{
+  "evaluated_at": "2026-10-28T18:47:57.257251+00:00",
+  "candidate": 3,
+  "decision": "ACCEPT_INDEPENDENT_LOCAL_GATE",
+  "source_sha256": {
+    "discovery_tools.py": "3fda14c2977c8699c271dd37e87fe328563776ced28bc6775cff1b56049b5c7f",
+    "claim_audit.py": "33dd8224480ff0ab34e951fd8cbd8cd1bf345a0f92d8809975ee9838ffc77774"
+  },
+  "frozen_contracts": {
+    "passed": 38,
+    "total": 38,
+    "parts": [
+      "independent-final-main.json:34",
+      "independent-final-remaining.json:4frozen"
+    ]
+  },
+  "additional_repair_boundary_controls": {
+    "passed": 9,
+    "total": 9,
+    "parts": [
+      "independent-final-remaining.json:1sourceFIFO",
+      "repair-control-final.json:8variants"
+    ]
+  },
+  "behavioral": {
+    "baseline_cases": 2,
+    "candidate_cases": 2,
+    "baseline_criteria": 14,
+    "candidate_criteria": 14,
+    "baseline_score": 28,
+    "candidate_score": 28,
+    "maximum_score": 28,
+    "critical_failures": 0,
+    "unnecessary_questions": 0,
+    "interpretation": "Bothmeet; regression/preservationevidence, notprosesuperiority. Neitherwriterusednewauditutility; actualCLIcontrolsseparate.",
+    "timing": "CandidatewritingranbeforeIO-onlymanifestrepair; writingcoreunchanged, finalIOfunctionalchecks rerun."
+  },
+  "actual_primary_pipeline": {
+    "status": "PASS_SCOPED",
+    "final_cli_checks": 2,
+    "evidence": "live-content-review.json andfinal-real-claim-cli.json",
+    "extracted_text_chars": 69881,
+    "section_offsets_checked": 47,
+    "semantic_result": "c1supportsboundedqualitativeauthorcomparison;c2universalguaranteenotestablished;partialrecordnotclearance;independentreviewlocatedadditionalcontraryhumanassessmentcontext",
+    "source_status": "unknownnotcertified",
+    "drafting_clearance": "not_granted"
+  },
+  "documentation": {
+    "passed": 7,
+    "total": 7
+  },
+  "initial_findings_fixed": [
+    "malformednegativeOpenAlexcountmasqueradingasempty",
+    "officialHTMLunusedduplicatepresentationtitlefalsefailure;identityduplicatesstillrefused",
+    "sourceFIFOpreflightblocking",
+    "manifestFIFOreadblocking"
+  ],
+  "protocol_correction": "Initialgenericbad-resulttesthelperpermittedemptyincorrectly; correctedtotruefrozenD07expectationwithoutcriterionchange; initialhistoryretainednotaccepted.",
+  "review": "Separatefromconstruction, nonblindagent-based; exactmodel/effortunknowninherited; nohumanexpertvalidationorcostcomparison",
+  "limits": [
+    "OpenAlexfirstpage/sharedanonymousquota;nofullcitationgraph/exhaustivediscovery",
+    "arxivexplicitversionHTMLcoverage/conversionheuristic;noPDFfallback",
+    "10ssockettimeoutnotglobalwallbound;globalratecoordinationcaller",
+    "families/status/judgmentsaredeclarations;noclaimofautomaticentailment/scientifictruth",
+    "cooperatingfilesystemneededbecauselegacycheckerreopenspaths;notadversarialOSsandbox",
+    "2shortsyntheticwritingcases+1actualprimarypaperpipeline;no broadqualityperformanceclaim"
+  ],
+  "public_scope": "Independent local evaluation; hosted CI and managed-install readback are separate release checks recorded in the pull request.",
+  "public_test_methods": {
+    "existing": 125,
+    "discovery": 28,
+    "claim_audit": 25,
+    "total_local": 178
+  }
+}
