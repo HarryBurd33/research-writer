@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.6.1** adds portable CI, public adversarial regressions and an offline installed-package self-check. Research-writing behavior and the v0.6.0 computational utilities are retained. See [testing](docs/testing.md), [validation](docs/validation.md) and the [remaining-work roadmap](docs/roadmap.md).
+**Version 0.6.2** adds bounded Crossref/Europe PMC literature discovery, correction metadata and accessible open full-text retrieval, plus an offline claim-to-passage review record checker. It preserves the writing workflow, numerical evidence checks and device-adaptive utilities. See [literature retrieval](skills/research-writer/references/literature-retrieval.md), [source-support records](skills/research-writer/references/source-support.md) and [validation](docs/validation.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
@@ -85,6 +85,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.6.1. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.6.2. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. Original code, workflow instructions and documentation are licensed under the [MIT License](LICENSE). The aggregate example data retains its documented CC0 provenance. Project-specific research and private development notes are excluded from this repository.

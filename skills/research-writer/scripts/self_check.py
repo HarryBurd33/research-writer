@@ -22,12 +22,13 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTEXT = ('run', 'condition', 'dataset', 'metric', 'unit', 'seed', 'statistic', 'value')
 REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/research_tools.py', 'scripts/self_check.py',
+            'scripts/literature_tools.py', 'scripts/support_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
                 'device-profiles', 'modes', 'prewriting', 'publication-workflow',
                 'question-development', 'research-and-sources', 'standards',
-                'tool-usage', 'testing')))
+                'tool-usage', 'testing', 'literature-retrieval', 'source-support')))
 
 
 def require(condition, message):
@@ -121,6 +122,34 @@ def core_check(work):
     failed = work / 'rejected.json'
     run_cli(work, 'evidence_tools.py', ['verify-evidence', '--input', input_file, '--output', failed], expected=2)
     require(not load(failed)['passed'], 'Wrong-unit claim accepted')
+    # These help calls import both optional tools without any HTTP request.
+    run_cli(work, 'literature_tools.py', ['--help'])
+    run_cli(work, 'support_tools.py', ['--help'])
+    source = work / 'source.txt'
+    text = 'Fictional control: the observed signal was zero.'
+    source.write_text(text, encoding='utf-8')
+    sha = hashlib.sha256(source.read_bytes()).hexdigest()
+    packet = {'schema_version': 1,
+              'sources': [{'id': 's', 'version': 'fixture-v1', 'access': 'full_text',
+                           'identity_status': 'identity_verified', 'path': source.name,
+                           'sha256': sha, 'locator': 'fictional control'}],
+              'reviews': [{'id': 'r', 'claim': 'The fictional signal was zero.',
+                           'source_id': 's', 'source_version': 'fixture-v1', 'source_sha256': sha,
+                           'start': 0, 'end': len(text), 'passage': text, 'locator': 'control sentence',
+                           'judgment': 'supports', 'rationale': 'Explicit zero in this fictional control.',
+                           'reviewer': 'installation-control', 'reviewed_at': '2026-01-01T00:00:00Z'}]}
+    packet_path = work / 'support.json'
+    write(packet_path, packet)
+    support_report = work / 'support-pass.json'
+    run_cli(work, 'support_tools.py', ['review-support', '--input', packet_path, '--output', support_report])
+    require(load(support_report)['passed'] and
+            load(support_report)['semantic_entailment'] == 'not_automatically_verified',
+            'Support record integrity/semantic boundary failed')
+    packet['reviews'][0]['passage'] = 'Invented source text'
+    write(packet_path, packet)
+    support_fail = work / 'support-fail.json'
+    run_cli(work, 'support_tools.py', ['review-support', '--input', packet_path, '--output', support_fail], expected=2)
+    require(not load(support_fail)['passed'], 'Invented passage accepted')
 
 
 def molecular_check(work):

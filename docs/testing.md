@@ -5,6 +5,8 @@ Use Python 3.10+ for core tests. No third-party package or live service is neede
 ```sh
 python evals/toolkit_checks.py
 python evals/toolkit_regressions.py
+python evals/literature_checks.py
+python evals/support_checks.py
 python evals/package_smoke.py
 python scripts/build_portable.py --check
 ```
@@ -69,3 +71,13 @@ No current matrix covers GPU backends, remote execution, heavy research engines,
 all Python versions or all CPU architectures. Source metadata, deterministic
 integrity checks and even successful installation tests do not establish source
 entailment, research completeness, novelty or scientific validity.
+
+## Literature and source-support checks
+
+The added offline suites exercise bounded pagination, provider failures and
+malformed responses, correction/identity/access distinctions, and exact source
+hash/version/passage/reviewer records. Network responses are mocked in CI.
+Local live public-source controls are separate evidence, not claims that every
+provider result or all literature has been reviewed. Record integrity does not
+validate the meaning of a source-support judgment. See the new tool guides and
+[validation](validation.md) for executed counts and coverage.
