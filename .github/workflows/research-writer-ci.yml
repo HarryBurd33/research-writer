@@ -1,0 +1,119 @@
+name: Research Writer CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: research-writer-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: "1"
+  PYTHONDONTWRITEBYTECODE: "1"
+
+jobs:
+  core:
+    name: Core (${{ matrix.os }}, Python ${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            python: "3.10"
+            architecture: x64
+          - os: ubuntu-latest
+            python: "3.12"
+            architecture: x64
+          - os: windows-latest
+            python: "3.10"
+            architecture: x64
+          - os: windows-latest
+            python: "3.12"
+            architecture: x64
+          - os: macos-15-intel
+            python: "3.10"
+            architecture: x64
+          - os: macos-latest
+            python: "3.12"
+            architecture: arm64
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: ${{ matrix.python }}
+          architecture: ${{ matrix.architecture }}
+      - name: Report actual runtime
+        run: python -c "import platform, sys; print(sys.version); print(platform.platform(), platform.machine())"
+      - name: Core toolkit checks (molecular explicitly skipped)
+        run: python evals/toolkit_checks.py
+      - name: Public adversarial regressions
+        run: python evals/toolkit_regressions.py
+      - name: Isolated installed-package smoke
+        run: python evals/package_smoke.py
+      - name: Portable bundle consistency
+        run: python scripts/build_portable.py --check
+
+  molecular:
+    name: CPU molecular (${{ matrix.os }}, Python 3.12)
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            architecture: x64
+          - os: windows-latest
+            architecture: x64
+          - os: macos-latest
+            architecture: arm64
+    steps:
+      - name: Check out source without persisted credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.12"
+          architecture: ${{ matrix.architecture }}
+      - name: Install selected CPU wheels (no models or GPU extras)
+        run: |
+          python -m pip install --only-binary=:all: -r extras/cpu-tested-requirements.txt
+      - name: Report actual runtime and package versions
+        run: python -c "import platform, sys, importlib.metadata as m; print(sys.version); print(platform.platform(), platform.machine()); print({p:m.version(p) for p in ('rdkit','OpenMM','numpy','pillow')})"
+      - name: Toolkit checks with actual molecular controls
+        run: python evals/toolkit_checks.py --molecular
+      - name: Public regressions with actual molecular controls
+        run: python evals/toolkit_regressions.py --molecular
+      - name: Isolated installed-package molecular smoke
+        run: python evals/package_smoke.py --molecular
+
+  required:
+    # Stable aggregate check name; do not rename when extending the matrix.
+    name: Research Writer checks
+    if: ${{ always() }}
+    needs: [core, molecular]
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      CORE_RESULT: ${{ needs.core.result }}
+      MOLECULAR_RESULT: ${{ needs.molecular.result }}
+    steps:
+      - name: Require every matrix job to pass
+        shell: bash
+        run: |
+          test "$CORE_RESULT" = success
+          test "$MOLECULAR_RESULT" = success
