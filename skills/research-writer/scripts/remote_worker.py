@@ -174,15 +174,26 @@ def nearest_existing(path):
 
 @contextmanager
 def mutation_lock(job):
+    import fcntl
     lock = job / '.rpc-lock'
+    descriptor = None
     try:
-        lock.mkdir()
-    except FileExistsError:
-        raise ValueError('Unresolved/concurrent remote mutation; reconcile without stealing the lock')
-    try:
+        # Keep one inode. Kernel locks release after an interrupted RPC; a stale
+        # directory from an older controller is deliberately not stolen.
+        descriptor = os.open(lock, os.O_RDWR | os.O_CREAT | os.O_NOFOLLOW | os.O_NONBLOCK, 0o600)
+        actual, named = os.fstat(descriptor), lock.lstat()
+        if (not stat.S_ISREG(actual.st_mode) or actual.st_uid != os.getuid() or
+                actual.st_nlink != 1 or actual.st_mode & 0o022 or
+                (actual.st_dev, actual.st_ino) != (named.st_dev, named.st_ino)):
+            raise ValueError('Remote lock ownership/type/identity mismatch')
+        try:
+            fcntl.flock(descriptor, fcntl.LOCK_EX | fcntl.LOCK_NB)
+        except BlockingIOError as exc:
+            raise ValueError('Concurrent remote mutation; reconcile without stealing the lock') from exc
         yield
     finally:
-        lock.rmdir()
+        if descriptor is not None:
+            os.close(descriptor)
 
 
 def snapshot(job):
@@ -292,7 +303,7 @@ def handle(req):
         if not isinstance(req, dict) or type(req.get('protocol')) is not int or req['protocol'] != PROTOCOL:
             raise ValueError('Unsupported protocol')
         operation = req.get('operation')
-        if operation not in ('inspect', 'prepare', 'submit', 'status', 'collect', 'cancel'):
+        if operation not in ('inspect', 'prepare', 'submit', 'status', 'recover', 'collect', 'cancel'):
             raise ValueError('Unsupported operation')
         root = root_path(req.get('remote_root'))
         if operation == 'inspect':
@@ -312,8 +323,14 @@ def handle(req):
         job = checked_job(root, req)
         if job is None:
             return reply(ident, req, 'not_found')
-        if operation == 'status':
+        if operation in ('status', 'recover'):
             s = snapshot(job)
+            if operation == 'recover':
+                return reply(ident, req, s['status'], state=s, reconciliation={
+                    'mode': 'read_only', 'execution_attempted': (job / 'submission.json').exists(),
+                    'restarted': False, 'pid_signal_sent': False,
+                    'liveness': 'not_proven_by_heartbeat_or_stored_pid',
+                    'next_action': 'Collect terminal artifacts; otherwise reconcile the original job without resubmitting'})
             return reply(ident, req, s['status'], state=s)
         if operation == 'collect':
             s = snapshot(job)
