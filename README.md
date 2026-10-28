@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.10.0** adds bounded anonymous OpenAlex search/work/reference lookup, official version-pinned arXiv HTML retrieval and an offline declared-claim audit. It preserves source families, versions, access and partial/conflicting judgments, detects missing reviews, and keeps record validity separate from scientific support or drafting clearance. See [deeper retrieval](skills/research-writer/references/deeper-retrieval.md), [claim audit](skills/research-writer/references/claim-audit.md), [validation](docs/deeper-literature-validation.md) and [tests](docs/testing.md). No new runtime dependency or API key is required.
+**Version 0.11.0** adds optional Linux resource isolation and container-identity recovery, plus read-only recovery and crash-releasing locks for existing SSH jobs. An explicitly selected existing Docker Linux/cgroup-v2 engine and immutable local image are required only for the isolated route. The tool never installs an engine, pulls an image or resubmits during recovery. See [Linux isolation](skills/research-writer/references/linux-isolation.md), [validation](docs/linux-isolation-validation.md) and [tests](docs/testing.md). Literature discovery and claim auditing from v0.10.0 remain available without Docker.
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
