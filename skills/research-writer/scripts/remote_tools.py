@@ -433,7 +433,7 @@ def collect_files(result,manifest,destination):
 def main(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
     commands=parser.add_subparsers(dest='operation',required=True)
-    for op in ('inspect','prepare','submit','status','collect','cancel'):
+    for op in ('inspect','prepare','submit','status','recover','collect','cancel'):
         cmd=commands.add_parser(op);cmd.add_argument('--profile',required=True);cmd.add_argument('--output',required=True)
         if op=='prepare':cmd.add_argument('--manifest',required=True);cmd.add_argument('--allow-transfer',action='store_true')
         if op!='inspect':cmd.add_argument('--state-dir',required=True)

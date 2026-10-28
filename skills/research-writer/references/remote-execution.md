@@ -110,3 +110,28 @@ A running cancel acknowledgment is only a request: query status for the terminal
 `cancelled` result. Disconnecting SSH does not establish that remote work stopped.
 All states, errors and partial artifacts must remain visible in the research
 record; a complete transport run does not establish scientific validity.
+
+## Interrupted RPCs and read-only recovery (v0.11)
+
+Use `recover` with the same profile, job ID and state directory as `status`:
+
+```sh
+python PATH_TO_SKILL/scripts/remote_tools.py recover --profile PROJECT/remote.json --job-id JOB_ID --state-dir PROJECT/jobs --output PROJECT/recovery.json
+```
+
+It validates the original host, manifest and stored controller, then reports the
+existing snapshot and whether submission was attempted. It does not restart work,
+trust stored PIDs or signal a process. A stale heartbeat remains uncertain; it
+cannot prove the process is gone. The original staged worker must support this
+operation; an older worker staged for an existing job can be reconciled with
+`status`. Never change staged controller bytes after submission to add recovery.
+
+New workers use a stable kernel file lock that releases after RPC process death.
+The inode stays in place. A directory lock left by an older version, symlink,
+hardlink or unexpected owner fails closed; reconcile its original operation
+before an operator decides what to do. Do not delete a live lock.
+
+This SSH route still runs trusted tasks with cooperative controls. For enforced
+limits on a separately selected compatible Linux host, use [Linux isolation and
+recovery](linux-isolation.md). It has a different manifest and lifecycle; do not
+silently translate an uncertain SSH job into a new container submission.

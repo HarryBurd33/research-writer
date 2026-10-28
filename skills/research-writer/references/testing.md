@@ -75,3 +75,9 @@ a missing review. It keeps record integrity separate from semantic judgment
 and drafting clearance. Actual OpenAlex/arXiv access, conversion quality and
 content review need separate bounded live acceptance. The repository also has
 public offline provider/parser and inventory regressions for use in CI.
+
+
+The v0.11 Linux client and supervisor load with the standard library and no Docker
+probe during the offline self-check. Actual Linux resource enforcement requires
+its separately requested disposable-engine integration suite; an offline pass is
+not that evidence. See [Linux isolation](linux-isolation.md).

@@ -84,7 +84,7 @@ and writing usable without hardware, services or paid providers.
 | Priority | Deliverable | Acceptance and external dependency |
 |---|---|---|
 | 6: literature/source support | v0.10.0 delivers anonymous bounded OpenAlex discovery/reference leads, pinned arXiv HTML and declared-claim coverage auditing. Broader provider/full-text/correction coverage and expert semantic review remain open. | See [executed validation](deeper-literature-validation.md). Valid records are not scientific truth; anonymous paging, HTML availability and article rights remain bounded. |
-| 7: remote isolation/recovery | Optional enforced Linux limits and filesystem restrictions with a documented threat model; improve controller/host failure reconciliation. | Disposable-host tests of actual memory, CPU/process, storage and wall limits plus interrupted recovery; never infer isolation from configuration. Existing mode remains trusted-task only. |
+| 7: remote isolation/recovery | v0.11.0 adds an optional Docker Linux/cgroup-v2 CPU executor, finite scratch retention, identity-checked recovery and crash-releasing legacy locks. | See [phase-7 validation](linux-isolation-validation.md) for observed results. Actual Linux enforcement is a required release gate; Mac offline checks alone do not establish it. Existing SSH mode remains trusted-task only. |
 | 8: external host and GPU | Portable host acceptance and one real GPU route using an existing small workload first. | Needs a selected trusted machine, permitted files/task, compatible runtime/assets and resource bounds. Verify actual device, numerical output, cancellation and collection. Loopback cannot establish this. |
 | 9: selected scientific engines | One task-appropriate docking and one larger prediction route, then optional task-justified engines/pipelines. | Recheck distinct rights; isolate environments; official small control and negative control; independent output parsing and a predefined licensed benchmark before performance claims. Large downloads/paid services need explicit bounds. |
 | 10: Windows remote/schedulers | Separate remote Windows implementation and selected scheduler lifecycle adapter. | Actual compatible Windows host and scheduler test environment, including uncertain-submit recovery and cancellation. Mock contracts alone do not establish support. |
@@ -99,3 +99,14 @@ Finite searches cannot prove completeness or worldwide novelty. Appropriate
 statistics depend on suitable evidence; model predictions require task-specific
 and often experimental validation. These boundaries must be managed honestly
 rather than marked solved by a packaging upgrade.
+
+## Remaining isolation work after v0.11
+
+The isolated route requires an existing explicitly selected compatible engine and
+immutable local image. It does not provision a real external host, GPU, scheduler,
+rootless daemon, cgroup-v1 backend, remote Docker endpoint or Windows worker.
+Recovery reconciles a surviving original container; temporary outputs can be lost
+on retention expiry, PID1/host failure or OOM. A later durable-storage/checkpoint
+route needs its own capacity, ownership, cleanup and failure tests. CPU quota is a
+rate limit, not an aggregate CPU-time allowance. Docker administrator, image and
+kernel trust, scientific validation and access rights remain external boundaries.

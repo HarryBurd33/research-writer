@@ -1,6 +1,14 @@
-# Validation — Research Writer 0.10.0
+# Validation — Research Writer 0.11.0
 
 Updated: 2026-10-28 UTC. Historical checks below retain their original dates.
+
+## Linux isolation and recovery — 2026-10-28
+
+v0.11 adds an optional Linux/cgroup-v2 Docker CPU executor, finite result
+retention and identity-checked recovery. Existing SSH jobs gain read-only recovery
+and crash-releasing locks. See [the phase-7 report](linux-isolation-validation.md)
+for observed results, gate status and remaining boundaries. A Mac offline pass
+alone does not establish Linux enforcement; the actual Linux CI gate is required.
 
 ## Deeper retrieval and source-support inventory — 2026-10-28
 

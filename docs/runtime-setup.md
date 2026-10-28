@@ -38,3 +38,12 @@ Use local, remote, CPU, CUDA, MPS or ROCm declarations to plan; test the actual 
 Run `rdkit-descriptors`, a seeded `rdkit-conformer`, and `openmm-smoke` as small controls before relying on that environment. Preserve versions, input/output hashes and failures. These checks demonstrate local functionality only; neither a structure, docking score, generated molecule nor short simulation establishes biological success. See [commands and schemas](../skills/research-writer/references/tool-usage.md) and [device guide](../skills/research-writer/references/device-profiles.md).
 
 After installing or moving the skill, run its `scripts/self_check.py` with the actual selected interpreter. Add `--molecular` to require CPU controls rather than skip them. See [test commands and matrix limits](testing.md).
+
+
+For optional enforced Linux CPU execution, follow the separate
+[Linux engine/image profile and lifecycle](../skills/research-writer/references/linux-isolation.md).
+It uses an existing selected Docker Linux/cgroup-v2 engine and immutable local
+image. It never installs a daemon, pulls an image or chooses a remote host.
+The ordinary runtime above remains usable without it. Treat selected virtual
+environment interpreter paths as executables; resolving their symlinks to a bare
+Python binary can bypass the environment and its installed packages.
