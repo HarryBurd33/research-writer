@@ -231,3 +231,5 @@ checkpoint tests remain required. Storage fault injection is deterministic adapt
 testing, separate from the existing actual SQLITE_FULL/hot-journal/process-kill
 controls and from unexecuted physical power/device-loss validation. The installed
 self-check remains offline. See [observed results](off-device-backup-validation.md).
+
+CI selects explicit Bash fail-fast execution on every OS, including Windows. A failed command in a multi-command step must stop that step. Inspect actual method summaries and expected skips alongside job status; a green wrapper alone does not prove every subprocess passed.
