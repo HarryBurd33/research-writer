@@ -17,6 +17,7 @@ import subprocess
 import sys
 import tempfile
 import time
+import unicodedata
 
 CONTROL = Path('/control')
 WORK = Path('/work')
@@ -353,12 +354,127 @@ def report(include_files=False):
     return 0
 
 
+def _checkpoint_parts(name):
+    if not isinstance(name, str) or not name or len(name) > 512 or any(c in name for c in ('\\', '\x00', '\n', '\r')):
+        raise ValueError('Bounded confined checkpoint path required')
+    p = PurePosixPath(name)
+    if p.is_absolute() or str(p) != name or any(x in ('', '.', '..') for x in name.split('/')):
+        raise ValueError('Normalized checkpoint path required')
+    reserved = {'CON', 'PRN', 'AUX', 'NUL', *(f'COM{i}' for i in range(1, 10)), *(f'LPT{i}' for i in range(1, 10)), *(f'COM{i}' for i in '¹²³'), *(f'LPT{i}' for i in '¹²³')}
+    if name != unicodedata.normalize('NFC', name):
+        raise ValueError('Checkpoint path requires NFC Unicode')
+    for part in p.parts:
+        low = part.casefold()
+        if any(ord(c) < 32 or ord(c) == 127 or c in '<>:"|?*' for c in part) or part.endswith(('.', ' ')) or part.split('.')[0].upper() in reserved or low in ('.ssh', '.aws', '.git', '.codex', '.checkpoint.json', '.collection.json', '.logs') or low == '.env' or low.startswith('.env.'):
+            raise ValueError('Nonportable/configuration checkpoint path forbidden')
+    return p.parts
+
+
+def _checkpoint_dir(parent_fd, parts):
+    # Every component is opened relative to an already held directory. A task
+    # can rename its directories, but cannot replace this anchor with a symlink.
+    fd = os.dup(parent_fd)
+    try:
+        for part in parts:
+            new = os.open(part, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW, dir_fd=fd)
+            os.close(fd); fd = new
+        return fd
+    except Exception:
+        os.close(fd); raise
+
+
+def _checkpoint_read(parent_fd, name, maximum):
+    parts = _checkpoint_parts(name)
+    directory = _checkpoint_dir(parent_fd, parts[:-1])
+    fd = None
+    try:
+        fd = os.open(parts[-1], os.O_RDONLY | os.O_NOFOLLOW | os.O_NONBLOCK, dir_fd=directory)
+        before = os.fstat(fd)
+        if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1 or before.st_size > maximum:
+            raise ValueError('Bounded regular non-hardlinked checkpoint file required')
+        with os.fdopen(fd, 'rb', closefd=False) as stream:
+            raw = stream.read(maximum + 1)
+        after = os.fstat(fd)
+        identity = lambda x: (x.st_dev, x.st_ino, x.st_size, x.st_mtime_ns, x.st_ctime_ns)
+        if len(raw) > maximum or identity(before) != identity(after):
+            raise ValueError('Checkpoint file changed while reading')
+        return raw, identity(after)
+    finally:
+        if fd is not None: os.close(fd)
+        os.close(directory)
+
+
+def checkpoint():
+    """Read an application-published immutable generation without pausing work."""
+    manifest, binding = checked_binding()
+    if manifest.get('schema_version') != 2:
+        raise ValueError('Checkpoint capture requires opt-in manifest schema2')
+    cp = manifest['checkpoint']
+    if not isinstance(cp, dict) or set(cp) != {'directory', 'max_bytes', 'max_files'} or type(cp['max_bytes']) is not int or not 1 <= cp['max_bytes'] <= 16 * 1024**2 or type(cp['max_files']) is not int or not 1 <= cp['max_files'] <= 32:
+        raise ValueError('Checkpoint configuration bounds invalid')
+    work_fd = os.open(WORK, os.O_RDONLY | os.O_DIRECTORY | os.O_NOFOLLOW)
+    cp_fd = gen_fd = None
+    try:
+        cp_fd = _checkpoint_dir(work_fd, _checkpoint_parts(cp['directory']))
+        before, before_identity = _checkpoint_read(cp_fd, 'ready.json', 64 * 1024)
+        ready = json.loads(before, object_pairs_hook=pairs,
+                           parse_constant=lambda _: (_ for _ in ()).throw(ValueError('Nonfinite checkpoint JSON')))
+        if not isinstance(ready, dict) or set(ready) != {'schema_version', 'checkpoint_id', 'application', 'files'} or type(ready['schema_version']) is not int or ready['schema_version'] != 1:
+            raise ValueError('Exact checkpoint declaration schema1 required')
+        import re
+        identity = ready['checkpoint_id']
+        if not isinstance(identity, str) or not re.fullmatch('[0-9a-f]{32}', identity):
+            raise ValueError('Checkpoint generation must be32lowercasehex')
+        app = ready['application']
+        if not isinstance(app, dict) or set(app) != {'format', 'version', 'resume_notes'}:
+            raise ValueError('Exact checkpoint application fields required')
+        for name in ('format', 'version'):
+            if not isinstance(app[name], str) or not app[name].strip() or len(app[name]) > 128 or any(c in app[name] for c in ('\x00', '\n', '\r')):
+                raise ValueError('Bounded checkpoint application format/version required')
+        if not isinstance(app['resume_notes'], str) or len(app['resume_notes'].encode('utf-8')) > 8192 or '\x00' in app['resume_notes']:
+            raise ValueError('Bounded checkpoint notes required')
+        if not isinstance(ready['files'], list) or not 1 <= len(ready['files']) <= cp['max_files']:
+            raise ValueError('Checkpoint file count invalid')
+        names, total = [], 0
+        for item in ready['files']:
+            if not isinstance(item, dict) or set(item) != {'path', 'size', 'sha256'}:
+                raise ValueError('Exact checkpoint file declaration fields required')
+            _checkpoint_parts(item['path'])
+            if type(item['size']) is not int or not 0 <= item['size'] <= 8 * 1024**2 or not isinstance(item['sha256'], str) or not re.fullmatch('[0-9a-f]{64}', item['sha256']):
+                raise ValueError('Checkpoint size/hash invalid')
+            names.append(PurePosixPath(unicodedata.normalize('NFC', item['path'].casefold()))); total += item['size']
+        if total > cp['max_bytes'] or len(names) != len(set(names)) or any(a != b and a in b.parents for a in names for b in names):
+            raise ValueError('Checkpoint total or aliased inventory invalid')
+        gen_fd = _checkpoint_dir(cp_fd, (identity,))
+        files = []
+        for item in ready['files']:
+            raw, _ = _checkpoint_read(gen_fd, item['path'], item['size'])
+            if len(raw) != item['size'] or digest(raw) != item['sha256']:
+                raise ValueError('Checkpoint content differs from declaration')
+            files.append({**item, 'data_base64': base64.b64encode(raw).decode('ascii')})
+        after, after_identity = _checkpoint_read(cp_fd, 'ready.json', 64 * 1024)
+        if before != after or before_identity != after_identity:
+            raise ValueError('Checkpoint declaration changed during capture')
+        result = {'schema_version': 1, 'job_id': manifest['job_id'], 'nonce': binding['nonce'],
+                  'manifest_sha256': binding['manifest_sha256'], 'checkpoint_id': identity,
+                  'application': app, 'files': files, 'consistency': 'application_declared_not_automatically_verified'}
+        raw = canonical(result)
+        if len(raw) > MAX_RPC:
+            raise ValueError('Checkpoint capture exceeds RPC byte bound')
+        sys.stdout.buffer.write(raw + b'\n')
+        return 0
+    finally:
+        if gen_fd is not None: os.close(gen_fd)
+        if cp_fd is not None: os.close(cp_fd)
+        os.close(work_fd)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('operation', choices=('run', 'status', 'collect'))
+    parser.add_argument('operation', choices=('run', 'status', 'collect', 'checkpoint'))
     args = parser.parse_args()
     try:
-        return run() if args.operation == 'run' else report(args.operation == 'collect')
+        return run() if args.operation == 'run' else checkpoint() if args.operation == 'checkpoint' else report(args.operation == 'collect')
     except Exception as exc:
         print(json.dumps({'error': type(exc).__name__ + ': ' + str(exc)[:1000]}), file=sys.stderr)
         return 2
