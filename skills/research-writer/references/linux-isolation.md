@@ -181,3 +181,14 @@ Docker, selected images and their components retain their own terms. See
 [tmpfs](https://docs.docker.com/engine/storage/tmpfs/),
 [exec](https://docs.docker.com/reference/cli/docker/container/exec/) and
 [copy limitations](https://docs.docker.com/reference/cli/docker/container/cp/).
+
+
+## Durable application files (v0.12)
+
+A newly prepared schema-2 job can explicitly declare a cooperative checkpoint
+area. [Durable checkpoints](durable-checkpoints.md) capture its immutable published
+files through read-only exec and commit them in a host-side store. Existing
+schema-1 jobs remain unchanged. A checkpoint must be committed before the
+container disappears; restoring it does not relaunch that job. The original
+execution must be reconciled before preparing a permitted new continuation.
+No writable host mount or automatic background watcher is added.
