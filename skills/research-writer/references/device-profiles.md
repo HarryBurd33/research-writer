@@ -68,3 +68,5 @@ request fails; hardware detection does not establish broader engine support.
 Moving a profile cannot move its packages or weights. Reinstall compatible
 versions and repeat controls on each device. No remote host is contacted by
 these adapters. See the two execution guides for exact supported inputs/limits.
+
+Optional checkpoint backup uses a separate [SSH vault profile](off-device-backups.md), with mandatory host/user and vault identity, explicit whole-store byte limit and timeout. A declared remote hostname is not evidence of an independent storage failure domain.
