@@ -213,3 +213,5 @@ redistributed. These are separately supplied runtime interfaces. References:
 [Python SQLite](https://docs.python.org/3/library/sqlite3.html),
 [filesystem limits](https://www.sqlite.org/howtocorrupt.html) and
 [Docker tmpfs](https://docs.docker.com/engine/storage/tmpfs/).
+
+For a separately selected destination, [verified SSH backups](off-device-backups.md) add bounded whole-store transfer and readback/restore drills. The local `backup` command alone remains a same-device copy unless the operator establishes otherwise.

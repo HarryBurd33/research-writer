@@ -74,3 +74,5 @@ External delivery depends on supported tools and access. Distinguish a new docum
 > Use Research Writer to inspect this FASTA and compute descriptors plus a seeded RDKit conformer for this small molecule in my local environment. Save reports in the selected project folder, record versions and hashes, and explain what these calculations cannot establish.
 
 Tool commands, input schemas and optional setup are in the [tool usage guide](../skills/research-writer/references/tool-usage.md). A source-audited catalog entry does not mean that engine is installed. Profiles are private user configuration, not shared defaults or authorization to spend money or transmit data.
+
+For a selected existing backup machine, follow [verified SSH backups](../skills/research-writer/references/off-device-backups.md). Ask the skill: “Back up this checkpoint store to my existing SSH destination. Establish identity, data permission and size limits, verify readback and show a recovery drill.” No destination or transfer is assumed.

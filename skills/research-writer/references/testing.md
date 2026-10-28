@@ -89,3 +89,5 @@ needs the interpreter's SQLite module; ordinary research and the default core
 check do not probe a container engine. See [checkpoint guidance](durable-checkpoints.md).
 Process-crash tests are separate from physical power-loss or remote-storage
 claims. A valid checkpoint is not an execution or scientific-consistency grant.
+
+Optional backup contracts use `evals/backup_checks.py` in the repository and actual disposable transport uses `evals/backup_loopback_checks.py --run-ssh` on POSIX. See [backup usage](off-device-backups.md). A package self-check has no SSH connections; it cannot certify a second device.

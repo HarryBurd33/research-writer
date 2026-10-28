@@ -128,3 +128,15 @@ filesystems remain outside this stage. Future durable replication needs authoriz
 destinations, rights/privacy, transfer verification, ownership and failure tests.
 External-host/GPU, scheduler and scientific-engine acceptance remain separately
 bounded work. Current device profiles and writing workflows stay optional.
+
+## Verified backup continuation — v0.13
+
+An optional explicit-destination SSH route adds consistent whole-store backups,
+immutable identity, uncertain-outcome reconciliation, receiver verification and
+fresh readback/restore drills. See [observed backup validation](off-device-backup-validation.md).
+The transfer cap deliberately bounds memory and temporary disk use; stores above
+the supported cap need a separately designed streaming backend. Actual second-device
+acceptance requires a selected independent destination. Loopback, injected syscall
+failures and process termination do not certify physical power loss, SSD firmware,
+network/cloud filesystems, encryption-at-rest or shared distributed writers.
+External-host/GPU, scientific engine and scheduler acceptance remain separate.

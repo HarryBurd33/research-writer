@@ -68,6 +68,8 @@ def decode(raw):
 
 
 def no_symlinks(path):
+    if '..' in Path(path).parts:
+        raise ValueError('Parent traversal component forbidden')
     path = Path(path).absolute()
     for p in (path, *path.parents):
         if p.is_symlink():
@@ -512,7 +514,8 @@ def rename_new(source, destination):
 
 def write_new(path, raw):
     with Path(path).open('xb') as stream:
-        stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+        if stream.write(raw) != len(raw): raise OSError('Short checkpoint write')
+        stream.flush(); os.fsync(stream.fileno())
 
 
 def restore(root, checkpoint_id, destination, allow_restore=False):
@@ -540,8 +543,10 @@ def restore(root, checkpoint_id, destination, allow_restore=False):
         if stage.exists(): shutil.rmtree(stage)
 
 
-def backup(root, destination, allow_copy=False):
+def backup(root, destination, allow_copy=False, max_backup_bytes=None):
     if not allow_copy: raise ValueError('Explicit --allow-copy required')
+    if max_backup_bytes is not None and (type(max_backup_bytes) is not int or not 1 <= max_backup_bytes <= MAX_DB):
+        raise ValueError('Invalid optional backup byte cap')
     destination = outside_skill(destination); source = no_symlinks(root)
     if destination.exists() or destination == source or source in destination.parents or destination in source.parents:
         raise ValueError('New backup destination separate from store required')
@@ -553,6 +558,8 @@ def backup(root, destination, allow_copy=False):
             conn, p = connect_store(source)
             target = raw_connection(stage / DB_NAME)
             try:
+                if max_backup_bytes is not None and conn.execute('PRAGMA page_count').fetchone()[0] * 4096 > max_backup_bytes:
+                    raise ValueError('Source database exceeds selected backup cap')
                 configure(target, p); conn.backup(target); configure(target, p)
             finally: target.close(); conn.close()
         result = verify_store(stage)
