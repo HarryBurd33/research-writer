@@ -94,7 +94,10 @@ def write_new(path, raw):
 
 
 def fsync_file(path):
-    fd = os.open(path, os.O_RDONLY | getattr(os, 'O_NOFOLLOW', 0))
+    # Windows _commit/FlushFileBuffers needs a writable handle. Callers pass
+    # validated, owned, closed staging artifacts; POSIX retains read-only access.
+    access = os.O_RDWR if os.name == 'nt' else os.O_RDONLY
+    fd = os.open(path, access | getattr(os, 'O_NOFOLLOW', 0))
     try: os.fsync(fd)
     finally: os.close(fd)
 
