@@ -1,5 +1,13 @@
 # Changes
 
+## 0.10.0 — 2026-10-28
+
+- Added bounded anonymous OpenAlex first-page search, exact work/DOI lookup and reference-ID leads. Provider flags remain metadata.
+- Added official version-pinned arXiv HTML extraction with structural identity checks, source/extraction hashes and section offsets; no arbitrary URL, PDF, mirror or latest-version fallback.
+- Added an offline declared claim/source inventory with required-pair coverage, exact passage/hash/version checks, partial/contradictory/uncertain judgments and family/status flags; record validity grants no drafting clearance.
+- Added public parser/provider/inventory regressions, offline installed-copy controls and CI coverage; preserved legacy Crossref/Europe PMC/source-support contracts and device-adaptive tools.
+- Repaired malformed provider counts, duplicate presentation titles in real HTML, and nonregular source/manifest file reads discovered during independent acceptance.
+
 ## 0.9.0 — 2026-10-28
 
 - Added ten frozen workflow cases plus two fresh proposal-design contrasts, fixed rubrics and an independently checkable synthetic quantitative control.

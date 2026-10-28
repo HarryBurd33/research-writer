@@ -61,3 +61,24 @@ sections23.1.1–23.1.3](https://www.cochrane.org/authors/handbooks-and-manuals/
 shared settings can allow cross-condition contamination, and analysis must account
 for relevant dependence. This informs a conditional design check, not a universal
 requirement to assign groups or use one statistical model. No source prose is copied.
+
+
+## Deeper retrieval and claim inventory — 2026-10-28
+
+Current [OpenAlex API](https://help.openalex.org/api/) and
+[authentication](https://help.openalex.org/api/authentication/) guidance were
+inspected with actual anonymous search/lookup controls. Basic first-page queries
+use a shared-IP free quota; key-enabled pagination and paid capacity are separate.
+Metadata rights do not authorize paper redistribution.
+
+Official [arXiv API terms](https://info.arxiv.org/help/api/tou.html) and
+[HTML guidance](https://info.arxiv.org/about/accessible_HTML.html) informed
+request coordination, pinned-version identity and conversion/access limits. The
+MIT `arxiv.py` client README/license and delay implementation were inspected as
+a comparison, not adopted code or a dependency. The original implementation
+uses only standard-library modules and never copies paper text into this skill.
+
+The declared claim inventory is an original integrity/coverage aid. Its explicit
+partial/contradictory/uncertain judgments and family/status declarations require
+actual evidence review. Valid records cannot authenticate their reviewers, prove
+truth or guarantee that every consequential claim and contrary source was found.

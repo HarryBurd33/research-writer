@@ -1,6 +1,27 @@
-# Validation — Research Writer 0.9.0
+# Validation — Research Writer 0.10.0
 
 Updated: 2026-10-28 UTC. Historical checks below retain their original dates.
+
+## Deeper retrieval and source-support inventory — 2026-10-28
+
+v0.10.0 adds bounded anonymous OpenAlex search/lookup/reference leads, official
+pinned arXiv HTML extraction and an offline declared-claim audit. Independent
+acceptance passes 38/38 frozen contracts, 9/9 repair/boundary controls and 7/7
+documentation checks. Both writing arms meet14/14 criteria; this is preservation,
+not prose superiority. Actual no-key search/work and pinned-text controls passed,
+including 47 section offsets and final actual claim-coverage CLI checks.
+
+All 179 local methods pass with selected engines, including 54 new methods and
+six actual loopback SSH cases. Full copied-install smoke, 35-file/66-link metadata
+and portable consistency pass. Four reproduced failure scenarios were repaired:
+malformed counts reported empty, harmless presentation-title duplication refused,
+and nonregular source/manifest reads blocking. Legacy retrieval/support code is
+unchanged; fixed identity/access/rights and semantic boundaries remain explicit.
+
+See [detailed validation](deeper-literature-validation.md) for actual artifacts,
+review limits, candidate history and remaining service/conversion/semantic limits.
+Hosted CI and final installed/GitHub identities are separate release checks
+recorded in the pull request when observed.
 
 ## Phase 5: end-to-end workflow evaluation — 2026-10-28
 

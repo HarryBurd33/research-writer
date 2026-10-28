@@ -1,4 +1,4 @@
-# Research Writer — version 0.9.0
+# Research Writer — version 0.10.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -17,6 +17,15 @@ No heavy engine, model weights, paid API, remote compute service or external app
 ## Literature and source support
 
 Use [bounded retrieval](references/literature-retrieval.md) for public literature metadata, recorded correction relationships and accessible open text. Use [source-support records](references/source-support.md) to connect each claim to the inspected source version, passage and reviewer rationale. Record integrity never establishes that a judgment is correct.
+
+## Deeper discovery and claim inventory
+
+[Deeper retrieval](references/deeper-retrieval.md) adds anonymous first-page
+OpenAlex search, exact-work/reference-ID lookup and version-pinned official
+arXiv HTML. [Claim audit](references/claim-audit.md) checks declared claim/source
+coverage and preserves partial, contradictory and uncertain judgments, versions,
+status and family declarations. Neither retrieval nor record validity establishes
+scientific truth or drafting clearance. No new runtime dependency is required.
 
 ## Selected executable engines
 

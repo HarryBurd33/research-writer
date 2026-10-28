@@ -65,3 +65,13 @@ violated source restrictions and incorrect destinations cannot be averaged away.
 Public cases become known regressions after release; a future held-out test needs
 new material. Deterministic fixture arithmetic and package checks do not execute
 a writing agent, establish semantic truth or replace domain review.
+
+
+## Deeper discovery and claim-inventory controls
+
+The installed self-check loads the new discovery command without contacting a
+provider, executes a fictional declared-claim audit and requires rejection of
+a missing review. It keeps record integrity separate from semantic judgment
+and drafting clearance. Actual OpenAlex/arXiv access, conversion quality and
+content review need separate bounded live acceptance. The repository also has
+public offline provider/parser and inventory regressions for use in CI.

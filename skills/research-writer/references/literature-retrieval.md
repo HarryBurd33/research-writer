@@ -66,3 +66,9 @@ Official interface and rights references: [Crossref cursor guidance](https://www
 [Crossref metadata schema](https://github.com/CrossRef/rest-api-doc/blob/master/api_format.md),
 [Europe PMC REST](https://europepmc.org/RestfulWebService),
 [Europe PMC copyright](https://europepmc.org/Copyright).
+
+
+For bounded anonymous OpenAlex discovery/reference IDs and official version-pinned
+arXiv HTML, use the separate [deeper retrieval tool](deeper-retrieval.md). The
+commands above retain their existing Crossref/Europe PMC contract; HTML handling
+is specific to the new fixed arXiv route, not arbitrary publisher scraping.
