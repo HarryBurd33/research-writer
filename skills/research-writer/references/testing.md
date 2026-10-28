@@ -10,7 +10,9 @@ python PATH_TO_SKILL/scripts/self_check.py
 
 It checks required resources and internal links, runs the packaged bibliography,
 project, device-inventory, FASTA and evidence commands, preserves edits/outputs,
-accepts a valid zero and rejects the same number with a wrong unit. Its JSON
+accepts a valid zero and rejects the same number with a wrong unit. It also loads
+the literature tool without network access and checks a fictional source-support
+record, rejecting an invented passage while preserving the semantic-review limit. Its JSON
 report distinguishes passed checks from the optional molecular checks skipped
 by default. This verifies installation and controls, not writing quality or truth.
 
