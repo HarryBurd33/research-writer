@@ -59,3 +59,7 @@ python scripts/evidence_tools.py verify-evidence --input PROJECT/evidence.json -
 ```
 
 Use the actual CSV row: rows start at 1 after its header, and all context fields must agree. Exact comparison deliberately performs no hidden rounding, unit conversion or tolerance matching; explicitly document derived/rounded quantities separately. A claim citing a different run or unit fails even if its number appears elsewhere. Empty manifests are not checked. Source access declarations cannot turn metadata into full text; recorded access and locators remain assertions needing inspection. A passing integrity report checks traceability and declared consistency, not source entailment, experimental truth or scientific usefulness.
+
+### Verified backup transport
+
+Use `scripts/backup_tools.py` only for an explicitly selected authorized SSH backup destination. Its separate `init-remote`, `prepare`, `push`, `verify` and `fetch` operations preserve uncertain outcomes and immutable identity. See [the full contract](off-device-backups.md). It transfers a consistent whole SQLite store with an explicit 1–64 MiB cap; it does not execute saved application notes.
