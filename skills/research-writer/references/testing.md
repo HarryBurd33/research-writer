@@ -47,3 +47,21 @@ The default installed check also loads the remote client without connecting or
 transferring anything. Remote host/job acceptance is separate and requires an
 explicitly selected profile and bounded test; local package success is not proof
 that a remote host or GPU is configured.
+
+## Evaluate research and writing separately
+
+The repository's [workflow evaluation](https://github.com/HarryBurd33/research-writer/tree/main/evals/workflow)
+provides supplied-source cases for intake, study-family decisions, quantitative
+synthesis or refusal, source conflict, theory, tutorials, close reading, proposals
+and contribution duplication. A bounded primary-paper case uses original
+paraphrased notes; receiving those notes is not personal full-text access.
+
+For a new improvement, freeze fresh cases and review criteria before changing
+instructions. Run the prior and candidate copies in separate contexts with
+comparable tools and settings; retain actual outputs, calculations and saved-file
+readbacks. Have a reviewer separate from construction inspect both usefulness
+and claim support, and disclose agent-based or nonblind review. Fabrication,
+violated source restrictions and incorrect destinations cannot be averaged away.
+Public cases become known regressions after release; a future held-out test needs
+new material. Deterministic fixture arithmetic and package checks do not execute
+a writing agent, establish semantic truth or replace domain review.
