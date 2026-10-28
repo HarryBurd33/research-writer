@@ -25,13 +25,14 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/research_tools.py', 'scripts/self_check.py',
             'scripts/literature_tools.py', 'scripts/support_tools.py',
             'scripts/conversion_tools.py', 'scripts/protein_tools.py',
+            'scripts/remote_tools.py', 'scripts/remote_worker.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
                 'device-profiles', 'modes', 'prewriting', 'publication-workflow',
                 'question-development', 'research-and-sources', 'standards',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
-                'molecular-conversion', 'protein-embeddings')))
+                'molecular-conversion', 'protein-embeddings', 'remote-execution')))
 
 
 def require(condition, message):
@@ -130,6 +131,7 @@ def core_check(work):
     run_cli(work, 'support_tools.py', ['--help'])
     run_cli(work, 'conversion_tools.py', ['--help'])
     run_cli(work, 'protein_tools.py', ['--help'])
+    run_cli(work, 'remote_tools.py', ['--help'])
     source = work / 'source.txt'
     text = 'Fictional control: the observed signal was zero.'
     source.write_text(text, encoding='utf-8')
