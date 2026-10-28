@@ -1,5 +1,14 @@
 # Changes
 
+## 0.6.1 — 2026-10-27
+
+- Added read-only GitHub Actions CI for core Linux/Windows/macOS combinations and optional CPU molecular controls, with pinned actions and a stable aggregate check.
+- Promoted known edge cases into portable offline public regressions; these are not new held-out scientific evaluations.
+- Added an offline installed self-check, copied-package test from an unrelated directory and missing-resource negative control.
+- Added LF checkout rules for deterministic portable-source hashes.
+- Retained research-writing instructions and utility algorithms; no heavy models, remote compute or external research services added.
+
+
 ## 0.6.0 — 2026-10-27
 
 - Added original executable bibliography, public metadata, project and context-linked evidence utilities; source identity remains separate from claim support.

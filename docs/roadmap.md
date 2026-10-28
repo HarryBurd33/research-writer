@@ -2,6 +2,10 @@
 
 Plan dated 2026-10-27. This is a roadmap, not a claim that its proposed features or tests have run. The starting release is v0.6.0; see [validation](validation.md), [runtime setup](runtime-setup.md) and [tool catalog](../skills/research-writer/references/tool-catalog.json). Preserve the user's device-adaptable design, genre/audience/destination intake, renewed literature search before substantive writing, and tested prior behavior.
 
+## Phase 1 implementation status
+
+v0.6.1 adds the CI workflow, public regressions and installed-package self-check described below. Local executed checks and hosted-matrix status are recorded in [validation](validation.md); defined matrix jobs are not automatically passing jobs. Later phases remain planned.
+
 ## Starting point
 
 Verified in the v0.6.0 evaluation: 54 independent checks, eight public test methods with molecular dependencies enabled, paired research-writing cases, one held-out computational task, live Crossref metadata lookup/search, RDKit descriptors/conformers, and an artificial OpenMM Reference control. The tested runtime was macOS arm64/Python 3.12.14. Earlier versions also have bounded real-evidence and Google Docs delivery evidence; these are historical checks, not fresh v0.6 service tests.
