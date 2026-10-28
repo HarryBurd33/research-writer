@@ -1,4 +1,4 @@
-# Research Writer — version 0.10.0
+# Research Writer — version 0.11.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -62,3 +62,14 @@ Browsing or a scholarly connector enables live discovery and verification. Full 
 Research quality depends on accessible evidence, tool capabilities and expert judgment. A polished draft is not evidence that a hypothesis is true or that a manuscript meets all requirements for publication.
 
 All workflow text in this package is newly authored. Referenced methodological sources retain their own rights. No third-party source text is redistributed. This original skill package is licensed under the [MIT License](LICENSE).
+
+## Optional Linux isolation and recovery
+
+[Linux isolation](references/linux-isolation.md) adds an explicitly selected
+existing Docker Linux/cgroup-v2 CPU route. It bounds memory, CPU rate, processes,
+wall time and writable scratch, separates the unprivileged task from its
+supervisor, and reconciles the original container after a lost client. Recovery
+never resubmits work. Outputs live in temporary filesystems and must be collected
+before the finite retention deadline. No engine, image, remote host or GPU is
+installed or selected automatically. Legacy SSH recovery is read-only and retains
+its cooperative trusted-task limits.
