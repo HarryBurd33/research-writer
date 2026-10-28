@@ -19,6 +19,7 @@ import tempfile
 import threading
 import time
 import uuid
+import unicodedata
 
 ROOT = Path(__file__).resolve().parent
 MAX_RPC = 32 * 1024 * 1024
@@ -126,6 +127,18 @@ def relative(value):
     return value
 
 
+def checkpoint_relative(value):
+    relative(value)
+    if value != unicodedata.normalize('NFC', value):
+        raise ValueError('Checkpoint path requires NFC Unicode')
+    reserved = {'CON', 'PRN', 'AUX', 'NUL', *(f'COM{i}' for i in range(1, 10)), *(f'LPT{i}' for i in range(1, 10)), *(f'COM{i}' for i in '¹²³'), *(f'LPT{i}' for i in '¹²³')}
+    for part in PurePosixPath(value).parts:
+        low = part.casefold()
+        if any(ord(c) < 32 or ord(c) == 127 or c in '<>:"|?*' for c in part) or part.endswith(('.', ' ')) or part.split('.')[0].upper() in reserved or low in ('.ssh', '.aws', '.git', '.codex', '.checkpoint.json', '.collection.json', '.logs') or low == '.env' or low.startswith('.env.'):
+            raise ValueError('Nonportable/configuration checkpoint path forbidden')
+    return value
+
+
 def no_symlinks(path):
     path = Path(path).absolute()
     for parent in [path, *path.parents]:
@@ -154,8 +167,8 @@ def profile(value):
 
 def validate_manifest(m):
     fields = {'schema_version', 'job_id', 'image_id', 'argv', 'inputs', 'outputs', 'resources', 'required_device'}
-    if not isinstance(m, dict) or set(m) != fields or type(m['schema_version']) is not int or m['schema_version'] != 1:
-        raise ValueError('Exact manifest schema1 fields required')
+    if not isinstance(m, dict) or type(m.get('schema_version')) is not int or m['schema_version'] not in (1, 2) or set(m) != fields | ({'checkpoint'} if m['schema_version'] == 2 else set()):
+        raise ValueError('Exact manifest schema1 or opt-in schema2 fields required')
     if not isinstance(m['job_id'], str) or not re.fullmatch('[0-9a-f]{32}', m['job_id']):
         raise ValueError('32 lowercase hexadecimal job_id required')
     if not isinstance(m['image_id'], str) or not re.fullmatch('sha256:[0-9a-f]{64}', m['image_id']):
@@ -189,6 +202,15 @@ def validate_manifest(m):
     paths = list(map(PurePosixPath, all_names))
     if any(a != b and a in b.parents for a in paths for b in paths):
         raise ValueError('Parent/child file conflict')
+    if m['schema_version'] == 2:
+        cp = m['checkpoint']
+        if not isinstance(cp, dict) or set(cp) != {'directory', 'max_bytes', 'max_files'}:
+            raise ValueError('Exact checkpoint configuration required')
+        directory = PurePosixPath(checkpoint_relative(cp['directory']).casefold())
+        if any(directory == x or directory in x.parents or x in directory.parents for x in (PurePosixPath(str(x).casefold()) for x in paths)):
+            raise ValueError('Checkpoint directory overlaps an input/output path')
+        if type(cp['max_bytes']) is not int or not 1 <= cp['max_bytes'] <= MAX_INPUT or type(cp['max_files']) is not int or not 1 <= cp['max_files'] <= 32:
+            raise ValueError('Checkpoint bounds invalid')
     return m
 
 
@@ -596,7 +618,7 @@ def collect_files(root, state, result, destination):
             shutil.rmtree(stage)
 
 
-def operate(operation, state_path, allow_execute=False, allow_cancel=False, allow_remove=False, destination=None):
+def operate(operation, state_path, allow_execute=False, allow_cancel=False, allow_remove=False, destination=None, checkpoint_store=None, allow_save=False):
     with state_lock(state_path) as root:
         state = checked_state(root)
         if operation == 'submit':
@@ -624,6 +646,41 @@ def operate(operation, state_path, allow_execute=False, allow_cancel=False, allo
             obj = inspect_container(state)
             return {'schema_version': 1, 'state': 'submitted', 'job_id': state['manifest']['job_id'],
                     'container_id': obj['Id'], 'reexecuted': False}
+        if operation == 'checkpoint':
+            if not allow_save:
+                raise ValueError('Explicit --allow-save required')
+            if state['manifest']['schema_version'] != 2:
+                raise ValueError('Checkpoint capture requires an explicitly prepared schema2 job')
+            store = no_symlinks(checkpoint_store)
+            if store == root or root in store.parents or store in root.parents:
+                raise ValueError('Checkpoint store must be separate from job state')
+            obj = inspect_container(state)
+            if obj is None or not obj['State'].get('Running'):
+                raise ValueError('Only a surviving bound container can supply a new checkpoint')
+            state['container_id'] = obj['Id']; save(root / 'state.json', state)
+            raw = docker(state['profile'], ['exec', '--user', '0:0', obj['Id'], state['profile']['container_python'], '/runner/linux_supervisor.py', 'checkpoint'])
+            capture = decode(raw)
+            if not isinstance(capture, dict) or set(capture) != {'schema_version', 'job_id', 'nonce', 'manifest_sha256', 'checkpoint_id', 'application', 'files', 'consistency'}:
+                raise ValueError('Invalid checkpoint capture response')
+            for key, expected in [('schema_version', 1), ('job_id', state['manifest']['job_id']), ('nonce', state['binding']['nonce']), ('manifest_sha256', state['binding']['manifest_sha256'])]:
+                if type(capture[key]) is not type(expected) or capture[key] != expected:
+                    raise ValueError('Checkpoint capture binding mismatch')
+            cp = state['manifest']['checkpoint']
+            if not isinstance(capture['files'], list) or len(capture['files']) > cp['max_files'] or any(not isinstance(x, dict) or type(x.get('size')) is not int for x in capture['files']) or sum(x['size'] for x in capture['files']) > cp['max_bytes']:
+                raise ValueError('Capture exceeds configured checkpoint limits')
+            import importlib.util
+            spec = importlib.util.spec_from_file_location('research_writer_checkpoint_store', ROOT / 'checkpoint_tools.py')
+            helper = importlib.util.module_from_spec(spec)
+            try: spec.loader.exec_module(helper)
+            except ImportError as exc: raise ValueError('Checkpoint capture needs the bundled helper and standard-library SQLite runtime') from exc
+            packet = {key: capture[key] for key in ('schema_version', 'checkpoint_id', 'application', 'files', 'consistency')}
+            packet['provenance'] = {'kind': 'linux', 'job_id': state['manifest']['job_id'],
+                'manifest_sha256': state['binding']['manifest_sha256'], 'image_id': state['manifest']['image_id'],
+                'supervisor_sha256': state['binding']['supervisor_sha256'], 'container_id': obj['Id'],
+                'engine_id': state['profile']['expected_engine_id']}
+            # No payload is persisted in client state. SQLite commits all files together.
+            try: return helper.save_packet(store, packet, True)
+            except helper.sqlite3.Error as exc: raise ValueError('Checkpoint store transaction failed: ' + str(exc)) from exc
         if operation in ('status', 'recover'):
             return reconcile(root, state)
         if operation == 'collect':
@@ -660,7 +717,7 @@ def operate(operation, state_path, allow_execute=False, allow_cancel=False, allo
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
     commands = parser.add_subparsers(dest='operation', required=True)
-    for operation in ('inspect', 'prepare', 'submit', 'status', 'recover', 'collect', 'cancel', 'cleanup'):
+    for operation in ('inspect', 'prepare', 'submit', 'status', 'recover', 'collect', 'cancel', 'cleanup', 'checkpoint'):
         cmd = commands.add_parser(operation); cmd.add_argument('--report', required=True)
         if operation in ('inspect', 'prepare'):
             cmd.add_argument('--profile', required=True)
@@ -676,6 +733,8 @@ def main(argv=None):
             cmd.add_argument('--allow-remove', action='store_true')
         if operation == 'collect':
             cmd.add_argument('--destination', required=True)
+        if operation == 'checkpoint':
+            cmd.add_argument('--store', required=True); cmd.add_argument('--allow-save', action='store_true')
     args = parser.parse_args(argv)
     report = None
     try:
@@ -689,7 +748,7 @@ def main(argv=None):
         else:
             result = operate(args.operation, args.state, getattr(args, 'allow_execute', False),
                              getattr(args, 'allow_cancel', False), getattr(args, 'allow_remove', False),
-                             getattr(args, 'destination', None))
+                             getattr(args, 'destination', None), getattr(args, 'store', None), getattr(args, 'allow_save', False))
         save(report, result, True)
         return 0
     except (OSError, ValueError, TypeError, KeyError, subprocess.SubprocessError) as exc:
