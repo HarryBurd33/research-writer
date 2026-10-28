@@ -1,0 +1,6 @@
+# Tested macOS arm64 / Python 3.12.14 on 2026-10-27.
+# Optional CPU utilities only; not a universal OS/Python lock or GPU environment.
+rdkit==2026.9.1
+OpenMM==8.6.1
+numpy==2.5.4
+pillow==13.0.0

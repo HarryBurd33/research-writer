@@ -1,6 +1,41 @@
-# Validation — Research Writer 0.5.0
+# Validation — Research Writer 0.6.0
 
-Updated: 2026-10-26 UTC. Historical checks below retain their original dates.
+Updated: 2026-10-27 UTC. Historical checks below retain their original dates.
+
+## Device-adaptive research tools — 2026-10-27
+
+The v0.6.0 update adds original executable utilities rather than treating a list of repositories as installed capability. All 13 supplied repositories and the AutoResearchClaw paper were assessed using primary code, interface, packaging and rights files. The [catalog](../skills/research-writer/references/tool-catalog.json) retains inspected revisions and evidence URLs. It distinguishes source-audited interfaces, detected dependencies, executed smoke tests and scientific validation. No upstream code, paper text, model weights or training datasets are bundled. A separate independent primary-source review checked all 13 entries and material licensing/interpretation distinctions.
+
+Skill Forge used a 90-minute effort bound, a maximum of three candidates and six staged workers: three repository auditors, two of whom also constructed separately owned resources, an independent reviewer, and separate fresh baseline/candidate executors. One candidate was constructed. The source arms, input requests and independent evaluator were frozen before behavioral execution; the evaluator's reserved request remained unseen by the parent and constructors until both executions completed. Independent review was not blinded; exact underlying active model/effort was not exposed. Workers inherited the same settings. No paid API or remote inference route was used.
+
+### Actually executed checks
+
+- **54 independent code/API/runtime checks passed.** They covered identifier normalization/dedup/version provenance, mocked provider unavailable/error/empty/metadata/mismatch states, all eight context-field mismatches, wrong hashes/rows/nonfinite values, traversal/duplicate IDs, source access/identity distinctions, remote profiles remaining unprobed, nonexecuting plans, registry structure, and actual molecular outputs.
+- **Eight public test methods passed** with the optional molecular environment enabled: run `python evals/toolkit_checks.py --molecular`. Without those packages, omit the flag; molecular checks are explicitly skipped, not counted as executed. These are developer tests, separate from the independently authored 54 checks.
+- **RDKit 2026.09.1, Python 3.12.14, macOS arm64:** actual ethanol (`CCO`) formula C2H6O, molecular weight 46.069 g/mol, exact mass 46.041864812 Da, three heavy atoms, one donor and one acceptor. A seeded ETKDGv3/MMFF conformer had nine atoms including hydrogens, 3D coordinates, optimizer status 0, and independently verified artifact hash. Repeating the same seed produced identical SDF bytes in this environment. This does not guarantee byte identity across builds or validate a bound pose.
+- **OpenMM 8.6.1:** actual Reference-platform two-particle harmonic energy was 0.5000000000000001 kJ/mol, within 1e-8 of the analytic 0.5. Units, observed platform, CSV provenance and artifact hashes were checked independently. This is an artificial installation/unit test, not a biological MD study or a GPU benchmark.
+- **Live Crossref:** a public DOI lookup resolved the requested identity with the expected title, and a bounded generic search returned two metadata records. Results remained metadata-only. Offline/denied/invalid responses were also tested with mocks. Neither a live metadata response nor a successful empty lookup establishes full-text support, peer review or scholarly absence.
+
+Core deterministic checks reject a correct number attached to the wrong run, condition, dataset, metric, unit, seed or statistic, and bind it to the actual CSV row and artifact SHA-256. Empty claim sets report not_checked. Identity lookup is separate from declared source access, and the validator explicitly does not check semantic entailment or scientific truth. Exact comparison performs no hidden rounding or unit conversion.
+
+### Fresh paired execution and observed benefit
+
+Both v0.5.0 and v0.6.0 executed eight matched first-response requests, two added frozen regression controls (punctuation-only and unavailable/incompatible meta-analysis), and one independently authored held-out practical task. Public requests are in [computational-inputs.json](../evals/computational-inputs.json). The eight developmental requests were non-browsing fictional fixtures; real local utilities were permitted in the held-out practical task. No real external engine, remote service or paid call was allowed.
+
+Both arms passed the response fixtures and held-out scientific requirements. Minor candidate length misses were disclosed (121 words for a 120-word target and 254 for 250); this was not claimed as exact length compliance. The candidate reused packaged commands to produce bibliography/device/evidence records and real molecular artifacts, including eight computed claims checked against their CSV/hash context and three deliberately wrong-context fixture claims rejected. The baseline accomplished the task using more custom algorithms and scientific glue. Independently measured task glue was 275 lines/16,587 bytes for the baseline versus 118 lines/12,493 bytes for the candidate. These figures exclude the reusable toolkit's implementation and are a code-authoring proxy, not a time, token, financial-cost or broad quality estimate. The baseline had a documented assertion-count repair; no candidate repair was observed in that task. The narrow observed benefit is reusable executed tooling with less per-task glue, not superior molecular science.
+
+The reserved request is now known regression evidence. Small single runs, shared host settings and nonblind grading do not establish population reliability. Independent review recomputed artifact hashes and checked the actual SDF chemistry/3D coordinates and analytic energy; a self-reported success or exit code alone was insufficient. Prior prewriting, target/destination, humanities/source-only and meta-analysis boundaries remain preserved.
+
+### What was not executed
+
+AutoResearchClaw, Beeblio and the heavyweight prediction/docking/design/ML engines were source-audited; they were **not installed or run** in this validation. No AlphaFold, Boltz, ESM, DiffDock, GNINA, REINVENT or DeepChem inference/training, biological simulation, remote GPU job, model/database download or hosted sequence upload occurred. Open Babel conversion also remains an optional source-audited route. Windows, Linux, CUDA, MPS, ROCm and remote operation are supported as profile/preparation concepts, not universally tested runtime combinations. Device-specific engine setup and task-sized acceptance remain necessary.
+
+Beeblio's PolyForm Noncommercial code is not a bundled MIT dependency. AlphaFold code, weights and output rights differ; other tools also have separate or unverified checkpoint/data/service terms. Current Biohub ESM was assessed separately from the archived Meta ESM. See the catalog for current pin-level qualifications and recheck selected releases before setup. User-owned profiles and local environments are excluded from this public repository.
+
+Metadata, the 18-file skill and its 38 local links passed static validation. The portable builder includes fenced original Python/JSON sources, not automatic execution, and regeneration/consistency checks pass. The prior package and Git revision are retained for rollback. Local package versions are recorded in [optional tested requirements](../extras/cpu-tested-requirements.txt); [device setup](runtime-setup.md) explains adapting them without assuming universal wheels or hardware.
+
+- Evaluated v0.5.0 baseline directory SHA-256: `381666300a1889cf60593370e4240329136c0c9d4d47eb53a51d407f04486ced`.
+- Evaluated v0.6.0 candidate directory SHA-256: `3be5fb937f192dd8165e6efcce7013af0cfacddf007642310b4f58ab0e3fea20`.
 
 ## Prewriting gate comparison — 2026-10-26
 

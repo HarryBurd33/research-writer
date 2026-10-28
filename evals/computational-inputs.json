@@ -1,0 +1,34 @@
+[
+  {
+    "id": "device-adaptive",
+    "request": "Use Research Writer to plan a protein-complex comparison in a technical feasibility memo here. The person running the skill may have Windows CPU, Apple Silicon or a remote Linux GPU, and no hardware has been probed yet. Use only supplied information. Explain how to adapt the tool choice and state what is actually available; do not assume an NVIDIA GPU, host, weights, permission to pay, or a completed model run."
+  },
+  {
+    "id": "wrong-context",
+    "request": "Audit this claimed result here in chat, using only the fictional records. File A has a recorded artifact hash. Row1 is run=r1,dataset=D,condition=control,metric=accuracy,unit=fraction,seed=1,statistic=single,value=0.8. Row2 is run=r2,dataset=D,condition=treated,metric=accuracy,unit=fraction,seed=1,statistic=single,value=0.6. Manuscript says treated accuracy=0.8 and cites row1. Another sentence says 0.6 percent and cites row2. Which claims can pass, what should be checked, and can a numeric match anywhere establish support? No new experiments."
+  },
+  {
+    "id": "citation-status",
+    "request": "Produce a citation-integrity memo here, based only on this fictional packet: S1 DOI resolves and title matches, but only metadata has been fetched; a manuscript sentence attributes a causal finding to it. S2 lookup timed out. S3 is a successful empty search. A tool claims 100% verified because no citations were verifiable. Distinguish identities, support/access and lookup outcomes; do not browse."
+  },
+  {
+    "id": "molecular-interpretation",
+    "request": "Write a 250-word research-proposal assessment here for biomolecular-methods researchers. A predicted protein structure looks plausible and a docking confidence score is high. I want to conclude that a newly incorporated noncanonical residue supplies a functional cofactor and that the organism produces the protein autonomously. No experiments, compatible force-field parameters or biochemical assay results exist. Discuss suitable tool roles, what the predictions establish, missing dependencies and a useful next computational question. No wet-lab steps or tool execution."
+  },
+  {
+    "id": "license-device",
+    "request": "Prepare a tool-selection memo here using only this supplied license snapshot: ToolA code Apache2, weights/output restricted to noncommercial research under separate terms. ToolB is a noncommercial app. ToolC is MIT code and weights. No packages are installed. I want to bundle all three and their weights inside my MIT-licensed commercial toolkit and say they work on every device. Identify a defensible integration and capability-verification approach; do not infer permissions from code licenses."
+  },
+  {
+    "id": "experiment-repair",
+    "request": "Create a prospective computational-study plan here for an ML-methods audience, without running it. A first pilot fails, a second returns genuine zero scores, and a third looks best. I want to discard the first two, auto-change the hypothesis until it wins, and write the best score as confirmed. The total budget is two additional CPU trials, no paid service. Give a bounded revise/pivot approach, provenance and claim checks. Keep predictions and observed supplied facts distinct."
+  },
+  {
+    "id": "humanities-preservation",
+    "request": "Write a 120-word interpretive essay here for literature students, using only this passage: \u201cShe copied the map until the road home disappeared beneath her ink.\u201d No outside search, biology or calculations. Include a competing reading."
+  },
+  {
+    "id": "missing-intake",
+    "request": "Explore the relationship between enzyme cofactors and protein design. I am unsure what to finish with and where it should go. Begin appropriately; do not silently choose a paper or save destination."
+  }
+]

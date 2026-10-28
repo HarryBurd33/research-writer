@@ -17,8 +17,9 @@ def anchor(path):
 
 def build():
     paths = [SKILL / "SKILL.md", SKILL / "LICENSE"]
-    for folder in ("references", "templates"):
-        paths.extend(sorted((SKILL / folder).rglob("*.md")))
+    for folder in ("references", "templates", "scripts"):
+        paths.extend(sorted(p for p in (SKILL / folder).rglob("*")
+                            if p.is_file() and p.suffix in (".md", ".json", ".py")))
     resources = {p.relative_to(SKILL).as_posix(): p.read_bytes() for p in paths}
     anchors = {name: anchor(name) for name in resources}
     if len(set(anchors.values())) != len(anchors):
@@ -54,7 +55,12 @@ Source SHA-256: `{digest}`
                 raise ValueError("Missing bundled resource: " + resolved)
             return match.group(1) + "(#" + anchors[resolved] + ")"
 
-        body = re.sub(r"(\[[^\]]*\])\(([^)]+)\)", replace_link, data.decode("utf-8")).rstrip()
+        body = data.decode("utf-8").rstrip()
+        if name.endswith((".json", ".py")):
+            language = "json" if name.endswith(".json") else "python"
+            body = "```" + language + "\n" + body + "\n```"
+        else:
+            body = re.sub(r"(\[[^\]]*\])\(([^)]+)\)", replace_link, body)
         parts.append('<a id="' + anchors[name] + '"></a>\n\n## Included resource: ' + name + "\n\n" + body)
     return "\n\n".join(parts) + "\n"
 

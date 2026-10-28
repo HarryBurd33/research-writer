@@ -63,3 +63,14 @@ Useful additions include the audience, length, relevant disciplines, date range,
 For sustained work, request a task-local research record containing decisions, source support, searches, unresolved claims and the next action. To resume, supply that record and say what changed. The skill does not imply automatic research between turns.
 
 External delivery depends on supported tools and access. Distinguish a new document from edits to an existing one; for existing documents, provide the target and edit scope. An authorized creation can proceed without a blanket approval step. If delivery fails, the draft should be preserved and the specific obstacle reported. See the [validation record](validation.md) for executed checks and remaining limitations.
+
+
+## Use research and molecular tools
+
+> Use Research Writer to organize these references and audit the evidence behind my draft. Deliver the report here. Normalize identifiers, retain conflicting/version metadata, distinguish identity from full-text support, and check numeric claims against the exact recorded condition and artifact.
+
+> Use Research Writer to prepare a computational feasibility memo here for a protein/cofactor idea. Inspect my device profile, distinguish the roles of sequence models, folding, docking and simulation, compare compatible optional tools, and propose bounded controls. Do not download weights or run remote jobs yet.
+
+> Use Research Writer to inspect this FASTA and compute descriptors plus a seeded RDKit conformer for this small molecule in my local environment. Save reports in the selected project folder, record versions and hashes, and explain what these calculations cannot establish.
+
+Tool commands, input schemas and optional setup are in the [tool usage guide](../skills/research-writer/references/tool-usage.md). A source-audited catalog entry does not mean that engine is installed. Profiles are private user configuration, not shared defaults or authorization to spend money or transmit data.

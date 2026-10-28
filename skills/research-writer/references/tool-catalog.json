@@ -1,0 +1,529 @@
+{
+  "schema_version": 1,
+  "inspected_on": "2026-10-27",
+  "engines": [
+    {
+      "id": "researchclaw",
+      "name": "AutoResearchClaw",
+      "repository": "https://github.com/aiming-lab/AutoResearchClaw",
+      "revision": "be4ba4755bf1b52220f25e13b2293b5956590070",
+      "role": "Optional external research pipeline; reference for citation identity checks, experiment repair and numeric provenance.",
+      "code_license": "MIT; uninspected bundled components retain separate terms.",
+      "weights_terms": "No mandatory weights identified; chosen LLMs/models have independent terms.",
+      "data_service_terms": "Configured LLM/ACP and scholarly providers may receive prompts, queries and artifacts; provider subscription/API and compute costs apply.",
+      "import_name": "researchclaw",
+      "distribution": null,
+      "cli_name": "researchclaw",
+      "prerequisites": [
+        "Separately installed Python >=3.11 environment and selected upstream configuration.",
+        "Authorized LLM/ACP backend, provider terms and explicit spending/compute/storage bounds.",
+        "Task-specific experiment dependencies; LaTeX for applicable local compilation."
+      ],
+      "inputs": "Research topic/configuration, source records and experiment artifacts.",
+      "outputs": "Pipeline artifacts, manuscript drafts, verification reports and run records; depends on configuration.",
+      "example_argv": null,
+      "limitations": [
+        "Reference and optional external installation; no automatic agent setup, memory injection, execution or publishing.",
+        "Global numeric matching is not condition-specific claim entailment; identity-resolved citations do not prove sentence support.",
+        "Preserve failed/negative runs and disclose selection; current source revision is not installed-version evidence."
+      ],
+      "evidence_urls": [
+        "https://github.com/aiming-lab/AutoResearchClaw/blob/be4ba4755bf1b52220f25e13b2293b5956590070/README.md",
+        "https://github.com/aiming-lab/AutoResearchClaw/blob/be4ba4755bf1b52220f25e13b2293b5956590070/LICENSE",
+        "https://github.com/aiming-lab/AutoResearchClaw/blob/be4ba4755bf1b52220f25e13b2293b5956590070/pyproject.toml",
+        "https://github.com/aiming-lab/AutoResearchClaw/blob/be4ba4755bf1b52220f25e13b2293b5956590070/researchclaw/pipeline/verified_registry.py",
+        "https://github.com/aiming-lab/AutoResearchClaw/blob/be4ba4755bf1b52220f25e13b2293b5956590070/researchclaw/literature/verify.py"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "beeblio",
+      "name": "Beeblio",
+      "repository": "https://github.com/alharkan7/beeblio",
+      "revision": "43fd308d72741e7230487b567f5b75a675f0993a",
+      "role": "Reference-only local research workspace patterns: bibliography, literature matrix and source-tagged search.",
+      "code_license": "PolyForm Noncommercial 1.0.0; restricted permitted use and distribution notices.",
+      "weights_terms": "No mandatory weights identified; configured model/provider terms are separate.",
+      "data_service_terms": "OpenRouter and scholarly APIs receive selected data; optional public sharing and Office previews add data destinations and costs.",
+      "import_name": null,
+      "distribution": null,
+      "cli_name": null,
+      "prerequisites": [
+        "Reference-only integration; do not copy upstream implementation into a commercial-capable skill.",
+        "Any separate app installation requires compatible Node 24/pnpm 11, Python/Bash and configured provider access.",
+        "Resolve package repository-name discrepancy before installation."
+      ],
+      "inputs": "Research workspace files, bibliography identities, literature queries and local datasets.",
+      "outputs": "Bibliography records, comparison matrix, derived analysis files and reports.",
+      "example_argv": null,
+      "limitations": [
+        "Not a mandatory dependency or bundled app; no verified general-purpose scientific CLI.",
+        "Local shell inherits environment and is not constrained to project by ordinary file-path checks.",
+        "Do not enable sharing/tunnels or transmit previews automatically; keep project notes separate from global memory."
+      ],
+      "evidence_urls": [
+        "https://github.com/alharkan7/beeblio/blob/43fd308d72741e7230487b567f5b75a675f0993a/README.md",
+        "https://github.com/alharkan7/beeblio/blob/43fd308d72741e7230487b567f5b75a675f0993a/LICENSE.md",
+        "https://github.com/alharkan7/beeblio/blob/43fd308d72741e7230487b567f5b75a675f0993a/package.json",
+        "https://github.com/alharkan7/beeblio/blob/43fd308d72741e7230487b567f5b75a675f0993a/lib/research-workspace.ts",
+        "https://github.com/alharkan7/beeblio/blob/43fd308d72741e7230487b567f5b75a675f0993a/lib/literature/search.ts",
+        "https://github.com/alharkan7/beeblio/blob/43fd308d72741e7230487b567f5b75a675f0993a/agent/sandbox/sandbox.ts"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "alphafold3",
+      "name": "AlphaFold 3",
+      "repository": "https://github.com/google-deepmind/alphafold3",
+      "revision": "4f41476ebdfd590cd20ef1f87992fad359d0eab9",
+      "role": "Biomolecular structure/complex prediction for proteins, DNA, RNA, ligands and supported modifications.",
+      "code_license": "Apache-2.0 source; third-party dependencies retain their terms.",
+      "weights_terms": "Custom terms: Google-direct weights; noncommercial use by/on behalf of noncommercial organizations; restricted weight sharing and output distribution/training uses.",
+      "data_service_terms": "Output terms require notices, modification disclosure and citation. Databases have separate attribution/CC0/other terms. Server and Google Cloud routes have separate terms, accounts and costs.",
+      "import_name": "alphafold3",
+      "distribution": "alphafold3",
+      "cli_name": null,
+      "prerequisites": [
+        "Compatible Python >=3.12 environment, compiled dependencies and licensed Google-provided weights.",
+        "Prepared JSON matching pinned parser, CCD/custom chemistry and required MSAs/templates/databases.",
+        "Documented Linux/NVIDIA route; current code also exposes CPU/MPS with XLA attention, requiring environment-specific validation.",
+        "Full search installation: approximately 252 GB compressed databases/up to 1 TB installed; RAM/device/runtime budget must be checked."
+      ],
+      "inputs": "AlphaFold JSON dialect versions 1–4: sequences, seeds, optional MSAs/templates, CCD/SMILES ligands and supported bonded atoms/custom CCD.",
+      "outputs": "Predicted mmCIF structures, confidence/summary JSON, ranking data, processed inputs and terms files.",
+      "example_argv": [
+        "{python}",
+        "{executable}",
+        "--json_path={input}",
+        "--output_dir={output}",
+        "--model_dir={model_dir}",
+        "--db_dir={db_dir}"
+      ],
+      "limitations": [
+        "Executable placeholder is the user-supplied run_alphafold.py path; recipe requires its compatible environment.",
+        "Installation prose says Linux/GPU; current source supports --jax_backend=cpu|mps with --flash_attention_implementation=xla. Neither alternate route is validated by this catalog.",
+        "GPU and CPU preparation can be split; missing fields may trigger substantial search.",
+        "Modifications use 1-based positions; arbitrary chemistry needs compatible CCD/conformers/topology.",
+        "Predicted confidence/structure does not establish function, binding or experimental validation; commercial server terms do not follow Apache licensing."
+      ],
+      "evidence_urls": [
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/README.md",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/LICENSE",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/WEIGHTS_TERMS_OF_USE.md",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/OUTPUT_TERMS_OF_USE.md",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/docs/installation.md",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/docs/input.md",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/run_alphafold.py",
+        "https://github.com/google-deepmind/alphafold3/blob/4f41476ebdfd590cd20ef1f87992fad359d0eab9/pyproject.toml"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "boltz",
+      "name": "Boltz",
+      "repository": "https://github.com/jwohlwend/boltz",
+      "revision": "b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc",
+      "role": "Biomolecular complex structure prediction; Boltz-2 optionally estimates protein–small-molecule affinity.",
+      "code_license": "MIT.",
+      "weights_terms": "Upstream README explicitly licenses code and model weights MIT for academic/commercial use.",
+      "data_service_terms": "MSA server/data terms are independent; --use_msa_server submits sequences externally and can require authentication. Local prepared MSAs avoid that route.",
+      "import_name": "boltz",
+      "distribution": "boltz",
+      "cli_name": "boltz",
+      "prerequisites": [
+        "Separate compatible Python >=3.10,<3.13/PyTorch environment and preprovisioned checkpoints/CCD assets.",
+        "YAML inputs with local MSAs or explicitly chosen single-sequence mode.",
+        "Selected CPU/GPU runtime, storage and time budget; CPU is documented but slow."
+      ],
+      "inputs": "YAML biomolecule/chain declarations, ligand SMILES or CCD, optional modifications/templates/constraints and affinity property request.",
+      "outputs": "Ranked mmCIF/PDB poses, confidence JSON and NPZ arrays; optional affinity JSON.",
+      "example_argv": [
+        "{executable}",
+        "predict",
+        "{input}",
+        "--out_dir",
+        "{output}",
+        "--model",
+        "boltz2",
+        "--accelerator",
+        "cpu"
+      ],
+      "limitations": [
+        "Entry is a CPU prepared-MSA recipe; it does not prove local availability or forbid a separately validated GPU route.",
+        "Startup downloads missing checkpoints/assets; preflight those dependencies before execution and do not add MSA upload automatically.",
+        "Modified positions are 1-based; covalent/chemical support is restricted.",
+        "Affinity targets one small-molecule ligand against protein; RNA/DNA/cofactor targets are unreliable. log10(IC50 in micromolar) and binder probability are predictions, not measured Kd/free energy.",
+        "No audited native macOS MPS or universal RAM/VRAM guarantee."
+      ],
+      "evidence_urls": [
+        "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/README.md",
+        "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/LICENSE",
+        "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/pyproject.toml",
+        "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/docs/prediction.md",
+        "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/src/boltz/main.py",
+        "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/src/boltz/data/parse/schema.py"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "meta-esm",
+      "name": "Meta ESM / fair-esm",
+      "repository": "https://github.com/facebookresearch/esm",
+      "revision": "2b369911bb5b4b0dda914521b9475cad1656b2ac",
+      "role": "Protein embeddings/contact and variant scores; ESMFold protein folding; ESM-IF1 inverse folding.",
+      "code_license": "MIT source.",
+      "weights_terms": "Separate checkpoint-specific terms not located in bounded repository audit; record exact checkpoint provenance and terms before use.",
+      "data_service_terms": "Atlas data is CC BY 4.0 with linked Meta terms; other datasets/services are separate. Historical Atlas API availability and terms were not verified.",
+      "import_name": "esm",
+      "distribution": "fair-esm",
+      "cli_name": "esm-extract",
+      "prerequisites": [
+        "Separate fair-esm environment; do not coinstall Biohub esm in its Python namespace.",
+        "Trusted preprovisioned selected checkpoints and compatible PyTorch.",
+        "Native ESMFold installation has older Python <=3.9/OpenFold/nvcc requirements despite CPU inference flags; check per task."
+      ],
+      "inputs": "FASTA sequences for embeddings/folding; protein backbone PDB/mmCIF for inverse-folding APIs/scripts.",
+      "outputs": "Per-sequence .pt representations/contact data, PDB structures, sequence designs or conditional likelihood CSV depending on interface.",
+      "example_argv": [
+        "{executable}",
+        "esm2_t33_650M_UR50D",
+        "{input}",
+        "{output}",
+        "--repr_layers",
+        "33",
+        "--include",
+        "mean",
+        "per_tok",
+        "--nogpu"
+      ],
+      "limitations": [
+        "Example uses esm-extract; folding and inverse-folding need different interfaces and prerequisites.",
+        "Archived repository; documented hosted endpoints are not current availability evidence.",
+        "Extractor truncation/batching must be recorded; .pt checkpoint/artifact provenance must be trusted.",
+        "Protein/multimer folding is not general ligand/cofactor/DNA/RNA chemistry. Scores and generated sequences do not validate function."
+      ],
+      "evidence_urls": [
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/README.md",
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/LICENSE",
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/setup.py",
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/scripts/extract.py",
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/scripts/fold.py",
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/esm/pretrained.py",
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/examples/inverse_folding/README.md"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "biohub-esm",
+      "name": "Biohub ESM",
+      "repository": "https://github.com/Biohub/esm",
+      "revision": "296637a50f9f837aaa2a2231030c13141c265bd7",
+      "role": "ESMC sequence representations, ESM3 multimodal generation and ESMFold2 all-atom biomolecular complex prediction.",
+      "code_license": "MIT source; separately licensed dependencies in third-party notices.",
+      "weights_terms": "Current upstream and official ESMFold2/ESM3-small weight cards indicate MIT; ESMC-6B metadata is MIT plus other/third-party notices. Pin actual checkpoint and inspect associated terms.",
+      "data_service_terms": "Model cards refer to Biohub acceptable-use policy. Hosted API requires token and independent service/privacy/cost review; training data rights do not follow code license.",
+      "import_name": "esm",
+      "distribution": "esm",
+      "cli_name": null,
+      "prerequisites": [
+        "Separate Biohub esm environment, distinct from fair-esm; Python >=3.12 and compatible PyTorch 2.11 stack.",
+        "Preprovisioned selected model/backbone/tokenizer/CCD files with terms, hashes and storage budget.",
+        "Match CPU/CUDA/ROCm/MPS capabilities to each model and kernels; documented folding example uses CUDA.",
+        "Typed structure inputs with compatible molecular chemistry; explicit authorization for any hosted route."
+      ],
+      "inputs": "ESMC tokenized protein sequences; ESM3 partial sequence/structure/function tracks; ESMFold2 typed protein/DNA/RNA/ligand/MSA/modification inputs.",
+      "outputs": "Logits/embeddings/hidden states; generated protein tracks/PDB; or all-atom mmCIF and confidence arrays.",
+      "example_argv": null,
+      "limitations": [
+        "Python APIs are verified; no general scientific CLI invented.",
+        "Default package is already several GB; model weights/backbone/cache add more. No universal VRAM/RAM estimate established.",
+        "Current source exposes CPU loading, which does not itself prove CPU folding. README esm[gpu] extras and inspected pyproject disagree.",
+        "ESMFold2 modification positions are zero-based; modification SMILES is TODO; chainbreaks and covalent bonds have compatibility limits.",
+        "Larger hosted ESM3 availability differs from local small-open model. Predictions/function labels are hypotheses, not validated biology."
+      ],
+      "evidence_urls": [
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/README.md",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/LICENSE.md",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/THIRD_PARTY_NOTICE.md",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/pyproject.toml",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/_assets/ESM3_README.md",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/esm/models/esmfold2/model.py",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/esm/models/esmfold2/processor.py",
+        "https://github.com/Biohub/esm/blob/296637a50f9f837aaa2a2231030c13141c265bd7/esm/utils/structure/input_builder.py",
+        "https://huggingface.co/biohub/ESMFold2",
+        "https://huggingface.co/biohub/ESMC-6B",
+        "https://huggingface.co/biohub/esm3-sm-open-v1"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "openmm",
+      "name": "OpenMM",
+      "repository": "https://github.com/openmm/openmm",
+      "revision": "308e446242e3a044a0a3d7b0c2c9c9cd7ecdb4b7",
+      "role": "Molecular simulation engine: forces, energies, integration, states and trajectories; Reference-platform toy check is a diagnostic.",
+      "code_license": "API/Reference/CPU MIT; CUDA/OpenCL LGPL; other components have additional notices.",
+      "weights_terms": "No pretrained weights required for classical toy energy; ML plugins/models have independent terms.",
+      "data_service_terms": "Force fields, parameters, input structures and plugins have independent provenance/terms; no service needed for a basic local toy calculation.",
+      "import_name": "openmm",
+      "distribution": "openmm",
+      "cli_name": null,
+      "prerequisites": [
+        "Compatible OpenMM build and selected available platform; choose Reference explicitly for the toy check.",
+        "Real simulations additionally need topology, positions, force-field parameters, units and a scientifically justified protocol.",
+        "Set RAM/runtime/trajectory/checkpoint storage budgets; test backend availability in the selected environment."
+      ],
+      "inputs": "Toy particles/force constants or prepared molecular topology, positions, parameters and simulation protocol.",
+      "outputs": "Potential energies with units, states, trajectories, checkpoints and simulation logs depending on API.",
+      "example_argv": null,
+      "limitations": [
+        "Verified Python API, not a general single-file simulation CLI.",
+        "MIT does not cover every backend/component; installed backend availability is not universal OS/GPU support.",
+        "Toy energy success does not validate MD, equilibrium sampling, binding affinity or experimental mechanism.",
+        "Noncanonical residues/cofactors need compatible topology/force-field parameters; do not silently substitute."
+      ],
+      "evidence_urls": [
+        "https://github.com/openmm/openmm/blob/308e446242e3a044a0a3d7b0c2c9c9cd7ecdb4b7/README.md",
+        "https://github.com/openmm/openmm/blob/308e446242e3a044a0a3d7b0c2c9c9cd7ecdb4b7/docs-source/licenses/Licenses.txt",
+        "https://github.com/openmm/openmm/blob/308e446242e3a044a0a3d7b0c2c9c9cd7ecdb4b7/docs-source/usersguide/application/01_getting_started.rst",
+        "https://github.com/openmm/openmm/blob/308e446242e3a044a0a3d7b0c2c9c9cd7ecdb4b7/docs-source/usersguide/application/02_running_sims.rst",
+        "https://github.com/openmm/openmm/blob/308e446242e3a044a0a3d7b0c2c9c9cd7ecdb4b7/openmmapi/include/openmm/HarmonicBondForce.h"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "rdkit",
+      "name": "RDKit",
+      "repository": "https://github.com/rdkit/rdkit",
+      "revision": "c0f3e73431978c031fb556e68e12db29333e2e22",
+      "role": "CPU cheminformatics: molecular parsing, descriptors, fingerprints, conformers and force-field optimization.",
+      "code_license": "BSD-3-Clause; bundled components retain their notices.",
+      "weights_terms": "No pretrained weights needed for basic descriptors or conformers.",
+      "data_service_terms": "No external service/dataset needed for basic local operations; input and external data rights remain separate.",
+      "import_name": "rdkit",
+      "distribution": "rdkit",
+      "cli_name": null,
+      "prerequisites": [
+        "Compatible isolated RDKit environment and CPU; select current supported wheel/conda build.",
+        "Explicit SMILES/stereochemistry/charge/fragment interpretation; seeded conformer settings and supported force field.",
+        "User-selected artifact paths and time/output bounds."
+      ],
+      "inputs": "SMILES or supported molecular structure data plus descriptor/conformer options.",
+      "outputs": "Descriptor records, fingerprints, molecular structures/SDF conformers and explicit optimizer status/provenance.",
+      "example_argv": null,
+      "limitations": [
+        "Verified Python APIs; this skill's descriptors/conformer commands are original wrappers.",
+        "Reject invalid/empty inputs and nonfinite outputs; distinguish embedding failure and nonconverged optimization.",
+        "Do not silently substitute force fields or assume parameters exist for metals/noncanonical chemistry.",
+        "Descriptors and minimized conformers do not prove measured solubility, potency, safety or bound geometry."
+      ],
+      "evidence_urls": [
+        "https://github.com/rdkit/rdkit/blob/c0f3e73431978c031fb556e68e12db29333e2e22/README.md",
+        "https://github.com/rdkit/rdkit/blob/c0f3e73431978c031fb556e68e12db29333e2e22/license.txt",
+        "https://github.com/rdkit/rdkit/blob/c0f3e73431978c031fb556e68e12db29333e2e22/Docs/Book/Install.md",
+        "https://github.com/rdkit/rdkit/blob/c0f3e73431978c031fb556e68e12db29333e2e22/Docs/Book/GettingStartedInPython.rst",
+        "https://github.com/rdkit/rdkit/blob/c0f3e73431978c031fb556e68e12db29333e2e22/rdkit/Chem/Descriptors.py"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "deepchem",
+      "name": "DeepChem",
+      "repository": "https://github.com/deepchem/deepchem",
+      "revision": "455d07f3e17e880a4d980b5b0365e4a02b417e14",
+      "role": "Molecular/materials ML featurization, datasets, model training, predictions and evaluation.",
+      "code_license": "MIT source.",
+      "weights_terms": "Checkpoint-specific terms must be checked; code licensing does not clear pretrained models.",
+      "data_service_terms": "MoleculeNet and other datasets/services have independent licenses and download/privacy costs; example loaders can fetch data.",
+      "import_name": "deepchem",
+      "distribution": "deepchem",
+      "cli_name": null,
+      "prerequisites": [
+        "Separate compatible environment and selected backend; README/Python metadata ranges differ.",
+        "Backend-specific versions (Torch/JAX/TensorFlow) and accelerator support checked independently.",
+        "Authorized labeled data/checkpoints with provenance, split/leakage checks and runtime/storage budget."
+      ],
+      "inputs": "Molecular/materials data and labels, featurizer, model and explicit evaluation configuration.",
+      "outputs": "Feature datasets, trained checkpoints, predictions and metric dictionaries.",
+      "example_argv": null,
+      "limitations": [
+        "No verified general scientific CLI; use an explicit task-specific Python workflow.",
+        "CPU featurization/classical models are possible; native Apple GPU support is not established.",
+        "Current dependency pins can conflict with other engines; do not combine environments by default.",
+        "Dataset download examples are not offline smoke checks; benchmark metrics do not establish assay performance or applicability-domain validity."
+      ],
+      "evidence_urls": [
+        "https://github.com/deepchem/deepchem/blob/455d07f3e17e880a4d980b5b0365e4a02b417e14/README.md",
+        "https://github.com/deepchem/deepchem/blob/455d07f3e17e880a4d980b5b0365e4a02b417e14/LICENSE",
+        "https://github.com/deepchem/deepchem/blob/455d07f3e17e880a4d980b5b0365e4a02b417e14/setup.py",
+        "https://github.com/deepchem/deepchem/blob/455d07f3e17e880a4d980b5b0365e4a02b417e14/examples/delaney/delaney_graph_conv.py"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "diffdock",
+      "name": "DiffDock",
+      "repository": "https://github.com/gcorso/DiffDock",
+      "revision": "85c49b60d3e0b0182a59ee43a34a6d7036981284",
+      "role": "Protein–small-molecule docking pose prediction and confidence ranking; current default is DiffDock-L.",
+      "code_license": "MIT.",
+      "weights_terms": "README explicitly applies MIT to code and DiffDock model weights; ESM/OpenFold dependencies have separate provenance/terms.",
+      "data_service_terms": "Protein/ligand and benchmark data, public demos and cloud GPU services retain separate terms. Do not upload private structures automatically.",
+      "import_name": null,
+      "distribution": null,
+      "cli_name": null,
+      "prerequisites": [
+        "Compatible separately provisioned repository environment; supplied Python3.9/CUDA11.7 stack is not a native Apple Silicon recipe.",
+        "Preprovisioned pinned DiffDock/ESM assets and caches; prevent uncapped startup downloads.",
+        "Prepared protein PDB and ligand/CSV; PDB CPU route documented, GPU faster; sequence route adds ESMFold.",
+        "Explicit working directory/module path, model hashes and runtime/storage/network budget."
+      ],
+      "inputs": "CSV fields complex_name, protein_path, ligand_description, protein_sequence; protein PDB/sequence and ligand SMILES or supported file.",
+      "outputs": "Ranked SDF poses with confidence values; optional reverse-process visualization.",
+      "example_argv": [
+        "{python}",
+        "-m",
+        "inference",
+        "--config",
+        "default_inference_args.yaml",
+        "--protein_ligand_csv",
+        "{input}",
+        "--out_dir",
+        "{output}"
+      ],
+      "limitations": [
+        "Recipe requires compatible checkout/module path and reviewed configuration.",
+        "Missing weights can trigger automatic ZIP fetch/extraction; model archive is only part of total storage.",
+        "Protein-small-molecule domain; confidence is not binding affinity or experimental validation.",
+        "Preparation, receptor conformation and distribution shifts can invalidate pose interpretation."
+      ],
+      "evidence_urls": [
+        "https://github.com/gcorso/DiffDock/blob/85c49b60d3e0b0182a59ee43a34a6d7036981284/README.md",
+        "https://github.com/gcorso/DiffDock/blob/85c49b60d3e0b0182a59ee43a34a6d7036981284/LICENSE",
+        "https://github.com/gcorso/DiffDock/blob/85c49b60d3e0b0182a59ee43a34a6d7036981284/environment.yml",
+        "https://github.com/gcorso/DiffDock/blob/85c49b60d3e0b0182a59ee43a34a6d7036981284/requirements.txt",
+        "https://github.com/gcorso/DiffDock/blob/85c49b60d3e0b0182a59ee43a34a6d7036981284/inference.py",
+        "https://github.com/gcorso/DiffDock/blob/85c49b60d3e0b0182a59ee43a34a6d7036981284/utils/download.py"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "reinvent4",
+      "name": "REINVENT4",
+      "repository": "https://github.com/MolecularAI/REINVENT4",
+      "revision": "3cf206ea5b385ac955dc44bbae6063b55ee31e0a",
+      "role": "Generative molecular design: sampling, transfer/reinforcement learning, scaffold/linker/R-group tasks.",
+      "code_license": "Apache-2.0 source.",
+      "weights_terms": "Separately hosted prior-model license/version/hash/size remained unverified because linked Zenodo record was inaccessible; obtain explicit provenance before use.",
+      "data_service_terms": "Optional scoring programs/services and datasets have independent terms; OpenEye ROCS requires separate toolkit/license. Set external spending bounds.",
+      "import_name": "reinvent",
+      "distribution": null,
+      "cli_name": "reinvent",
+      "prerequisites": [
+        "Separate compatible Python >=3.11 environment; current source Torch/RDKit/numpy pins differ from other engines.",
+        "User-provided compatible prior/checkpoint with verified terms and explicit TOML/JSON/YAML config.",
+        "CPU fallback documented; Linux validated upstream, macOS support depends on appropriate PyTorch/MPS build.",
+        "Runtime/model/cache/storage budgets; GPU recommended for training."
+      ],
+      "inputs": "Configuration naming task/mode, model file, device, sample count, output and optional reference/scaffold/fragment SMILES.",
+      "outputs": "Sampled SMILES/negative log-likelihood CSV; training agents, scoring outputs and logs depend on mode/config.",
+      "example_argv": [
+        "{executable}",
+        "-l",
+        "{output}",
+        "{input}"
+      ],
+      "limitations": [
+        "Output placeholder here is log path; scientific output paths are explicit fields inside the input config.",
+        "Do not run CUDA-oriented uv defaults blindly on another platform.",
+        "README-named prior_registry.py was absent at audited revision; use verified explicit model-path config.",
+        "High scores/valid SMILES do not establish activity, safety, synthesizability or real-world novelty."
+      ],
+      "evidence_urls": [
+        "https://github.com/MolecularAI/REINVENT4/blob/3cf206ea5b385ac955dc44bbae6063b55ee31e0a/README.md",
+        "https://github.com/MolecularAI/REINVENT4/blob/3cf206ea5b385ac955dc44bbae6063b55ee31e0a/LICENSE",
+        "https://github.com/MolecularAI/REINVENT4/blob/3cf206ea5b385ac955dc44bbae6063b55ee31e0a/pyproject.toml",
+        "https://github.com/MolecularAI/REINVENT4/blob/3cf206ea5b385ac955dc44bbae6063b55ee31e0a/configs/sampling.toml"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "openbabel",
+      "name": "Open Babel",
+      "repository": "https://github.com/openbabel/openbabel",
+      "revision": "9be528bcdb31a219637ae3d1699170a8aaa5be6d",
+      "role": "Chemical format conversion, search/filtering and coordinate-generation toolkit.",
+      "code_license": "GPL-2.0-only in package metadata; COPYING GPLv2; no binaries bundled by this catalog.",
+      "weights_terms": "No neural weights needed for basic conversion.",
+      "data_service_terms": "No online service needed for basic local conversion; input-data rights and build-time dependency/download terms remain separate.",
+      "import_name": "openbabel",
+      "distribution": "openbabel",
+      "cli_name": "obabel",
+      "prerequisites": [
+        "User-supplied compatible executable or Python bindings; CPU is sufficient.",
+        "Explicit input/output formats, destination and identity/charge/stereochemistry checks.",
+        "Build dependencies and possible auto-downloads reviewed if installing separately."
+      ],
+      "inputs": "Supported molecular files or SMILES plus format/conversion options.",
+      "outputs": "Converted molecular files or generated coordinates, with possible information loss.",
+      "example_argv": [
+        "{executable}",
+        "-ismi",
+        "{input}",
+        "-osdf",
+        "-O",
+        "{output}"
+      ],
+      "limitations": [
+        "Example explicitly converts SMILES file to SDF; it does not promise 3D coordinates.",
+        "Conversion may change aromaticity, bonds, hydrogens, charge, fragments or unsupported fields; validate relevant identity before/after.",
+        "Generic Open Babel build is not necessarily GNINA's recommended fork/version.",
+        "Generated coordinates are model geometries, not experimental structures."
+      ],
+      "evidence_urls": [
+        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/README.md",
+        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/COPYING",
+        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/INSTALL",
+        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/pyproject.toml",
+        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/doc/obabel.1"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "gnina",
+      "name": "GNINA",
+      "repository": "https://github.com/gnina/gnina",
+      "revision": "01cae6aa6e014e0bf11e511f1fe7a61b17975855",
+      "role": "Docking, pose optimization and empirical/CNN scoring for protein–ligand systems.",
+      "code_license": "GPL/Apache conditions: supplied Open Babel integration forces GPL; Apache-only use requires removing Open Babel references. Not an ordinary Apache-only binary.",
+      "weights_terms": "Bundled model files are present, but separate per-weight licenses were not located; inspect exact models and any external downloads.",
+      "data_service_terms": "CrossDocked/DUD-E and other training/benchmark datasets or model repositories have separate unverified terms; remote GPU/compute costs need a budget.",
+      "import_name": null,
+      "distribution": null,
+      "cli_name": "gnina",
+      "prerequisites": [
+        "User-supplied compatible Linux/WSL binary/environment; native macOS execution not established.",
+        "Prepared receptor PDB, ligand SDF, binding-site/autobox definition, model identity and explicit bounded search settings.",
+        "Current source build requires CUDA>=12 even though runtime --no_gpu exists.",
+        "Prebuilt binary alone can be about 2 GB; check full download/build/runtime/output budgets."
+      ],
+      "inputs": "Receptor PDB, ligand SDF and box coordinates/sizes or reference ligand; optional scoring/minimization/search configuration.",
+      "outputs": "Ranked ligand poses, empirical/CNN score fields and logs.",
+      "example_argv": null,
+      "limitations": [
+        "No general one-input command template: receptor, ligand and search-site mapping require an explicit task plan.",
+        "--no_gpu is runtime CPU selection, not proof of CUDA-free source build or Apple GPU support.",
+        "CNNscore, CNNaffinity and empirical energy are distinct; do not rename them one confidence/affinity metric.",
+        "Docking scores/poses are computational hypotheses; protonation, waters/metals, stereochemistry, controls and physical validity matter."
+      ],
+      "evidence_urls": [
+        "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/README.md",
+        "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/LICENSE.APACHE",
+        "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/LICENSE.GNU",
+        "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/CMakeLists.txt",
+        "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/gninasrc/lib/models/README.md"
+      ],
+      "status": "source-audited"
+    }
+  ]
+}

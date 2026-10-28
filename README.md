@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.5.0** adds an explicit prewriting gate for audience, paper type, publication context, search renewal and a tested contribution. See the [validation report](docs/validation.md) for actual checks and limits.
+**Version 0.6.0** adds executable evidence/bibliography utilities, device-adaptive tool profiles, and optional computational-research guidance while retaining the prewriting workflow. It includes original local RDKit/OpenMM utilities and a source-audited catalog of all 13 requested engines. See the [tool guide](skills/research-writer/references/tool-usage.md), [capability catalog](skills/research-writer/references/tool-catalog.json) and [validation](docs/validation.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
@@ -38,6 +38,14 @@ The workflow checks the idea's premises, chooses an appropriate method, verifies
 
 For an article intended for a journal, the skill also checks venue fit, alignment between aims and evidence, and missing authorship, funding, ethics, availability and submission information. It preserves the chosen genre and never invents results or declarations.
 
+## Executable tools and device adaptation
+
+The complete skill contains original Python scripts for DOI/arXiv/PMID normalization with retained provenance, bounded Crossref search and DOI metadata lookup, project initialization, exact context-and-artifact-linked evidence checks, FASTA inspection, RDKit descriptors/seeded conformers, and an OpenMM analytic Reference-platform energy check. Standard-library commands require Python 3.10+; the two molecular packages are optional isolated dependencies.
+
+Device profiles describe local or remote environments without embedding anyone's hardware, paths or credentials in the shared package. Inventory, declared configuration, successful smoke tests and scientific validation are distinct. Heavy engines are not bundled or auto-launched, and no paid API, model weights, remote machine or external sequence service is assumed. See [device guidance](skills/research-writer/references/device-profiles.md) and [setup/use](skills/research-writer/references/tool-usage.md).
+
+The catalog covers AutoResearchClaw, Beeblio, AlphaFold 3, Boltz, Meta ESM, Biohub ESM, OpenMM, RDKit, DeepChem, DiffDock, REINVENT4, Open Babel and GNINA. These tools do different jobs; code, weights, data, outputs and service terms are assessed separately. No upstream source or weights are redistributed. A prediction is not an experiment, docking confidence is not measured affinity, and a provenance check does not prove semantic support or scientific usefulness.
+
 ## Start using it
 
 See the [usage guide](docs/usage.md) for prompts covering question development, synthesis, theory, proposals and humanities writing. The [validation report](docs/validation.md) includes executed behavioral comparisons, native Google Docs delivery, a complex scientific proposal, and a reproducible review and meta-analytic reanalysis of 36 real study sites.
@@ -45,7 +53,7 @@ See the [usage guide](docs/usage.md) for prompts covering question development, 
 
 The installable skill is in [`skills/research-writer`](skills/research-writer). Use your agent's supported skill installer to install that complete folder, keeping its references and template together. The entry point is [`SKILL.md`](skills/research-writer/SKILL.md). This repository does not automatically install or activate it.
 
-If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow and its supporting guidance. Skill Forge is not required to use either version. Regenerate it with `python3 scripts/build_portable.py`; verify it with `python3 scripts/build_portable.py --check` (Python 3.9+, standard library only).
+If your agent cannot install skills, supply [`portable/research-writer.md`](portable/research-writer.md) as instructions along with your task. The portable file contains the workflow, guidance, catalog and original tool source. To execute tools, review and save the named Python/JSON resources as files with their folder layout; a pasted prompt alone cannot install dependencies or execute code. Skill Forge is not required to use either version. Regenerate it with `python3 scripts/build_portable.py`; verify it with `python3 scripts/build_portable.py --check` (Python 3.9+, standard library only).
 
 Try:
 
@@ -77,6 +85,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.5.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.6.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. Original code, workflow instructions and documentation are licensed under the [MIT License](LICENSE). The aggregate example data retains its documented CC0 provenance. Project-specific research and private development notes are excluded from this repository.

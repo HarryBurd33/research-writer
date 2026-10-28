@@ -1,5 +1,15 @@
 # Changes
 
+## 0.6.0 — 2026-10-27
+
+- Added original executable bibliography, public metadata, project and context-linked evidence utilities; source identity remains separate from claim support.
+- Added device-adaptive profiles/inventory and nonexecuting engine preparation plans, with 13 source-audited repositories, pinned provenance, separate rights and honest availability.
+- Added optional local FASTA, RDKit descriptors/conformer and OpenMM analytic Reference smoke utilities; computational outputs remain distinct from experimental validation.
+- Added bounded experiment/refine/pivot and all-attempt provenance guidance, preserving negative/failed results and excluding automatic global self-modification.
+- Kept prewriting, user-selected artifact/destination, humanities/source boundaries and MIT notices; no upstream engines, weights, datasets or noncommercial source code are bundled.
+- Portable builder now includes fenced original Python/JSON tool resources as well as guidance.
+
+
 ## 0.5.0 — 2026-10-26
 
 - Added an explicit gate before substantive writing: actual readers/knowledge/use, paper genre, publication venue type/readership when applicable, and scoped readiness.
