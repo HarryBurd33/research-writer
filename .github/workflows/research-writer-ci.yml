@@ -64,6 +64,10 @@ jobs:
         run: python evals/literature_checks.py
       - name: Source-support record contracts
         run: python evals/support_checks.py
+      - name: Deeper discovery and claim-inventory offline contracts
+        run: |
+          python evals/discovery_checks.py
+          python evals/claim_audit_checks.py
       - name: Optional engine offline contracts
         run: |
           python evals/conversion_checks.py
