@@ -47,3 +47,15 @@ image. It never installs a daemon, pulls an image or chooses a remote host.
 The ordinary runtime above remains usable without it. Treat selected virtual
 environment interpreter paths as executables; resolving their symlinks to a bare
 Python binary can bypass the environment and its installed packages.
+
+
+## Durable checkpoint storage
+
+The optional [checkpoint helper](../skills/research-writer/references/durable-checkpoints.md)
+uses Python's SQLite module and a trusted local filesystem. No extra PyPI package,
+Docker engine or cloud account is needed for local file checkpoints. Set an explicit
+store path, database byte ceiling and generation limit. Keep journals intact for
+SQLite recovery. Database quota excludes rollback-journal and backup/restore space;
+choose adequate disk headroom. Use consistent backups for authorized transfers.
+Power-loss behavior depends on the actual OS/VFS/storage; no shared/network/cloud
+filesystem locking or device-failure guarantee is assumed.

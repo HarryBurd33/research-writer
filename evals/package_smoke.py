@@ -16,6 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--molecular', action='store_true')
+    parser.add_argument('--checkpoints', action='store_true')
     parser.add_argument('--skill', type=Path, default=ROOT / 'skills' / 'research-writer')
     parser.add_argument('--obabel')
     parser.add_argument('--protein-python')
@@ -30,6 +31,8 @@ def main():
         command = [sys.executable, str(skill / 'scripts' / 'self_check.py')]
         if args.molecular:
             command.append('--molecular')
+        if args.checkpoints:
+            command.append('--checkpoints')
         for flag, value in (('--obabel', args.obabel), ('--protein-python', args.protein_python), ('--protein-model-dir', args.protein_model_dir)):
             if value:
                 command.extend([flag, value])

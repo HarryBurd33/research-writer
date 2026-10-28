@@ -1,4 +1,4 @@
-# Research Writer — version 0.11.0
+# Research Writer — version 0.12.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -73,3 +73,15 @@ never resubmits work. Outputs live in temporary filesystems and must be collecte
 before the finite retention deadline. No engine, image, remote host or GPU is
 installed or selected automatically. Legacy SSH recovery is read-only and retains
 its cooperative trusted-task limits.
+
+## Durable file and application checkpoints
+
+[Durable checkpoints](references/durable-checkpoints.md) save approved files into
+an explicitly selected, bounded SQLite store outside containers and this skill.
+Local research artifacts need no Docker. An optional schema-2 Linux job can
+publish cooperative checkpoint generations for read-only capture. Verified backup
+and restore keep committed files usable after the original container/client state
+is removed. Restore never executes a saved command; a continuation needs a new
+explicit job and compatible application. Process-crash recovery is tested separately
+from filesystem/device power-loss assumptions. Use `self_check.py --checkpoints`
+to require actual local SQLite installation controls.

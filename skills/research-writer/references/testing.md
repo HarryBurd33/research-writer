@@ -81,3 +81,11 @@ The v0.11 Linux client and supervisor load with the standard library and no Dock
 probe during the offline self-check. Actual Linux resource enforcement requires
 its separately requested disposable-engine integration suite; an offline pass is
 not that evidence. See [Linux isolation](linux-isolation.md).
+
+
+Add `--checkpoints` to the installed self-check to require actual local SQLite
+save, idempotent retry, backup, verification and zero-byte restore controls. It
+needs the interpreter's SQLite module; ordinary research and the default core
+check do not probe a container engine. See [checkpoint guidance](durable-checkpoints.md).
+Process-crash tests are separate from physical power-loss or remote-storage
+claims. A valid checkpoint is not an execution or scientific-consistency grant.

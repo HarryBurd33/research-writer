@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.11.0** adds optional Linux resource isolation and container-identity recovery, plus read-only recovery and crash-releasing locks for existing SSH jobs. An explicitly selected existing Docker Linux/cgroup-v2 engine and immutable local image are required only for the isolated route. The tool never installs an engine, pulls an image or resubmits during recovery. See [Linux isolation](skills/research-writer/references/linux-isolation.md), [validation](docs/linux-isolation-validation.md) and [tests](docs/testing.md). Literature discovery and claim auditing from v0.10.0 remain available without Docker.
+**Version 0.12.0** adds durable file/application checkpoints in an explicitly selected SQLite store: atomic generation saves, verification, consistent backup, new-location restore and explicit deletion. Local research checkpoints need no Docker. Opted-in Linux jobs can publish cooperative checkpoint files for read-only capture; an explicit new job can continue from restored application data after the original container is gone. No process-memory snapshot, automatic execution or background service is implied. See [checkpoint usage](skills/research-writer/references/durable-checkpoints.md), [validation](docs/durable-checkpoint-validation.md) and [tests](docs/testing.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 

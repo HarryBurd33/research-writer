@@ -78,13 +78,14 @@ jobs:
           python evals/remote_worker_checks.py
           python evals/controller_recovery_checks.py
           python evals/linux_checks.py
+          python evals/checkpoint_checks.py
           python evals/remote_loopback_checks.py
       - name: Workflow fixture arithmetic and integrity (no model evaluation)
         run: |
           python evals/workflow/reproduce_quantitative.py
           python evals/workflow_checks.py
       - name: Isolated installed-package smoke
-        run: python evals/package_smoke.py
+        run: python evals/package_smoke.py --checkpoints
       - name: Portable bundle consistency
         run: python scripts/build_portable.py --check
 
@@ -218,6 +219,7 @@ jobs:
         run: |
           IMAGE_ID=$(docker --context default image inspect --format '{{.Id}}' python:3.12-slim-bookworm)
           python evals/linux_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
+          python evals/durable_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
 
   required:
     # Stable aggregate check name; do not rename when extending the matrix.

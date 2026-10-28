@@ -1,6 +1,14 @@
-# Validation — Research Writer 0.11.0
+# Validation — Research Writer 0.12.0
 
 Updated: 2026-10-28 UTC. Historical checks below retain their original dates.
+
+## Durable checkpoints — 2026-10-28
+
+v0.12 adds bounded SQLite artifact/application stores, verified backup/restore and
+opt-in cooperative Linux capture. See [checkpoint validation](durable-checkpoint-validation.md)
+for observed local, crash, independent and hosted acceptance. A store commit is
+not a process-memory snapshot or permission to execute saved notes. Historical
+checks below retain their original dates and scopes.
 
 ## Linux isolation and recovery — 2026-10-28
 
