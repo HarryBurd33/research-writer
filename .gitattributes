@@ -1,0 +1,2 @@
+# Keep source hashes and the generated portable bundle identical on every OS.
+* text=auto eol=lf
