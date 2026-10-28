@@ -87,6 +87,24 @@ and confirm escaped-child readiness; their fresh current-head outcome and the
 complete required matrix are recorded in the release pull request before adoption.
 This observed Linux configuration does not establish other backend support.
 
+## Stronger fixture run and diagnostic repair
+
+[CI run 24](https://github.com/HarryBurd33/research-writer/actions/runs/40768178223)
+passes the explicit blocked-connection and escaped-child-readiness checks. Its
+unsafe-output case unexpectedly reported stopped-container artifact loss before
+a rejection receipt could be read, about one second after creation. The historical
+log omitted exit/OOM fields, so the cause is unconfirmed; it is not described as
+a proven OOM or accepted as an unsafe-output rejection pass.
+
+The unsafe-output fixture now has 128 MiB nominal memory headroom to separate file
+validation from the dedicated 64 MiB enforcement/OOM controls, which remain intact.
+All 49 current assertion nodes are unchanged, including exact failed-state,
+empty-artifact and collection-refusal expectations. Terminal diagnostics now
+record container exit code and OOM flag. Production code is unchanged from the
+successful run 22. Fresh full current-head CI remains the release gate; final
+results are recorded in the pull request. A repeated unexplained loss blocks
+adoption rather than relaxing the unsafe-output test.
+
 ## Remaining boundaries
 
 Only the tested Docker Linux/cgroup-v2 CPU configuration is an enforcement claim.
