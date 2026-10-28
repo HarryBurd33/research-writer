@@ -25,8 +25,9 @@ class ClaimAuditChecks(unittest.TestCase):
         self.temporary = tempfile.TemporaryDirectory()
         self.root = Path(self.temporary.name)
         self.text = 'A bounded review found mixed results. More work is required.\n'
-        (self.root / 'source.txt').write_text(self.text, encoding='utf-8')
-        self.digest = hashlib.sha256(self.text.encode()).hexdigest()
+        self.source_bytes = self.text.encode('utf-8')
+        (self.root / 'source.txt').write_bytes(self.source_bytes)
+        self.digest = hashlib.sha256(self.source_bytes).hexdigest()
         self.manifest = {
             'schema_version': 1,
             'sources': [self.source('s1')],
@@ -69,6 +70,15 @@ class ClaimAuditChecks(unittest.TestCase):
         self.assertEqual(result['declared_pair_coverage']['covered'], 1)
         self.assertEqual(result['semantic_entailment'], 'not_automatically_verified')
         self.assertEqual(result['drafting_clearance'], 'not_granted')
+
+    def test_fixture_bytes_and_declared_hashes_are_platform_exact(self):
+        raw = (self.root / 'source.txt').read_bytes()
+        self.assertEqual(raw, self.text.encode('utf-8'))
+        self.assertTrue(raw.endswith(b'\n'))
+        self.assertNotIn(b'\r\n', raw)
+        actual = hashlib.sha256(raw).hexdigest()
+        self.assertEqual(actual, self.manifest['sources'][0]['sha256'])
+        self.assertEqual(actual, self.manifest['reviews'][0]['source_sha256'])
 
     def test_missing_pair_is_specific_to_each_claim(self):
         self.manifest['claims'].append(self.claim('c2'))
@@ -160,7 +170,7 @@ class ClaimAuditChecks(unittest.TestCase):
     def test_symlink_escape(self):
         with tempfile.TemporaryDirectory() as outside:
             target = Path(outside) / 'outside.txt'
-            target.write_text(self.text, encoding='utf-8')
+            target.write_bytes(self.source_bytes)
             try:
                 (self.root / 'link.txt').symlink_to(target)
             except (OSError, NotImplementedError):
