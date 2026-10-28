@@ -1,4 +1,4 @@
-# Research Writer — version 0.6.1
+# Research Writer — version 0.6.2
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -13,6 +13,10 @@ Before substantive writing, it establishes readers, paper type and publication c
 The original Python utilities provide bibliography normalization and public metadata lookup, project records, artifact/context-linked evidence checks, FASTA inspection, and RDKit/OpenMM CPU utilities when installed. [Computational guidance](references/computational-research.md) explains use; [device profiles](references/device-profiles.md) adapt local or remote environments. The [13-engine catalog](references/tool-catalog.json) records inspected revisions, inputs/outputs, dependencies, distinct rights and scientific limits.
 
 No heavy engine, model weights, paid API, remote compute service or external app is bundled or automatically enabled. An inventory is not a successful inference run. The standard-library tools run with Python 3.10+; molecular utilities require separate compatible RDKit/OpenMM packages. Use a project environment or user-owned runtime profile outside this skill.
+
+## Literature and source support
+
+Use [bounded retrieval](references/literature-retrieval.md) for public literature metadata, recorded correction relationships and accessible open text. Use [source-support records](references/source-support.md) to connect each claim to the inspected source version, passage and reviewer rationale. Record integrity never establishes that a judgment is correct.
 
 ## Installation checks
 
