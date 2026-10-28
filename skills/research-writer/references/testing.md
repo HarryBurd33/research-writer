@@ -32,3 +32,13 @@ heavy engines, remote execution and biological predictions need separate tests.
 Run this check after installing/updating, changing Python/dependencies or moving
 devices. Read the actual error before continuing. Never treat dependency presence,
 a successful smoke or an unexecuted CI matrix as scientific validation.
+
+## Require selected engines
+
+Supply `--obabel PATH` to require independently checked chiral/E/Z conversion.
+The current interpreter needs RDKit; Open Babel can live in a separate runtime.
+For protein representations, supply both `--protein-python PATH` and
+`--protein-model-dir PATH` to require local CPU inference in that separate
+interpreter. No model preparation happens in this self-check. Missing runtime or
+assets fails rather than silently skipping. Default runs mark these optional
+checks skipped. Successful installation controls are not scientific benchmarks.

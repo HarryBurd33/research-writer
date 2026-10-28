@@ -1,4 +1,4 @@
-# Research Writer — version 0.6.2
+# Research Writer — version 0.7.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -17,6 +17,10 @@ No heavy engine, model weights, paid API, remote compute service or external app
 ## Literature and source support
 
 Use [bounded retrieval](references/literature-retrieval.md) for public literature metadata, recorded correction relationships and accessible open text. Use [source-support records](references/source-support.md) to connect each claim to the inspected source version, passage and reviewer rationale. Record integrity never establishes that a judgment is correct.
+
+## Selected executable engines
+
+[Open Babel conversion](references/molecular-conversion.md) uses a separately supplied executable and independent RDKit checks. [Small ESM-2 embeddings](references/protein-embeddings.md) use a separate compatible interpreter and pinned local model assets. Model preparation is explicit; inference is local-only. Device availability is measured at execution, and unsupported explicit accelerators fail rather than silently change device. These routes do not establish docking, folding or biological function.
 
 ## Installation checks
 

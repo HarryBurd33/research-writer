@@ -1,6 +1,22 @@
-# Validation — Research Writer 0.6.2
+# Validation — Research Writer 0.7.0
 
 Updated: 2026-10-27 UTC. Historical checks below retain their original dates.
+
+## Phase 3 selected execution adapters — 2026-10-28
+
+v0.7.0 implements two selected routes: Open Babel conversion independently checked by RDKit, and bounded short canonical-sequence ESM-2 embeddings through Transformers. It does not install every catalog engine or validate docking, folding or biological performance. Official package/model interfaces, immutable assets and distinct rights were renewed. The original MIT wrappers do not bundle external GPL Open Babel binaries, Transformers/PyTorch source or model weights.
+
+Local macOS arm64/Python 3.12 validation passed all 9 conversion methods and 14 protein methods with actual engines, plus all 51 prior public methods with applicable molecular controls. The conversion runtime uses official Open Babel 3.2.1 separately from the RDKit 2026.09.1 validator. Chiral/E-Z/aromatic/charge/count/order checks and positive roundtrips passed. An initial default zero-coordinate stereo route failed independent parsing and was rejected; the selected SMILES-to-SDF route now explicitly generates 2D depictions and retains identity checks. No 3D pose/property preservation is claimed.
+
+The protein runtime uses torch 2.14.1, transformers 5.21.0, safetensors 0.8.0 and numpy 2.5.4. All six immutable official model assets were explicitly prepared and hash-verified (31,387,085 bytes total). Actual CPU embeddings are finite 320-value vectors with input/model/output provenance; pooling excludes BOS/EOS. Inference uses local-only safetensors, bounded subprocess execution and no silent truncation or unsupported-residue mapping. Prepublication hardening rejected extra tokenizer sidecars and symlink assets as well as wrong hashes. Explicit unavailable backends fail, and auto conservatively selects CPU.
+
+Independent review passed 31/31 checks (14 conversion, 17 protein). Its fresh molecule/sequence cases were frozen before constructor inspection. Reserved molecular output was independently re-parsed, and an independent native CPU model forward matched both 320-value embedding vectors exactly in this environment. That is a numerical execution control, not biological validation or a performance benchmark. Review was separate and nonblind; exact model/effort was not exposed. No inference-cost or broad research-quality improvement is claimed.
+
+Combined copied-install self-check passed with the base molecular environment, separately supplied Open Babel executable, separate protein interpreter and verified model directory. Metadata validation passed 28 skill files/52 links, and portable generation/consistency passed. The workflow extends the existing matrix with actual conversion controls and three CPU protein jobs, retaining the stable aggregate and read-only permissions. Hosted outcomes and final release/install identities are recorded in the release pull request; a matrix definition alone is not a passing job.
+
+Timeouts, output limits, non-overwrite, wrong-identity output, invalid inputs, missing/changed assets, exact-six-file loading and unavailable device requests receive negative controls. Available bounded diagnostics are retained; an error before execution may have an error report without process logs. Earlier unrelated reference-document and live literature results remain historical, not newly repeated scientific studies.
+
+Remaining limitations: selected CPU engines and bounded inputs only; no universal OS/Python/backend support, MPS/CUDA/ROCm execution guarantee, benchmarked affinity/function, biological experiment or large-model/docking route. Larger engines need separately compatible assets, licenses, task and resource limits. Existing research-writing, literature/source-support and evidence boundaries remain. User runtime/model paths and assets stay outside the shared package. Prior v0.6.2 and managed installation hashes provide rollback.
 
 ## Phase 2: literature retrieval and source-support records — 2026-10-27
 

@@ -7,6 +7,8 @@ python evals/toolkit_checks.py
 python evals/toolkit_regressions.py
 python evals/literature_checks.py
 python evals/support_checks.py
+python evals/conversion_checks.py
+python evals/protein_checks.py
 python evals/package_smoke.py
 python scripts/build_portable.py --check
 ```
@@ -81,3 +83,24 @@ Local live public-source controls are separate evidence, not claims that every
 provider result or all literature has been reviewed. Record integrity does not
 validate the meaning of a source-support judgment. See the new tool guides and
 [validation](validation.md) for executed counts and coverage.
+
+## Optional executable engine controls
+
+Core tests run the conversion and protein contract suites without installing
+engines; optional actual-engine methods are explicitly skipped. To require actual
+execution, run the conversion suite with the RDKit environment's Python and
+`--molecular --executable PATH_TO_OBABEL`, and the protein suite with its separate
+runtime's Python and `--protein --model-dir VERIFIED_MODEL_DIRECTORY`.
+
+The copied-install smoke and installed `scripts/self_check.py` also accept
+`--obabel PATH_TO_OBABEL` and the paired `--protein-python PATH_TO_PYTHON
+--protein-model-dir VERIFIED_MODEL_DIRECTORY`. These require the selected engines;
+missing packages/assets or failed controls produce nonzero results rather than
+silently skipping. Standard checks still need no model/network access.
+
+The extended workflow retains six core and three molecular combinations, adds
+three CPU protein jobs and keeps the stable aggregate check. Molecular jobs use a
+separate Open Babel environment; protein jobs use the official CPU PyTorch index,
+an explicit small-model preparation command and actual local-only inference.
+No GPU, remote service or arbitrary model is tested. See [engine setup](engine-setup.md),
+actual CI logs and [validation](validation.md) for observed outcomes.

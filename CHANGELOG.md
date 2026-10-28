@@ -1,5 +1,14 @@
 # Changes
 
+## 0.7.0 — 2026-10-28
+
+- Added selected optional Open Babel conversion and small ESM-2 representation adapters with actual engine execution, independent controls and provenance.
+- Kept engine environments isolated; model preparation requires an explicit download flag, verifies pinned assets and uses safetensors for local-only inference.
+- Added bounds, non-overwrite behavior, explicit backend handling and negative cases; conversion rejects identity/charge/bond/stereo loss.
+- Extended portable, installed self-check and CI coverage while preserving prior research-writing and evidence tools.
+- Docking, larger prediction engines, remote execution and biological or benchmark-performance validation remain separate work. No upstream binary or weight is bundled.
+
+
 ## 0.6.2 — 2026-10-27
 
 - Added bounded optional Crossref/Europe PMC retrieval with pagination receipts, access distinctions, version/update metadata and honest coverage/failure states.

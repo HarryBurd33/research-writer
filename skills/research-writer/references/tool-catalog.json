@@ -89,7 +89,7 @@
         "Documented Linux/NVIDIA route; current code also exposes CPU/MPS with XLA attention, requiring environment-specific validation.",
         "Full search installation: approximately 252 GB compressed databases/up to 1 TB installed; RAM/device/runtime budget must be checked."
       ],
-      "inputs": "AlphaFold JSON dialect versions 1–4: sequences, seeds, optional MSAs/templates, CCD/SMILES ligands and supported bonded atoms/custom CCD.",
+      "inputs": "AlphaFold JSON dialect versions 1\u20134: sequences, seeds, optional MSAs/templates, CCD/SMILES ligands and supported bonded atoms/custom CCD.",
       "outputs": "Predicted mmCIF structures, confidence/summary JSON, ranking data, processed inputs and terms files.",
       "example_argv": [
         "{python}",
@@ -123,7 +123,7 @@
       "name": "Boltz",
       "repository": "https://github.com/jwohlwend/boltz",
       "revision": "b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc",
-      "role": "Biomolecular complex structure prediction; Boltz-2 optionally estimates protein–small-molecule affinity.",
+      "role": "Biomolecular complex structure prediction; Boltz-2 optionally estimates protein\u2013small-molecule affinity.",
       "code_license": "MIT.",
       "weights_terms": "Upstream README explicitly licenses code and model weights MIT for academic/commercial use.",
       "data_service_terms": "MSA server/data terms are independent; --use_msa_server submits sequences externally and can require authentication. Local prepared MSAs avoid that route.",
@@ -209,9 +209,19 @@
         "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/scripts/extract.py",
         "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/scripts/fold.py",
         "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/esm/pretrained.py",
-        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/examples/inverse_folding/README.md"
+        "https://github.com/facebookresearch/esm/blob/2b369911bb5b4b0dda914521b9475cad1656b2ac/examples/inverse_folding/README.md",
+        "https://huggingface.co/facebook/esm2_t6_8M_UR50D/blob/c731040fcd8d73dceaa04b0a8e6329b345b0f5df/README.md"
       ],
-      "status": "source-audited"
+      "status": "source-audited",
+      "verified_optional_checkpoint": {
+        "id": "facebook/esm2_t6_8M_UR50D",
+        "revision": "c731040fcd8d73dceaa04b0a8e6329b345b0f5df",
+        "weights_license": "MIT according to this exact official model card; does not establish terms for other checkpoints",
+        "weights_sha256": "24c5fa474c48f3b754b86efe752d5f189d2bcd88190fa2270fc92b2ef3034189",
+        "weights_bytes": 31384292,
+        "adapter": "scripts/protein_tools.py via Transformers, local safetensors only",
+        "capability": "bounded sequence embeddings; no folding/function/accuracy claim"
+      }
     },
     {
       "id": "biohub-esm",
@@ -365,7 +375,7 @@
       "name": "DiffDock",
       "repository": "https://github.com/gcorso/DiffDock",
       "revision": "85c49b60d3e0b0182a59ee43a34a6d7036981284",
-      "role": "Protein–small-molecule docking pose prediction and confidence ranking; current default is DiffDock-L.",
+      "role": "Protein\u2013small-molecule docking pose prediction and confidence ranking; current default is DiffDock-L.",
       "code_license": "MIT.",
       "weights_terms": "README explicitly applies MIT to code and DiffDock model weights; ESM/OpenFold dependencies have separate provenance/terms.",
       "data_service_terms": "Protein/ligand and benchmark data, public demos and cloud GPU services retain separate terms. Do not upload private structures automatically.",
@@ -485,16 +495,24 @@
         "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/COPYING",
         "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/INSTALL",
         "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/pyproject.toml",
-        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/doc/obabel.1"
+        "https://github.com/openbabel/openbabel/blob/9be528bcdb31a219637ae3d1699170a8aaa5be6d/doc/obabel.1",
+        "https://pypi.org/project/openbabel/3.2.1/"
       ],
-      "status": "source-audited"
+      "status": "source-audited",
+      "selected_execution_route": {
+        "version": "3.2.1",
+        "package": "official PyPI openbabel",
+        "license": "GPL-2.0-only, external executable; no binary bundled",
+        "adapter": "scripts/conversion_tools.py with independent RDKit checks",
+        "capability": "smi/sdf identity-checked conversion, not arbitrary-format or 3D validation"
+      }
     },
     {
       "id": "gnina",
       "name": "GNINA",
       "repository": "https://github.com/gnina/gnina",
       "revision": "01cae6aa6e014e0bf11e511f1fe7a61b17975855",
-      "role": "Docking, pose optimization and empirical/CNN scoring for protein–ligand systems.",
+      "role": "Docking, pose optimization and empirical/CNN scoring for protein\u2013ligand systems.",
       "code_license": "GPL/Apache conditions: supplied Open Babel integration forces GPL; Apache-only use requires removing Open Babel references. Not an ordinary Apache-only binary.",
       "weights_terms": "Bundled model files are present, but separate per-weight licenses were not located; inspect exact models and any external downloads.",
       "data_service_terms": "CrossDocked/DUD-E and other training/benchmark datasets or model repositories have separate unverified terms; remote GPU/compute costs need a budget.",

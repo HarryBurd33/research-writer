@@ -50,3 +50,21 @@ CUDA, ROCm and Apple MPS are different backends; one detected accelerator does n
 
 Before heavy work, verify exact runtime/model versions and hashes, input chemistry and provenance, compatible topology/tokenization/parameters, licenses and service terms, model/database/cache/temp storage, RAM/VRAM, elapsed-time/output limits and spending boundaries. Missing prerequisites remain explicit. Never add automatic API fallback, checkpoint/dataset download, MSA generation, sequence/structure upload or all-package installation. Preserve failed runs and report what was actually measured.
 
+
+## Executable adapter runtimes
+
+Keep one compatible runtime per selected dependency stack. Open Babel conversion
+can run its supplied executable in one environment while RDKit validates outputs
+in another. The small ESM-2 adapter uses Transformers in a separate interpreter;
+it does not require either shared `esm` namespace. Use project profiles for each
+runtime: `python` identifies its interpreter, `executables.openbabel` the converter,
+and `model_dirs.meta-esm` the selected verified local model directory. These are
+user-owned paths, not shared defaults. The traditional catalog doctor is an
+inventory of its named distributions, not proof that an alternative adapter works.
+The adapter's own report records its actual runtime and observed execution.
+
+CPU is the conservative embedding default. An explicit unavailable CUDA/MPS
+request fails; hardware detection does not establish broader engine support.
+Moving a profile cannot move its packages or weights. Reinstall compatible
+versions and repeat controls on each device. No remote host is contacted by
+these adapters. See the two execution guides for exact supported inputs/limits.
