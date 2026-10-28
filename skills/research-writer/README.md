@@ -1,4 +1,4 @@
-# Research Writer — version 0.12.0
+# Research Writer — version 0.13.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -85,3 +85,7 @@ is removed. Restore never executes a saved command; a continuation needs a new
 explicit job and compatible application. Process-crash recovery is tested separately
 from filesystem/device power-loss assumptions. Use `self_check.py --checkpoints`
 to require actual local SQLite installation controls.
+
+## Verified SSH backups
+
+[Optional SSH backups](references/off-device-backups.md) add bounded transfer, immutable publication, readback and a restore drill for a consistent whole-store backup. Select a trusted existing destination and explicit limits; credentials stay in the existing SSH configuration. No source deletion, automatic replication or job execution occurs. Loopback acceptance does not establish recovery on a second physical device.
