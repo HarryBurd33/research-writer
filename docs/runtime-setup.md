@@ -17,6 +17,8 @@ From the repository, substituting the chosen environment's Python:
 ```sh
 python -m pip install --only-binary=:all: -r extras/cpu-tested-requirements.txt
 python evals/toolkit_checks.py --molecular
+python evals/toolkit_regressions.py --molecular
+python evals/package_smoke.py --molecular
 python scripts/build_portable.py --check
 ```
 
@@ -34,3 +36,5 @@ Replace `PROJECT` with the selected user-owned project path. Set `python` in the
 Use local, remote, CPU, CUDA, MPS or ROCm declarations to plan; test the actual engine/backend separately. A remote profile does not connect or authenticate, and no credential belongs in it. Obtain user authorization and inspect the remote runtime before submitting any job. For heavyweight engines, resolve the selected release, compatible dependencies, weights/data terms, input chemistry, storage/RAM/VRAM and explicit compute/spending limits. A GPU alone does not make all catalog engines runnable. Keep the two ESM distributions and other conflicting ML stacks in separate environments.
 
 Run `rdkit-descriptors`, a seeded `rdkit-conformer`, and `openmm-smoke` as small controls before relying on that environment. Preserve versions, input/output hashes and failures. These checks demonstrate local functionality only; neither a structure, docking score, generated molecule nor short simulation establishes biological success. See [commands and schemas](../skills/research-writer/references/tool-usage.md) and [device guide](../skills/research-writer/references/device-profiles.md).
+
+After installing or moving the skill, run its `scripts/self_check.py` with the actual selected interpreter. Add `--molecular` to require CPU controls rather than skip them. See [test commands and matrix limits](testing.md).
