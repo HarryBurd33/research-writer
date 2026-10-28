@@ -161,6 +161,16 @@ class BackupContracts(BackupFixture):
             with self.assertRaises(OSError): B.publish_report(out, b'{"ok":true}')
         self.assertFalse(out.exists())
 
+    def test_artifact_flush_uses_writable_windows_and_readonly_posix_handle(self):
+        path = self.root / 'artifact'
+        for platform, expected in (('nt',os.O_RDWR), ('posix',os.O_RDONLY)):
+            with self.subTest(platform=platform), patch.object(B.os,'name',platform), \
+                    patch.object(B.os,'open',return_value=99) as opened, \
+                    patch.object(B.os,'fsync') as flushed, patch.object(B.os,'close') as closed:
+                B.fsync_file(path)
+                opened.assert_called_once_with(path,expected|getattr(os,'O_NOFOLLOW',0))
+                flushed.assert_called_once_with(99); closed.assert_called_once_with(99)
+
     def test_success_report_postrename_flush_failure_removes_own_report(self):
         out = self.root / 'report'
         with patch.object(C, 'fsync_directory', side_effect=OSError(errno.EIO, 'flush')):
