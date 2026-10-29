@@ -63,3 +63,7 @@ Use the actual CSV row: rows start at 1 after its header, and all context fields
 ### Verified backup transport
 
 Use `scripts/backup_tools.py` only for an explicitly selected authorized SSH backup destination. Its separate `init-remote`, `prepare`, `push`, `verify` and `fetch` operations preserve uncertain outcomes and immutable identity. See [the full contract](off-device-backups.md). It transfers a consistent whole SQLite store with an explicit 1–64 MiB cap; it does not execute saved application notes.
+
+### Streaming and profile migration
+
+Use `scripts/stream_backup_tools.py` for optional binary whole-store backups and explicit `migrate-profile` verification through changed client connection settings. Select transfer limits and preserve immutable destination/data pins. See [the contract](streaming-backups.md). The legacy JSON route remains available.
