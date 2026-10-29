@@ -140,3 +140,14 @@ acceptance requires a selected independent destination. Loopback, injected sysca
 failures and process termination do not certify physical power loss, SSD firmware,
 network/cloud filesystems, encryption-at-rest or shared distributed writers.
 External-host/GPU, scientific engine and scheduler acceptance remain separate.
+
+## Streaming and profile migration continuation — v0.14
+
+Optional binary streaming raises the explicit whole-store transfer ceiling to the
+existing 512 MiB SQLite store bound. It uses bounded buffers and temporary disk;
+no compression, distributed writer or partial-transfer resume is implied. Explicit
+profile migration adapts client connection settings after fresh read-only full
+verification of the same pinned destination and backup. It preserves old state
+and prevents another upload. See [observed validation](streaming-backup-validation.md).
+Physical off-device/power-loss acceptance, encryption, operational retention and
+monitoring, destination relocation, external GPU and scheduler work remain separate.

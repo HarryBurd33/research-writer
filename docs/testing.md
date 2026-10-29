@@ -233,3 +233,13 @@ controls and from unexecuted physical power/device-loss validation. The installe
 self-check remains offline. See [observed results](off-device-backup-validation.md).
 
 CI selects explicit Bash fail-fast execution on every OS, including Windows. A failed command in a multi-command step must stop that step. Inspect actual method summaries and expected skips alongside job status; a green wrapper alone does not prove every subprocess passed.
+
+## v0.14 streaming and connection-profile migration
+
+```bash
+python evals/stream_backup_checks.py
+python evals/stream_backup_loopback_checks.py --run-ssh
+python evals/package_smoke.py --checkpoints
+```
+
+The new suites supplement every previous backup/checkpoint/execution gate. A valid database larger than 64 MiB must exercise actual binary transfer, bounded-read instrumentation and full recovery. Explicit migration needs both positive changed-client and negative changed-destination controls, preserving old state and upload history. Inspect raw Windows logs; explicit Bash fail-fast remains mandatory. See [observed validation](streaming-backup-validation.md).

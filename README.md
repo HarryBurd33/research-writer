@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.13.0** adds optional verified SSH backups of consistent SQLite checkpoint stores: explicit destination and byte limits, immutable backup IDs, lost-reply reconciliation, full readback and restoration checks. Source data is retained. The receiver is a trusted POSIX host; ordinary research and local checkpoints require no remote connection. See [backup usage](skills/research-writer/references/off-device-backups.md), [observed validation](docs/off-device-backup-validation.md) and [tests](docs/testing.md).
+**Version 0.14.0** adds bounded binary streaming backups and explicit connection-profile migration. Select a whole-store limit up to 512 MiB and a transfer chunk size; fresh readback and full restore verification remain required. Migration can adapt client paths, aliases and timeouts after verifying the same pinned destination and backup, while preserving old state and preventing another upload. See [usage](skills/research-writer/references/streaming-backups.md), [validation](docs/streaming-backup-validation.md) and [tests](docs/testing.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 

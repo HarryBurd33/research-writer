@@ -1,5 +1,11 @@
 # Changes
 
+## 0.14.0
+
+- Optional bounded binary streaming of consistent whole-store backups, with explicit 1–512 MiB limits and 64 KiB–1 MiB transfer chunks.
+- Explicit read-only connection-profile migration with fresh backup verification, destination/data pins, lineage, preserved source state and upload blocking.
+- Existing JSON backup route, SQLite format1 and research/writing contracts preserved. Temporary disk, operational off-device validation and physical storage guarantees remain separate limits.
+
 ## 0.13.0
 
 - Optional explicit-destination SSH checkpoint backup with bounded whole-store transfer, immutable identity and reconciliation after uncertain publication.
