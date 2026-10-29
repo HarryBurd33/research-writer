@@ -86,6 +86,7 @@ jobs:
           python evals/linux_checks.py
           python evals/checkpoint_checks.py
           python evals/backup_checks.py
+          python evals/stream_backup_checks.py
           python evals/remote_loopback_checks.py
       - name: Workflow fixture arithmetic and integrity (no model evaluation)
         run: |
@@ -203,6 +204,7 @@ jobs:
         run: |
           python evals/remote_loopback_checks.py --run-ssh
           python evals/backup_loopback_checks.py --run-ssh
+          python evals/stream_backup_loopback_checks.py --run-ssh
 
   isolation:
     name: Linux isolation and recovery (Docker, Python 3.12)
