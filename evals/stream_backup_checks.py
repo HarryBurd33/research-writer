@@ -38,7 +38,7 @@ class StreamContracts(unittest.TestCase):
         self.tmp=tempfile.TemporaryDirectory(prefix='rw-stream-test-'); self.root=Path(self.tmp.name).resolve()
         self.config=self.root/'config'; self.config.write_text('Host test\n HostName 127.0.0.1\n')
         self.p={'schema_version':2,'ssh_alias':'test','ssh_config':str(self.config),'remote_python':'python3',
-                'remote_root':str(self.root/'vault'),'expected_hostname':socket.gethostname(),'expected_user':getpass.getuser(),
+                'remote_root':str(self.root/'vault') if os.name=='posix' else '/var/tmp/rw-stream-fixture','expected_hostname':socket.gethostname(),'expected_user':getpass.getuser(),
                 'connect_timeout_seconds':5,'vault_id':uuid.uuid4().hex,'max_backup_bytes':4*1024**2,
                 'rpc_timeout_seconds':10,'chunk_bytes':65536}
         self.store=self.root/'source'; C.init_store(self.store,4*1024**2,3)
