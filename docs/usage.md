@@ -76,3 +76,5 @@ External delivery depends on supported tools and access. Distinguish a new docum
 Tool commands, input schemas and optional setup are in the [tool usage guide](../skills/research-writer/references/tool-usage.md). A source-audited catalog entry does not mean that engine is installed. Profiles are private user configuration, not shared defaults or authorization to spend money or transmit data.
 
 For a selected existing backup machine, follow [verified SSH backups](../skills/research-writer/references/off-device-backups.md). Ask the skill: “Back up this checkpoint store to my existing SSH destination. Establish identity, data permission and size limits, verify readback and show a recovery drill.” No destination or transfer is assumed.
+
+For larger selected checkpoint backups or a changed recovery client, follow [streaming and profile migration](../skills/research-writer/references/streaming-backups.md). Ask Research Writer to establish the destination and byte/chunk/time budgets, verify the existing backup through the new profile, and create separate recovery state.
