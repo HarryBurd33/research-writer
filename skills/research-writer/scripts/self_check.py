@@ -28,7 +28,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/remote_tools.py', 'scripts/remote_worker.py',
             'scripts/discovery_tools.py', 'scripts/claim_audit.py',
             'scripts/linux_tools.py', 'scripts/linux_supervisor.py',
-            'scripts/checkpoint_tools.py', 'scripts/backup_tools.py',
+            'scripts/checkpoint_tools.py', 'scripts/backup_tools.py', 'scripts/stream_backup_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
@@ -36,7 +36,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
                 'question-development', 'research-and-sources', 'standards',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
                 'molecular-conversion', 'protein-embeddings', 'remote-execution',
-                'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints', 'off-device-backups')))
+                'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints', 'off-device-backups', 'streaming-backups')))
 
 
 def require(condition, message):
@@ -241,6 +241,29 @@ def checkpoint_check(work):
     require(drill.get('full_restore_drill') is True and drill.get('generations') == 1,
             'Offline backup restore drill failed')
     run_cli(work, 'backup_tools.py', ['--help'])
+    # The streaming route's selected offline check prepares a real consistent
+    # snapshot. This does not connect to the synthetic profile's host.
+    stream_profile = work / 'stream-profile.json'
+    write(stream_profile, {'schema_version': 2, 'ssh_alias': 'offline-control',
+          'ssh_config': None, 'remote_python': 'python3',
+          'remote_root': '/var/tmp/research-writer-offline-vault',
+          'expected_hostname': 'not-contacted', 'expected_user': 'not-contacted',
+          'connect_timeout_seconds': 5, 'vault_id': 'c' * 32,
+          'max_backup_bytes': 4 * 1024**2, 'rpc_timeout_seconds': 5,
+          'chunk_bytes': 65536})
+    stream_state = work / 'stream-state'
+    stream_report = work / 'stream-prepared.json'
+    run_cli(work, 'stream_backup_tools.py', ['prepare', '--profile', stream_profile,
+            '--store', store, '--backup-id', 'd' * 32, '--state-dir', stream_state,
+            '--report', stream_report])
+    prepared = load(stream_report)
+    require(prepared.get('ok') is True and prepared.get('state') == 'prepared' and
+            load(stream_state / 'intent.json')['schema_version'] == 2,
+            'Offline streaming snapshot preparation failed')
+    raw = (stream_state / 'snapshot/checkpoint.sqlite').read_bytes()
+    require(len(raw) == prepared['descriptor']['size'] and
+            hashlib.sha256(raw).hexdigest() == prepared['descriptor']['sha256'],
+            'Offline streaming snapshot hash differs')
     source.write_bytes(b'changed')
     run_cli(work, 'checkpoint_tools.py', ['save', '--store', store,
             '--manifest', packet, '--allow-save', '--report', work / 'checkpoint-rejected.json'], expected=2)
