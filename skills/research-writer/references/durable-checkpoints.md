@@ -215,3 +215,5 @@ redistributed. These are separately supplied runtime interfaces. References:
 [Docker tmpfs](https://docs.docker.com/engine/storage/tmpfs/).
 
 For a separately selected destination, [verified SSH backups](off-device-backups.md) add bounded whole-store transfer and readback/restore drills. The local `backup` command alone remains a same-device copy unless the operator establishes otherwise.
+
+For a larger selected whole-store transfer or changed recovery client, [streaming backups and explicit migration](streaming-backups.md) extend the optional SSH route to the existing store ceiling.
