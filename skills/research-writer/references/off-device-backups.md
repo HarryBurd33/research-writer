@@ -99,7 +99,7 @@ python /absolute/skill/scripts/checkpoint_tools.py restore --store /absolute/new
 ```
 
 Fetching needs the retained intent and independently provisioned connection,
-but not the original source store or local staged database. Preserve the exact normalized profile values: the intent currently pins local config paths, alias and timeouts as well as destination identity. It rejects changed values; there is no implicit profile migration. Using the default SSH config (`null`) and the same alias permits independently provisioned client credentials without embedding a machine-specific config path. Explicit path remapping requires a future verified migration route. It creates a new
+but not the original source store or local staged database. Preserve the exact normalized profile values: the intent currently pins local config paths, alias and timeouts as well as destination identity. It rejects changed values; there is no implicit profile migration. Using the default SSH config (`null`) and the same alias permits independently provisioned client credentials without embedding a machine-specific config path. For changed client paths, use the explicit [streaming profile migration](streaming-backups.md); the JSON helper itself still rejects edited profiles. It creates a new
 verified store and never overwrites a destination. Inspect restored bytes and
 application requirements before deciding on any separately authorized continuation.
 For a real off-device acceptance drill, make the original source unavailable,
@@ -126,3 +126,5 @@ See [local checkpoints](durable-checkpoints.md), [device profiles](device-profil
 and [testing](testing.md) for adjacent operations. SQLite documentation supplies
 the [consistent backup API](https://www.sqlite.org/backup.html); the implementation
 uses the installed Python SQLite library, not a bundled database engine.
+
+For bounded binary transfer up to the existing 512 MiB store ceiling and explicit client-connection migration, use [streaming backups](streaming-backups.md). The JSON commands above retain their original 64 MiB and exact-profile behavior.
