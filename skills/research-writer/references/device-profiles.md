@@ -70,3 +70,5 @@ versions and repeat controls on each device. No remote host is contacted by
 these adapters. See the two execution guides for exact supported inputs/limits.
 
 Optional checkpoint backup uses a separate [SSH vault profile](off-device-backups.md), with mandatory host/user and vault identity, explicit whole-store byte limit and timeout. A declared remote hostname is not evidence of an independent storage failure domain.
+
+[Streaming backup profile2](streaming-backups.md) adds explicit chunk and whole-store limits. Connection migration verifies the same pinned backup before producing new read-only state; a changed client config does not grant another upload.
