@@ -259,6 +259,40 @@ out.flush()
                     S.migrate_profile(self.p,self.p,self.state,self.root/'alias-migration',True)
             (self.state/name).unlink()
 
+    def test_artifact_metadata_cross_api_differences_and_mutation_guards(self):
+        from types import SimpleNamespace
+        path=self.state/'snapshot'/C.DB_NAME
+        info=path.lstat()
+        names=('st_dev','st_ino','st_size','st_mode','st_nlink','st_mtime_ns','st_ctime_ns')
+        before={name:getattr(info,name) for name in names}
+        # A stable fd representation differs from a stable path representation.
+        actual={**before,'st_mtime_ns':before['st_mtime_ns']-123,'st_ctime_ns':before['st_ctime_ns']+456}
+        def run(path_before,path_after,fd_before,fd_after):
+            with patch.object(C,'no_symlinks',return_value=path),patch.object(Path,'lstat',side_effect=[SimpleNamespace(**path_before),SimpleNamespace(**path_after)]),patch.object(S.os,'fstat',side_effect=[SimpleNamespace(**fd_before),SimpleNamespace(**fd_after)]):
+                with S.artifact_stream(path,self.p['max_backup_bytes']) as (stream,size):
+                    self.assertEqual(size,info.st_size); self.assertTrue(stream.read(1))
+        run(before,before,actual,actual)
+        for field in ('st_mtime_ns','st_ctime_ns','st_size','st_ino','st_dev','st_nlink'):
+            changed={**actual,field:actual[field]+1}
+            with self.assertRaisesRegex(ValueError,'changed during read'): run(before,before,actual,changed)
+            changed={**before,field:before[field]+1}
+            with self.assertRaisesRegex(ValueError,'changed during read'): run(before,changed,actual,actual)
+        for field in ('st_size','st_ino','st_dev'):
+            changed={**actual,field:actual[field]+1}
+            with self.assertRaisesRegex(ValueError,'changed during open'): run(before,before,changed,changed)
+
+    def test_artifact_metadata_platform_diagnostic(self):
+        path=self.state/'snapshot'/C.DB_NAME
+        fields=('st_dev','st_ino','st_size','st_mtime_ns','st_ctime_ns','st_nlink')
+        before=path.lstat()
+        with path.open('rb') as stream:
+            fd_before=os.fstat(stream.fileno()); stream.read(1); fd_after=os.fstat(stream.fileno())
+        after=path.lstat()
+        metadata={label:{field:getattr(value,field) for field in fields} for label,value in
+                  [('path_before',before),('fd_before',fd_before),('fd_after',fd_after),('path_after',after)]}
+        print('STREAM_METADATA_DIAGNOSTIC '+json.dumps({'os':os.name,'metadata':metadata},sort_keys=True),flush=True)
+        self.assertEqual(S.hash_file(path,self.p['max_backup_bytes'],self.p['chunk_bytes'])[0],before.st_size)
+
     def test_permission_and_private_paths(self):
         with self.assertRaises(ValueError): S.push(self.p,self.state)
         with self.assertRaises(ValueError): S.fetch(self.p,self.state,self.root/'fetch')
