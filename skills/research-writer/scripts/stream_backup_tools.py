@@ -183,13 +183,18 @@ def artifact_stream(path, maximum):
     fd = os.open(path,os.O_RDONLY|getattr(os,'O_NOFOLLOW',0)|getattr(os,'O_NONBLOCK',0))
     try:
         actual = os.fstat(fd)
-        if (before.st_dev,before.st_ino) != (actual.st_dev,actual.st_ino) or not stat.S_ISREG(actual.st_mode) or actual.st_nlink != 1:
+        identity = lambda x:(x.st_dev,x.st_ino,x.st_size)
+        if identity(before) != identity(actual) or not stat.S_ISREG(actual.st_mode) or actual.st_nlink != 1:
             raise ValueError('Database changed during open')
         with os.fdopen(fd,'rb',closefd=False) as stream:
             yield stream,actual.st_size
         after = os.fstat(fd); current = path.lstat()
         fields = lambda x:(x.st_dev,x.st_ino,x.st_size,x.st_mtime_ns,x.st_ctime_ns,x.st_nlink)
-        if fields(actual)!=fields(after) or fields(after)!=fields(current): raise ValueError('Database changed during read')
+        # Path stat and descriptor stat can expose different timestamp
+        # representations. Detect mutation within each API and compare stable
+        # file identity/size across APIs, retaining both replacement guards.
+        if fields(actual)!=fields(after) or fields(before)!=fields(current) or identity(after)!=identity(current):
+            raise ValueError('Database changed during read')
     finally: os.close(fd)
 
 
