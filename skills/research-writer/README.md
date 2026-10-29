@@ -1,4 +1,4 @@
-# Research Writer — version 0.13.0
+# Research Writer — version 0.14.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -89,3 +89,7 @@ to require actual local SQLite installation controls.
 ## Verified SSH backups
 
 [Optional SSH backups](references/off-device-backups.md) add bounded transfer, immutable publication, readback and a restore drill for a consistent whole-store backup. Select a trusted existing destination and explicit limits; credentials stay in the existing SSH configuration. No source deletion, automatic replication or job execution occurs. Loopback acceptance does not establish recovery on a second physical device.
+
+## Streaming and connection migration
+
+[Streaming backups](references/streaming-backups.md) use bounded binary transfer buffers with an explicit whole-store cap up to 512 MiB. Temporary disk still scales with the backup. An explicit migration verifies the same immutable backup through new client settings and creates new read-only recovery state; the old state and destination identity remain intact.
