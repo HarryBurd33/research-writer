@@ -95,14 +95,15 @@ class NativeWindows(unittest.TestCase):
             m=self.prepare(code);self.call(m,'submit');self.assertEqual(self.terminal(m)['status'],'failed')
 
     def test_timeout_and_cancel_kill_grandchild(self):
-        for cancel in (False,True):
+        for cancel in (False,True,True,True):
             code="import subprocess,sys,time;subprocess.Popen([sys.executable,'-c',\"import time;from pathlib import Path;time.sleep(3);Path('escaped.txt').write_text('bad')\"]);time.sleep(10)"
             m=self.prepare(code,wall=1 if not cancel else 10);self.call(m,'submit')
             if cancel:
                 end=time.monotonic()+5
                 while self.call(m,'status')['status']!='running' and time.monotonic()<end: time.sleep(.05)
                 self.call(m,'cancel')
-            self.assertEqual(self.terminal(m)['status'],'cancelled' if cancel else 'timed_out')
+            terminal=self.terminal(m)
+            self.assertEqual(terminal['status'],'cancelled' if cancel else 'timed_out',terminal)
             time.sleep(3.2);self.assertFalse((self.root/m['job_id']/'work/escaped.txt').exists())
 
     def test_controller_loss_stays_uncertain_and_kills_tree(self):

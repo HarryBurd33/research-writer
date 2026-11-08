@@ -78,6 +78,7 @@ jobs:
         run: |
           python evals/conversion_checks.py
           python evals/protein_checks.py
+          python evals/accelerator_checks.py
           python evals/slurm_checks.py
           python evals/windows_worker_checks.py
       - name: Remote client and worker contracts

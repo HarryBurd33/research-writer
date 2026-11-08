@@ -69,3 +69,5 @@ Use `scripts/backup_tools.py` only for an explicitly selected authorized SSH bac
 Use `scripts/stream_backup_tools.py` for optional binary whole-store backups and explicit `migrate-profile` verification through changed client connection settings. Select transfer limits and preserve immutable destination/data pins. See [the contract](streaming-backups.md). The legacy JSON route remains available.
 
 Use [docking](docking.md), [structure prediction](structure-prediction.md), [native Windows](windows-worker.md) and [Slurm](slurm-execution.md) only for explicitly selected compatible tasks. Each has its own versioned contract and provisioning/acceptance requirements.
+
+[Local accelerator acceptance](accelerator-acceptance.md) verifies one explicit MPS/CUDA control against a frozen CPU comparison. It does not change CPU remote manifests or imply external-host acceptance.

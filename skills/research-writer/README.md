@@ -99,3 +99,5 @@ to require actual local SQLite installation controls.
 ## Additional optional execution routes
 
 [Vina docking](references/docking.md) and [Boltz CPU prediction](references/structure-prediction.md) have bounded original wrappers and explicit input/output checks. [Native Windows](references/windows-worker.md) and [Slurm](references/slurm-execution.md) expose separate platform routes. Each guide distinguishes source contracts, actual runtime evidence and scientific or host-specific acceptance. No selected host, model asset or runtime is installed by merely installing the skill.
+
+[Accelerator acceptance](references/accelerator-acceptance.md) supplies an optional explicit MPS/CUDA control with actual-device proof and a CPU numerical comparison; external host/CUDA acceptance remains separate from the observed local MPS run.

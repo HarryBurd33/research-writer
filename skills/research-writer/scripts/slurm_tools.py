@@ -116,7 +116,13 @@ def rows(p,saved):
     query=['--clusters='+p['cluster'],'--user='+p['expected_user']]
     queued=command(p,'squeue',[*query,'--noheader','--format=%i|%u|%k|%T|%V|%a'])
     since=time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(saved.get('attempted_at',time.time())-60))
-    accounted=command(p,'sacct',[*query,'--starttime='+since,'--allocations','--noheader','--parsable2',
+    selected=[]
+    if saved.get('scheduler_job_id'):
+        if not re.fullmatch('[0-9]+',saved['scheduler_job_id']):raise ValueError('Invalid saved scheduler numeric identity')
+        # sacct otherwise excludes jobs that never became eligible (e.g. cancelled holds).
+        selected=['--jobs='+saved['scheduler_job_id']]
+    until=time.strftime('%Y-%m-%dT%H:%M:%S',time.localtime(time.time()+1))
+    accounted=command(p,'sacct',[*query,*selected,'--starttime='+since,'--endtime='+until,'--allocations','--noheader','--parsable2',
                                  '--duplicates','--format=JobIDRaw%32,User%256,Comment%128,State%64,ExitCode%32,Submit%32,Account%64'])
     matches={}; observed={}
     for raw,accounting in ((queued,False),(accounted,True)):

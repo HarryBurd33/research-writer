@@ -104,6 +104,16 @@ class SlurmContract(unittest.TestCase):
             self.assertTrue(s.operate(self.p,'cancel',m['job_id'],allow_cancel=True)['scheduler']['cancel_requested'])
             self.assertEqual(command.call_args.args[1:],('scancel',['--clusters=test','--user='+self.p['expected_user'],'123']))
 
+    def test_accounting_known_id_includes_never_eligible_cancelled_hold(self):
+        job,m,saved=self.prepare();saved.update(submit_attempted=True,attempted_at=1,scheduler_job_id='123')
+        with patch.object(s,'command',side_effect=['',self.row(saved,state='CANCELLED')]) as command:
+            result=s.reconcile(self.p,job,m,saved)
+        self.assertEqual(result['status'],'cancelled')
+        args=command.call_args.args[2]
+        self.assertIn('--jobs=123',args);self.assertIn('--duplicates',args)
+        self.assertTrue(any(x.startswith('--starttime=') for x in args))
+        self.assertTrue(any(x.startswith('--endtime=') for x in args))
+
     def test_queue_deadline_separate_from_running_timeout(self):
         job,m,saved=self.prepare();saved.update(submit_attempted=True,attempted_at=1)
         with patch.object(s,'command',side_effect=['',self.row(saved,state='PENDING')]):
