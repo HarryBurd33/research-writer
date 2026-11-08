@@ -223,7 +223,7 @@ jobs:
       - name: Require genuine maximum-capacity backup and interruption control
         if: runner.os == 'Linux'
         timeout-minutes: 5
-        run: python evals/stream_backup_capacity_checks.py --run-ssh --budget-seconds 240
+        run: python evals/stream_backup_capacity_checks.py --run-ssh --budget-seconds 240 --report "$RUNNER_TEMP/stream-backup-capacity.json"
 
   isolation:
     name: Linux isolation and recovery (Docker, Python 3.12)
