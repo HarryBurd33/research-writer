@@ -256,7 +256,7 @@ class CapacityChecks(unittest.TestCase):
             for label,who in (('controller',resource.RUSAGE_SELF),('reaped_ssh_clients',resource.RUSAGE_CHILDREN)):
                 current=resource.getrusage(who);initial=initial_cpu[who]
                 metrics['cpu_seconds'][label]={'user':round(current.ru_utime-initial.ru_utime,6),'system':round(current.ru_stime-initial.ru_stime,6)}
-            metrics['cpu_scope']='Actual controller and reaped SSH-client CPU during test body; excludes server-side CPU and fixture setup/cleanup' 
+            metrics['cpu_scope']='Actual controller and reaped SSH-client CPU during test body; excludes server-side CPU and fixture setup/cleanup'
             report['metrics']=metrics;report['state']='passed'
             phase('passed')
         except BaseException as exc:
