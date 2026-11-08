@@ -1,0 +1,54 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="520" viewBox="0 0 900 520" role="img" aria-labelledby="title description">
+<title id="title">Synthetic mean concentration ± sample SD</title>
+<desc id="description">Original synthetic fixture; no observed study results or generated numerical imagery.</desc>
+<metadata>{
+  "analysis": "statistics.mean and statistics.stdev; sample SD, denominator n-1; n=3",
+  "command": "python3 docs/examples/scientific-figures/generate.py",
+  "description": "Original synthetic fixture; no observed study results or generated numerical imagery.",
+  "formats": "Editable SVG text and paths; JSON statistics. No PDF/PNG or proprietary layered format.",
+  "generator_sha256": "2294e2f10aeb9be252ec304c76c9e84e55d098008bf0eb397af935aac0cefb69",
+  "sources_sha256": {
+    "erroneous-diagram.json": "4c653f2668e4c1d7ac7010daa3dea16b29e74eddc1d1ced0f4d62ccf5f81a7b9",
+    "measurements.csv": "d4dc598ee4f5a2317ad78991555cd01b92556db04a781fd7a26d3102c60287ef",
+    "protocol.txt": "2fbd939c7a3aa846abab235d30f3db05fddcc3c35e94e394459257b45fdd3c65"
+  }
+}
+</metadata>
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="Arial, sans-serif" font-size="16" fill="#17252d">
+<text x="450" y="32" text-anchor="middle" font-size="23">Synthetic concentration measurements</text>
+<text x="450" y="57" text-anchor="middle" font-size="14">Mean ± sample SD; n = 3 per time; SD is not a confidence interval</text>
+<path d="M 105 365.000000 H 805" stroke="#dce2e5"/>
+<text x="93" y="370" text-anchor="end">0</text>
+<path d="M 105 295.000000 H 805" stroke="#dce2e5"/>
+<text x="93" y="300" text-anchor="end">0.924</text>
+<path d="M 105 225.000000 H 805" stroke="#dce2e5"/>
+<text x="93" y="230" text-anchor="end">1.848</text>
+<path d="M 105 155.000000 H 805" stroke="#dce2e5"/>
+<text x="93" y="160" text-anchor="end">2.772</text>
+<path d="M 105 85.000000 H 805" stroke="#dce2e5"/>
+<text x="93" y="90" text-anchor="end">3.696</text>
+<path d="M 105 85 V 365 H 805" fill="none" stroke="#17252d"/>
+<polyline points="105.000000,365.000000 338.333333,213.484848 571.666667,289.242424 805.000000,137.727273" fill="none" stroke="#14647a" stroke-width="2"/>
+<path d="M 105.000000 365.000000 V 365.000000 M 98.000000 365.000000 H 112.000000 M 98.000000 365.000000 H 112.000000" stroke="#14647a" stroke-width="2"/>
+<circle cx="105.000000" cy="365.000000" r="5" fill="#14647a"/>
+<text x="105" y="390" text-anchor="middle">0</text>
+<text x="105" y="353" text-anchor="middle" font-weight="bold">0</text>
+<path d="M 338.333333 198.333333 V 228.636364 M 331.333333 198.333333 H 345.333333 M 331.333333 228.636364 H 345.333333" stroke="#14647a" stroke-width="2"/>
+<circle cx="338.333333" cy="213.484848" r="5" fill="#14647a"/>
+<text x="338.333" y="390" text-anchor="middle">1</text>
+<text x="338.333" y="186.333" text-anchor="middle" font-weight="bold">2</text>
+<path d="M 571.666667 281.666667 V 296.818182 M 564.666667 281.666667 H 578.666667 M 564.666667 296.818182 H 578.666667" stroke="#14647a" stroke-width="2"/>
+<circle cx="571.666667" cy="289.242424" r="5" fill="#14647a"/>
+<text x="571.667" y="390" text-anchor="middle">2</text>
+<text x="571.667" y="269.667" text-anchor="middle" font-weight="bold">1</text>
+<path d="M 805.000000 115.000000 V 160.454545 M 798.000000 115.000000 H 812.000000 M 798.000000 160.454545 H 812.000000" stroke="#14647a" stroke-width="2"/>
+<circle cx="805.000000" cy="137.727273" r="5" fill="#14647a"/>
+<text x="805" y="390" text-anchor="middle">3</text>
+<text x="805" y="103" text-anchor="middle" font-weight="bold">3</text>
+<text x="450" y="425" text-anchor="middle">Time (min)</text>
+<text transform="translate(28 225) rotate(-90)" text-anchor="middle">Concentration (mg/L)</text>
+<text x="105" y="464" font-size="14">Synthetic triplicates from measurements.csv; error bars use sample SD (denominator n − 1).</text>
+<text x="105" y="487" font-size="14">Zero at 0 min and decrease at 2 min are retained; line connects means only.</text>
+</g>
+</svg>

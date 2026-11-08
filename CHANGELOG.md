@@ -1,5 +1,13 @@
 # Changes
 
+## 0.15.0 — 2026-11-08
+
+- Add prospective question/contribution/evidence/method/analysis/deliverable traceability, material access limits, alternatives and a contribution-weakening outcome.
+- Record agreement across manuscript abstract, text, tables, figures and captions against authoritative claim/result artifacts, preserving null/contrary findings and genre flexibility.
+- Add optional bounded figure specification/render/factual/visual review with separate quantitative and conceptual routes, explicit API/upload boundaries and a local/specification fallback.
+- Add original reproducible synthetic SVG figure examples and independent numeric checks; no PaperBanana code, provider or dataset is bundled.
+- Preserve existing source/claim record semantics, computation tools and private project state. Validation and promotion status are recorded separately.
+
 ## 0.14.0
 
 - Optional bounded binary streaming of consistent whole-store backups, with explicit 1–512 MiB limits and 64 KiB–1 MiB transfer chunks.

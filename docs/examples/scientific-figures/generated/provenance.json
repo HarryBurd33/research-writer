@@ -1,0 +1,12 @@
+{
+  "analysis": "statistics.mean and statistics.stdev; sample SD, denominator n-1; n=3",
+  "command": "python3 docs/examples/scientific-figures/generate.py",
+  "description": "Original synthetic fixture; no observed study results or generated numerical imagery.",
+  "formats": "Editable SVG text and paths; JSON statistics. No PDF/PNG or proprietary layered format.",
+  "generator_sha256": "2294e2f10aeb9be252ec304c76c9e84e55d098008bf0eb397af935aac0cefb69",
+  "sources_sha256": {
+    "erroneous-diagram.json": "4c653f2668e4c1d7ac7010daa3dea16b29e74eddc1d1ced0f4d62ccf5f81a7b9",
+    "measurements.csv": "d4dc598ee4f5a2317ad78991555cd01b92556db04a781fd7a26d3102c60287ef",
+    "protocol.txt": "2fbd939c7a3aa846abab235d30f3db05fddcc3c35e94e394459257b45fdd3c65"
+  }
+}

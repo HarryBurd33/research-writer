@@ -1,0 +1,5 @@
+{
+  "purpose": "Planted factual error fixture for review; this is not the protocol.",
+  "steps": ["collect", "stain", "fix", "image"],
+  "expected_review": "Reject: fix and stain are reversed relative to protocol.txt. Correct order: collect → fix → stain → image."
+}

@@ -2,9 +2,11 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.14.0** adds bounded binary streaming backups and explicit connection-profile migration. Select a whole-store limit up to 512 MiB and a transfer chunk size; fresh readback and full restore verification remain required. Migration can adapt client paths, aliases and timeouts after verifying the same pinned destination and backup, while preserving old state and preventing another upload. See [usage](skills/research-writer/references/streaming-backups.md), [validation](docs/streaming-backup-validation.md) and [tests](docs/testing.md).
+**Version 0.15.0** adds explicit proposal traceability, manuscript cross-artifact consistency and an optional source-grounded scientific-figure workflow. Quantitative plots require verified data and rerunnable code; conceptual illustrations receive factual and visual review. Missing figure tools leave a useful specification without blocking writing. See [proposal guidance](skills/research-writer/references/proposal-quality.md), [figures](skills/research-writer/references/scientific-figures.md) and [upgrade validation](docs/proposal-figure-validation.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
+
+See original [proposal/manuscript examples](docs/examples/proposal-and-manuscript.md) and [reproducible figure sources](docs/examples/scientific-figures/FIGURE_SPEC.md). They use synthetic material and do not represent completed scientific studies.
 
 ## Develop the research question
 

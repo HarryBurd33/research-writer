@@ -243,3 +243,9 @@ python evals/package_smoke.py --checkpoints
 ```
 
 The new suites supplement every previous backup/checkpoint/execution gate. A valid database larger than 64 MiB must exercise actual binary transfer, bounded-read instrumentation and full recovery. Explicit migration needs both positive changed-client and negative changed-destination controls, preserving old state and upload history. Inspect raw Windows logs; explicit Bash fail-fast remains mandatory. See [observed validation](streaming-backup-validation.md).
+
+## Proposal, manuscript and figure upgrade checks
+
+Run `python evals/figure_example_checks.py` for the original synthetic example. It checks numerical expectations, source hashes, input-driven outputs, XML/labels, deterministic regeneration, relocation and source-file protection. It does not run a model or establish visual/scientific validity. The original source and outputs are in [the example](examples/scientific-figures/FIGURE_SPEC.md).
+
+Behavioral comparison, rendered-image inspection and installation/GitHub promotion are separate checks; consult [the upgrade report](proposal-figure-validation.md) for observed results and limits. Existing research tool schemas and offline suites remain unchanged.
