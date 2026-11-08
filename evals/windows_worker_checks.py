@@ -140,6 +140,17 @@ class NativeWindows(unittest.TestCase):
             self.assertLess(time.monotonic()-started,1.5)
         finally:
             if not closed.is_set():kernel.CloseHandle(handle)
+        handle=kernel.CreateFileW(str(path),0x80000000,0,None,3,0x80,None)
+        self.assertNotEqual(handle,wintypes.HANDLE(-1).value)
+        started=time.monotonic()
+        try:
+            with self.assertRaises(PermissionError):w.read_json(path)
+            self.assertLess(time.monotonic()-started,1.5)
+        finally:kernel.CloseHandle(handle)
+        self.assertEqual(w.read_json(path),{'value':'retained'})
+        started=time.monotonic()
+        with self.assertRaises(FileNotFoundError):w.read_json(path.with_name('absent-state.json'))
+        self.assertLess(time.monotonic()-started,.5)
 
     def test_nonzero_and_output_bound(self):
         for code in ('raise SystemExit(7)',"from pathlib import Path;Path('result.txt').write_bytes(b'x'*8192)"):
