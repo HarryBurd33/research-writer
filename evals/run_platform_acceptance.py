@@ -94,7 +94,7 @@ def main():
                 time.sleep(4.2);self.assertFalse((job/'work/escaped.txt').exists())
                 backend.operate(self.fixture.p,'collect',m['job_id'],destination=self.fixture.root/'cancel-tree')
         suite.addTests(unittest.defaultTestLoader.loadTestsFromTestCase(NativeSchedulerGates))
-    expected=9 if name=='windows' else 15
+    expected=10 if name=='windows' else 15
     if suite.countTestCases()<expected:raise SystemExit('Native acceptance cases missing')
     script='windows_worker.py' if name=='windows' else 'slurm_tools.py'
     paths=[root/'evals'/filename,root/'skills/research-writer/scripts'/script,Path(__file__)]

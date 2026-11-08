@@ -10,6 +10,7 @@ import socket
 import subprocess
 import sys
 import tempfile
+import threading
 import time
 import unittest
 import uuid
@@ -76,6 +77,32 @@ class NativeWindows(unittest.TestCase):
             if result['status'] in w.TERMINAL: return result
             time.sleep(.1)
         self.fail('No terminal state: '+str(result))
+
+    def test_native_reader_sharing_denial_then_bounded_atomic_retry(self):
+        path=Path(self.temp.name)/'shared-state.json';w.atomic(path,{'value':'old'})
+        source=Path(self.temp.name)/'raw-replacement.json';source.write_bytes(w.canonical({'value':'raw'}))
+        reader=path.open('rb')
+        try:
+            try:os.replace(source,path)
+            except PermissionError as exc:
+                self.assertIn(getattr(exc,'winerror',None),(5,32,33))
+                print('OBSERVED_NATIVE_REPLACE_DENIAL',exc.winerror,flush=True)
+            else:self.fail('Native runtime did not reproduce reader-sharing denial; causal gate remains unproven')
+            self.assertEqual(w.read_json(path),{'value':'old'})
+            release=threading.Thread(target=lambda:(time.sleep(.1),reader.close()))
+            release.start();started=time.monotonic()
+            try:w.atomic(path,{'value':'updated'})
+            finally:release.join(timeout=2)
+            self.assertLess(time.monotonic()-started,1.5)
+            self.assertEqual(w.read_json(path),{'value':'updated'})
+            held=path.open('rb');started=time.monotonic()
+            try:
+                with self.assertRaises(PermissionError):w.atomic(path,{'value':'must-not-replace'})
+                self.assertLess(time.monotonic()-started,1.5)
+            finally:held.close()
+            self.assertEqual(w.read_json(path),{'value':'updated'})
+        finally:
+            reader.close();source.unlink(missing_ok=True)
 
     def test_roundtrip_and_restart_and_no_duplicate(self):
         m=self.prepare("from pathlib import Path; Path('result.txt').write_text('研究',encoding='utf-8')")

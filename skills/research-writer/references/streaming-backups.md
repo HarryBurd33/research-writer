@@ -142,3 +142,7 @@ client support does not imply a Windows receiver. Larger stores require an expli
 future store-format/capacity design. A checksum proves observed bytes, not scientific
 validity or physical-media persistence. See [the earlier backup contract](off-device-backups.md),
 [device profiles](device-profiles.md) and [testing](testing.md).
+
+## Maximum-capacity acceptance
+
+The optional repository `evals/stream_backup_capacity_checks.py` exercises a real536,870,912-byte validSQLite database through disposable loopbackSSH. It retains31generations containing496MiB of deterministic artifact payload plus genuineSQLite schema/freelist pages, restores every generation/zero-byte artifact, and checks full-body interrupted publication/no retry and cap+1 refusal. The observed check proves the serialized ceiling on that environment; it does not establish an independent physical failure domain. Body-transfer buffers, SQLite/restore memory, sampled disk and total runtime are reported separately.

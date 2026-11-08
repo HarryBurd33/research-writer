@@ -60,6 +60,48 @@ def read_json(path):
         return parse(stream.read(MAX_REQUEST + 1))
 
 
+def current_account_owns(path):
+    """Compare the file's Windows owner SID with this process TokenUser SID."""
+    import ctypes
+    from ctypes import wintypes as w
+    adv=ctypes.WinDLL('advapi32',use_last_error=True);kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+    pointer=ctypes.c_void_p
+    adv.GetNamedSecurityInfoW.argtypes=[w.LPWSTR,w.DWORD,w.DWORD,ctypes.POINTER(pointer),pointer,pointer,pointer,ctypes.POINTER(pointer)]
+    adv.OpenProcessToken.argtypes=[w.HANDLE,w.DWORD,ctypes.POINTER(w.HANDLE)]
+    adv.GetTokenInformation.argtypes=[w.HANDLE,ctypes.c_int,pointer,w.DWORD,ctypes.POINTER(w.DWORD)]
+    adv.EqualSid.argtypes=[pointer,pointer]
+    kernel.GetCurrentProcess.restype=w.HANDLE;kernel.CloseHandle.argtypes=[w.HANDLE]
+    kernel.LocalFree.argtypes=[pointer];kernel.LocalFree.restype=pointer
+    owner=pointer();descriptor=pointer();token=w.HANDLE()
+    if adv.GetNamedSecurityInfoW(str(path),1,1,ctypes.byref(owner),None,None,None,ctypes.byref(descriptor)):
+        return False
+    try:
+        if not adv.OpenProcessToken(kernel.GetCurrentProcess(),8,ctypes.byref(token)):return False
+        needed=w.DWORD()
+        adv.GetTokenInformation(token,1,None,0,ctypes.byref(needed))
+        if not needed.value:return False
+        buffer=ctypes.create_string_buffer(needed.value)
+        if not adv.GetTokenInformation(token,1,buffer,needed,ctypes.byref(needed)):return False
+        current=ctypes.cast(buffer,ctypes.POINTER(pointer))[0]
+        return bool(adv.EqualSid(owner,current))
+    finally:
+        if token:kernel.CloseHandle(token)
+        kernel.LocalFree(descriptor)
+
+
+def retryable_metadata(source,target):
+    for path in (Path(source),Path(target),Path(target).parent):
+        if not path.exists():
+            if path==Path(target):continue
+            return False
+        info=path.lstat()
+        if path.is_symlink() or reparse(path) or info.st_nlink!=1 or not current_account_owns(path):return False
+        if path==Path(target).parent:
+            if not stat.S_ISDIR(info.st_mode):return False
+        elif not stat.S_ISREG(info.st_mode):return False
+    return True
+
+
 def atomic(path, value):
     path = Path(path)
     descriptor, name = tempfile.mkstemp(prefix='.state-', dir=path.parent)
@@ -68,7 +110,18 @@ def atomic(path, value):
             stream.write(canonical(value) + b'\n')
             stream.flush()
             os.fsync(stream.fileno())
-        os.replace(name, path)
+        deadline=time.monotonic()+1.0
+        while True:
+            try:
+                os.replace(name,path)
+                break
+            except PermissionError as exc:
+                # Sharing/delete denial can be transient while a status reader holds
+                # the old file. Never chmod, unlink, retry other errors or dispatch again.
+                if (os.name!='nt' or getattr(exc,'winerror',None) not in (5,32,33)
+                        or time.monotonic()>=deadline or not retryable_metadata(name,path)):
+                    raise
+                time.sleep(min(.02,max(0,deadline-time.monotonic())))
     finally:
         if os.path.exists(name):
             os.unlink(name)

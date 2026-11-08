@@ -79,8 +79,10 @@ jobs:
           python evals/conversion_checks.py
           python evals/protein_checks.py
           python evals/accelerator_checks.py
-          python evals/slurm_checks.py
           python evals/windows_worker_checks.py
+      - name: POSIX Slurm contracts
+        if: runner.os != 'Windows'
+        run: python evals/slurm_checks.py
       - name: Remote client and worker contracts
         run: |
           python evals/remote_client_checks.py
@@ -217,6 +219,11 @@ jobs:
           python evals/remote_loopback_checks.py --run-ssh
           python evals/backup_loopback_checks.py --run-ssh
           python evals/stream_backup_loopback_checks.py --run-ssh
+
+      - name: Require genuine maximum-capacity backup and interruption control
+        if: runner.os == 'Linux'
+        timeout-minutes: 5
+        run: python evals/stream_backup_capacity_checks.py --run-ssh --budget-seconds 240
 
   isolation:
     name: Linux isolation and recovery (Docker, Python 3.12)
