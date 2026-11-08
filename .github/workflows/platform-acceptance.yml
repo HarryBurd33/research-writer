@@ -1,0 +1,87 @@
+name: Platform runtime acceptance
+
+on:
+  pull_request:
+    paths:
+      - '.github/workflows/platform-acceptance.yml'
+      - 'skills/research-writer/scripts/**'
+      - 'evals/**'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/platform-acceptance.yml'
+      - 'skills/research-writer/scripts/**'
+      - 'evals/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: platform-acceptance-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  PYTHONUTF8: '1'
+  PYTHONDONTWRITEBYTECODE: '1'
+
+jobs:
+  windows:
+    name: Actual native Windows worker
+    runs-on: windows-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact candidate without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - name: Require native lifecycle, tree cleanup and restart controls without skips
+        run: python evals/run_platform_acceptance.py windows
+
+  slurm:
+    name: Actual disposable Slurm with accounting
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Check out exact candidate without credentials
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - name: Select Python
+        uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - name: Install native Ubuntu scheduler, accounting, database and authentication
+        timeout-minutes: 7
+        run: |
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get update -qq
+          sudo env DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends slurm-wlm slurmdbd slurm-wlm-mysql-plugin mariadb-server munge acl
+      - name: Configure only this ephemeral hosted runner
+        timeout-minutes: 3
+        run: |
+          sudo --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT "$(command -v python)" evals/setup_slurm_ci.py setup --user "$(id -un)" --root "$RUNNER_TEMP/rw-slurm-acceptance" --profile "$RUNNER_TEMP/rw-slurm-profile.json"
+      - name: Require real submit, lost acknowledgement, recovery, collect, timeout and cancel
+        timeout-minutes: 4
+        env:
+          RW_SLURM_LIVE: '1'
+          RW_SLURM_PROFILE: ${{ runner.temp }}/rw-slurm-profile.json
+        run: python evals/run_platform_acceptance.py slurm
+      - name: Reconcile owned jobs and stop disposable services
+        if: ${{ always() }}
+        timeout-minutes: 1
+        run: |
+          if test -f "$RUNNER_TEMP/rw-slurm-acceptance/CI-OWNER.json"; then
+            sudo --preserve-env=GITHUB_ACTIONS,RUNNER_ENVIRONMENT "$(command -v python)" evals/setup_slurm_ci.py cleanup --user "$(id -un)" --root "$RUNNER_TEMP/rw-slurm-acceptance" --profile "$RUNNER_TEMP/rw-slurm-profile.json"
+          fi
