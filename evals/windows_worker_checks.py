@@ -132,8 +132,9 @@ class NativeWindows(unittest.TestCase):
             time.sleep(.1);kernel.CloseHandle(handle);closed.set()
         try:
             with self.assertRaises(PermissionError) as denied:path.open('rb')
-            self.assertIn(denied.exception.winerror,(5,32,33))
-            print('OBSERVED_NATIVE_READ_DENIAL',denied.exception.winerror,flush=True)
+            native_code=getattr(denied.exception,'winerror',None)
+            self.assertTrue(native_code in (5,32,33) or (native_code is None and denied.exception.errno==13))
+            print('OBSERVED_NATIVE_READ_DENIAL',{'errno':denied.exception.errno,'winerror':native_code},flush=True)
             reader_release=threading.Thread(target=release);reader_release.start();started=time.monotonic()
             try:self.assertEqual(w.read_json(path),{'value':'retained'})
             finally:reader_release.join(timeout=2)

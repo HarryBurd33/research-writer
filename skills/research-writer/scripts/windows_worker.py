@@ -3,6 +3,7 @@
 """Windows trusted-job JSON worker. Job Objects control descendants; this is not a security sandbox."""
 from __future__ import annotations
 import argparse
+import errno
 import base64
 import getpass
 import hashlib
@@ -66,7 +67,9 @@ def read_json(path):
         except PermissionError as exc:
             # Replacement can temporarily deny an observer's open on Windows.
             # Retry only the read: never change permissions, delete or dispatch.
-            if os.name!='nt' or getattr(exc,'winerror',None) not in (5,32,33) or time.monotonic()>=deadline:
+            code=getattr(exc,'winerror',None)
+            translated_denial=code is None and exc.errno==errno.EACCES
+            if os.name!='nt' or not (code in (5,32,33) or translated_denial) or time.monotonic()>=deadline:
                 raise
             time.sleep(min(.02,max(0,deadline-time.monotonic())))
 
