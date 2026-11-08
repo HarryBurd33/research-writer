@@ -91,10 +91,11 @@ def current_account_owns(path):
 
 def retryable_metadata(source,target):
     for path in (Path(source),Path(target),Path(target).parent):
-        if not path.exists():
+        try:
+            info=path.lstat()
+        except FileNotFoundError:
             if path==Path(target):continue
             return False
-        info=path.lstat()
         if path.is_symlink() or reparse(path) or info.st_nlink!=1 or not current_account_owns(path):return False
         if path==Path(target).parent:
             if not stat.S_ISDIR(info.st_mode):return False
