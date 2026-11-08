@@ -76,8 +76,11 @@ def setup(a):
     for sub,owner,mode in (('jobs',a.user,0o700),('state','slurm',0o700),('spool','root',0o755),('logs','slurm',0o750)):
         path=root/sub;path.mkdir(mode=mode);account=pwd.getpwnam(owner);os.chown(path,account.pw_uid,account.pw_gid)
     # Daemons must traverse the private runner parent/root; ACL grant is confined to this new root.
-    run(['setfacl','-m','u:slurm:--x',str(root.parent)])
-    run(['setfacl','-m','u:slurm:--x',str(root)])
+    for ancestor in reversed((root,*root.parents)):
+        if run(['runuser','-u','slurm','--','test','-x',str(ancestor)],check=False).returncode:
+            run(['setfacl','-m','u:slurm:--x',str(ancestor)])
+    for sub in ('state','logs'):
+        run(['runuser','-u','slurm','--','test','-w',str(root/sub)])
     run(['systemctl','start','munge','mariadb'])
     wait_for('MariaDB local root socket',lambda:run(['mariadb','--protocol=socket','-uroot','-Nse','SELECT 1'],check=False).stdout.strip()=='1')
     generated_db_value=secrets.token_hex(32)
@@ -101,7 +104,7 @@ def setup(a):
         'ClusterName='+CLUSTER,'SlurmctldHost='+host+'(127.0.0.1)','SlurmUser=slurm','SlurmdUser=root',
         'AuthType=auth/munge','StateSaveLocation='+str(root/'state'),'SlurmdSpoolDir='+str(root/'spool'),
         'SlurmctldLogFile='+str(root/'logs/slurmctld.log'),'SlurmdLogFile='+str(root/'logs/slurmd.log'),
-        'SlurmctldPidFile=/run/slurmctld.pid','SlurmdPidFile=/run/slurmd.pid',
+        'SlurmctldPidFile='+str(root/'state/slurmctld.pid'),'SlurmdPidFile=/run/slurmd.pid',
         'SchedulerType=sched/backfill','SelectType=select/cons_tres','SelectTypeParameters=CR_CPU_Memory',
         'ProctrackType=proctrack/cgroup','TaskPlugin=task/cgroup','JobAcctGatherType=jobacct_gather/cgroup',
         'AccountingStorageType=accounting_storage/slurmdbd','AccountingStorageHost=localhost',
@@ -116,7 +119,11 @@ def setup(a):
     run(['sacctmgr','-i','add','cluster',CLUSTER])
     run(['sacctmgr','-i','add','account','rwci','Cluster='+CLUSTER,'Description=disposable-acceptance','Organization=ci'])
     run(['sacctmgr','-i','add','user',a.user,'Cluster='+CLUSTER,'Account=rwci','DefaultAccount=rwci'])
-    run(['systemctl','start','slurmctld','slurmd'])
+    try:
+        run(['systemctl','start','slurmctld','slurmd'])
+    except (OSError,RuntimeError,subprocess.SubprocessError):
+        diagnostics(root)
+        raise
     wait_for('controller ping',lambda:'UP' in run(['scontrol','ping'],check=False).stdout)
     wait_for('compute node registration',lambda:bool(re.search(r'\b(idle|mix)\b',run(['sinfo','--noheader','--format=%T'],check=False).stdout)))
     commands={name:shutil.which(name) for name in ('sbatch','squeue','sacct','scancel')}
@@ -131,6 +138,22 @@ def setup(a):
                       'accounting_comment_retention':'configured_job_comment','tracking':'actual_cgroup_runtime_required'}))
 
 
+def diagnostics(root):
+    """Only controller/compute diagnostics; never DB daemon logs/configuration."""
+    samples=[]
+    try:
+        samples.append(run(['journalctl','--no-pager','-n','60','-o','cat','-u','slurmctld','-u','slurmd'],check=False).stdout[-8192:])
+    except (OSError,RuntimeError,subprocess.SubprocessError):pass
+    for name in ('slurmctld.log','slurmd.log'):
+        path=root/'logs'/name
+        if path.is_file() and not path.is_symlink():
+            with path.open('rb') as stream:
+                stream.seek(max(0,path.stat().st_size-4096));samples.append(stream.read(4096).decode('utf-8','replace'))
+    text='\n'.join(samples)[-12288:]
+    lines=[line for line in text.splitlines() if not re.search(r'password|storagepass|secret|identified by',line,re.I)]
+    print('BOUNDED_SLURM_DIAGNOSTICS '+json.dumps('\n'.join(lines)),flush=True)
+
+
 def cleanup(a):
     guard();root=Path(a.root)
     owner=root/'CI-OWNER.json'
@@ -138,16 +161,27 @@ def cleanup(a):
     marker=json.loads(owner.read_text())
     if marker!={'schema_version':1,'hostname':socket.gethostname(),'user':a.user,'cluster':CLUSTER}:
         raise ValueError('Disposable owner marker mismatch')
-    # This entire cluster belongs to this one ephemeral job. Never broaden to another cluster/user.
-    run(['scancel','--clusters='+CLUSTER,'--user='+a.user],check=False)
-    for service in SERVICES:run(['systemctl','stop',service],check=False)
-    # Only nonsecret job receipts can be printed; no DB config, environment or daemon logs.
-    for path in sorted((root/'jobs').glob('*/slurm.json')):
-        print('SLURM_RECEIPT',path.parent.name,path.read_text().strip())
-    run(['mariadb','--protocol=socket','-uroot'],secret_input="DROP DATABASE IF EXISTS rwslurm; DROP USER IF EXISTS 'rwslurm'@'localhost';\n",check=False)
+    failures=[]
+    def observed(argv,secret_input=None):
+        try:
+            result=run(argv,secret_input=secret_input,check=False)
+            if result.returncode:failures.append({'command':Path(argv[0]).name,'operation':argv[1] if len(argv)>1 else '', 'returncode':result.returncode})
+        except (OSError,RuntimeError,subprocess.SubprocessError) as exc:
+            failures.append({'command':Path(argv[0]).name,'error_type':type(exc).__name__})
+    receipts=list((root/'jobs').glob('*/slurm.json'))
+    if any(json.loads(path.read_text()).get('submit_attempted') for path in receipts):
+        observed(['scancel','--clusters='+CLUSTER,'--user='+a.user])
+    for service in SERVICES:
+        observed(['systemctl','stop',service])
+        if run(['systemctl','is-active','--quiet',service],check=False).returncode==0:
+            failures.append({'service':service,'status':'still_active'})
+    for path in sorted(receipts):print('SLURM_RECEIPT',path.parent.name,path.read_text().strip())
+    observed(['mariadb','--protocol=socket','-uroot'],secret_input="DROP DATABASE IF EXISTS rwslurm; DROP USER IF EXISTS 'rwslurm'@'localhost';\n")
     Path('/etc/slurm/slurmdbd.conf').unlink(missing_ok=True)
-    run(['systemctl','stop','mariadb','munge'],check=False)
-    print('Owned disposable services stopped; ephemeral runner teardown removes remaining state')
+    for service in ('mariadb','munge'):observed(['systemctl','stop',service])
+    print('DISPOSABLE_CLEANUP '+json.dumps({'status':'uncertain' if failures else 'stopped',
+          'observed_failures':failures,'final_boundary':'ephemeral runner teardown'}),flush=True)
+    if failures:raise RuntimeError('Owned cleanup has observed failures; rely on ephemeral runner teardown, not cancellation proof')
 
 
 def main():

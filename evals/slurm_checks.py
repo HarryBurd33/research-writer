@@ -75,6 +75,15 @@ class SlurmContract(unittest.TestCase):
             with patch.object(s,'command',side_effect=['',self.row(saved,state='COMPLETED',exit_code=exit_code)]):
                 self.assertEqual(s.reconcile(self.p,job,m,dict(saved))['status'],'failed')
 
+    def test_completed_preserves_verified_worker_timeout_and_cancel(self):
+        job,m,saved=self.prepare();saved.update(submit_attempted=True,attempted_at=1)
+        for cause in ('timed_out','cancelled'):
+            s.worker.atomic(job/'state.json',{'status':cause,'job_id':m['job_id'],'updated_at':1})
+            with patch.object(s,'command',side_effect=['',self.row(saved,state='COMPLETED')]):
+                self.assertEqual(s.reconcile(self.p,job,m,dict(saved))['status'],cause)
+            with patch.object(s,'command',side_effect=['',self.row(saved,state='COMPLETED',exit_code='7:0')]):
+                self.assertEqual(s.reconcile(self.p,job,m,dict(saved))['status'],'failed')
+
     def test_completed_collect_checksums_no_overwrite(self):
         job,m,saved=self.prepare();s.worker.run_job(job)
         saved.update(submit_attempted=True,attempted_at=1);s.worker.atomic(job/'slurm.json',saved)

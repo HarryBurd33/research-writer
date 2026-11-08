@@ -325,6 +325,7 @@ def bounded_process(argv, directory, timeout, max_log, max_output, memory_budget
         resource.setrlimit(resource.RLIMIT_FSIZE, (max_output, max_output))
     log_path = directory / 'worker.log'; overflow = threading.Event()
     env = {**os.environ, 'PYTHONDONTWRITEBYTECODE': '1', 'HF_HUB_OFFLINE': '1',
+           'NUMBA_CACHE_DIR': str(directory / 'numba-cache'),
            'TRANSFORMERS_OFFLINE': '1', 'WANDB_MODE': 'disabled', 'HF_HUB_DISABLE_TELEMETRY': '1'}
     proc = subprocess.Popen(argv, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                             start_new_session=True, preexec_fn=limits, env=env)
