@@ -3,7 +3,7 @@ name: research-writer
 description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, tutorials, syntheses, systematic reviews/meta-analyses when feasible, theory, experimental/design proposals, humanities analysis and device-adaptive computational research tools. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
 license: MIT
 metadata:
-  version: "0.14.0"
+  version: "0.15.0"
 ---
 
 # Research Writer
@@ -42,6 +42,8 @@ Restate the desired outcome separately from the proposed explanation or implemen
 
 For a novel proposal, build a short dependency map: what must be true, what has been demonstrated, what transfers only by analogy, and what remains speculative. Connect evidence synthesis to proposal choices. Do not equate “not found in this search” with novelty or impossibility.
 
+For prospective work, use [proposal quality](references/proposal-quality.md) to trace question → proposed contribution → required evidence → method → planned analysis → feasible deliverable. Check access/resources, alternatives and a result or objection that would weaken the contribution. Keep proposed outcomes distinct from observed findings.
+
 Choose the applicable route in [writing modes](references/modes.md). Hybrid work may need several routes, such as synthesis → theory → experimental proposal. Keep their different evidence standards visible. A systematic review, meta-analysis, qualitative synthesis and humanities interpretation are not interchangeable labels. Descriptive or exploratory work can have a clear question without a directional hypothesis; choose the method for the question rather than force the question into a familiar tool.
 
 ## Optional research and computation tools
@@ -77,6 +79,8 @@ Use [argument and synthesis guidance](references/argument-and-synthesis.md) to c
 Distinguish established findings, contextual background, interpretation, hypotheses and proposals in the prose. Include important counterevidence and competing interpretations. State the actual basis for each conclusion. Do not force scientific paper headings onto humanities writing or a proposal. Match journal or disciplinary requirements only after checking the relevant current instructions and actual eligibility.
 
 Revise for argument, support, competing accounts and alignment with the writing brief before proofreading. Use clear terminology suited to readers, purposeful transitions, precise numbers/units, and hedging that matches uncertainty. Choose active or passive voice for clarity and disciplinary purpose; neither is a universal rule. Use verified references in the requested style. Keep citations close to the claims they support. Do not cite a real paper for an assertion it does not support. Mark necessary unresolved claims visibly in a working draft; remove or qualify them before calling the draft verified. Speculative proposals may be valuable while remaining explicitly speculative.
+
+When a scientific figure is requested or serves a concrete explanatory purpose, use [the optional figure workflow](references/scientific-figures.md). Separate conceptual illustrations from quantitative plots built from verified data and rerunnable code; specify source-grounded content, render with available authorized tools, and check numerical reproduction, factual fidelity and actual visual output separately within a stated bound. Missing tools leave a useful specification and pending rendering checks while core writing continues.
 
 ## 6. Audit and deliver
 

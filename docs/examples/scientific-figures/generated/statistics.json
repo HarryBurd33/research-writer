@@ -1,0 +1,46 @@
+[
+  {
+    "mean_mg_L": 0.0,
+    "n": 3,
+    "sample_sd_mg_L": 0.0,
+    "time_min": 0.0,
+    "values_mg_L": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "mean_mg_L": 2.0,
+    "n": 3,
+    "sample_sd_mg_L": 0.20000000000000007,
+    "time_min": 1.0,
+    "values_mg_L": [
+      1.8,
+      2.0,
+      2.2
+    ]
+  },
+  {
+    "mean_mg_L": 1.0,
+    "n": 3,
+    "sample_sd_mg_L": 0.10000000000000003,
+    "time_min": 2.0,
+    "values_mg_L": [
+      0.9,
+      1.0,
+      1.1
+    ]
+  },
+  {
+    "mean_mg_L": 3.0,
+    "n": 3,
+    "sample_sd_mg_L": 0.2999999999999998,
+    "time_min": 3.0,
+    "values_mg_L": [
+      2.7,
+      3.0,
+      3.3
+    ]
+  }
+]

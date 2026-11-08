@@ -33,6 +33,15 @@ Use only fields needed for this task. Store this filled record outside the skill
 - Provisional answer/hypothesis, distinguished from the question and eventual conclusion:
 - Question revisions and evidence that prompted them:
 
+## Proposal traceability, when prospective
+
+| Question | Proposed contribution | Required evidence/access | Method | Planned analysis/argument | Feasible deliverable and limit |
+|---|---|---|---|---|---|
+
+- Weakest assumption, strongest alternative and contribution-weakening result/passage/objection:
+- Resource/access dependencies, smallest informative next step and decision points:
+- Framework/hypothesis/timeline only where useful; proposed vs observed status:
+
 ## Closest prior work and novelty checks
 
 | Proposed contribution | Nearest precedent and locator | Actual overlap/difference and why it matters | Search/access limits and status |
@@ -91,6 +100,12 @@ Use status such as candidate, supported within inspected literature, already add
 
 | Aim/question | Evidence and method | Actual result or argument | Interpretation and limit | Gap and next action |
 |---|---|---|---|---|
+
+| Claim/result ID | Authoritative artifact and locator | Abstract/text/display occurrences | Agreement, correction and status |
+|---|---|---|---|
+
+- Specific limitations and null/contrary results retained; unsupported citations resolved or scoped:
+- Optional [figure specifications](figure-specification.md), source/data/code provenance and numerical/factual/visual status:
 
 | Preparation fact | Provided / missing / not applicable (reason) | Evidence or person who must resolve it |
 |---|---|---|

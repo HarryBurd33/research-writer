@@ -1,0 +1,7 @@
+Synthetic conceptual protocol for this example only; not a validated laboratory procedure.
+Ordered steps:
+1. collect
+2. fix
+3. stain
+4. image
+No duration, reagent, organism, or causal mechanism is specified.

@@ -21,6 +21,19 @@ Check both directions: every aim needs appropriate coverage, and every reported 
 
 Explain effects in meaningful units, direction and uncertainty. Distinguish odds, risks, risk ratios and percentage-point differences; an odds ratio is not automatically a probability ratio. Preserve legitimate citations in synthesis results and follow actual venue conventions for combined results/discussion sections. A writing guide's generic ban on Results citations does not override the artifact's evidentiary needs.
 
+## Reconcile the manuscript's repeated claims
+
+Prefer the actual protocol/amendments, full source passages, data and analysis outputs over a polished prior draft. Reuse existing claim/result IDs and [source-support records](source-support.md); record integrity cannot decide semantic support. Check whether each consequential citation actually supports the assertion, within its methods and scope. An unsupported assertion needs removal, qualification or new inspected evidence, even when the citation and source hash are valid.
+
+For consequential repeated findings, compare the abstract, main text, tables, figures and captions against the same authoritative artifact:
+
+| Claim/result ID | Authoritative artifact and locator | Abstract/text/display occurrences | Agreement, correction and status |
+|---|---|---|---|
+
+Check direction, magnitude, units, denominators/sample size, timing, uncertainty, exclusions, labels and strength of inference. For an overall or pooled rate claim, derive and explicitly report both the aggregate event/completion count and its denominator, with units and scope, from the appropriate underlying records. Verify that aggregation is warranted; do not average subgroup percentages or silently switch attempts, people or observations. Reconcile row counts, totals and percentages as well as the prose. Preserve valid zero, null and contrary findings. No detected effect is not proof of equivalence without an appropriate design/analysis. If an abstract says a condition is faster while the authoritative table shows a longer completion time, correct the direction in the abstract and affected conclusions; do not alter the table to rescue the story. When authority itself is unclear, expose the conflict and obtain/reproduce the underlying result before choosing a version.
+
+Perform the equivalent check for theoretical or humanities work: premises, quotations/locators, inferential steps and rival readings must agree across the abstract, argument and any conceptual displays. Do not require numerical results or empirical headings. Link specific limitations to the affected inference. Use [scientific figures](scientific-figures.md) for any needed specification, rendering and separate factual/visual review. Record corrections and unresolved conflicts; recheck affected occurrences after changes. An unresolved material disagreement prevents a verified/readiness claim, but useful scoped drafting can continue.
+
 ## Track publication facts without inventing them
 
 For a submission package or readiness request, provide a concise fact register with **provided**, **missing** or **not applicable** status and the basis or next action. Account explicitly for each category below, marking provided, missing or not applicable with a short reason; do not silently omit a category merely because the work is theoretical or no material was supplied:
@@ -38,3 +51,5 @@ Unknown is not "none" or "not applicable." Do not infer ethics approval or exemp
 Make retained tables and figures understandable through appropriate titles, legends, units, comparisons, samples, timing and abbreviation definitions. Summarize their message in the text without unnecessary repetition. Explain how specific limitations affect inference or transfer, and propose an informative next investigation rather than generic calls for more research.
 
 Finalize title, abstract and keywords against the completed manuscript's actual scope and findings. Check references, supporting files and supplied declarations against the chosen requirements. Include a venue-dependent cover letter or equivalent cover-material work item in a submission handoff; if no venue is selected, keep its need/content provisional rather than omit it or invent a mandatory form. Record final author approval explicitly before a package is called ready. Deliver through [the agreed destination](delivery.md), with the coverage map and unresolved fact register when relevant. Writing or preparing a package does not authorize journal submission, contacting editors or reviewers, public sharing, or simultaneous submissions.
+
+Contextual writing reference: I Diane Cooper, [How to write an original research paper (and get it published)](https://pmc.ncbi.nlm.nih.gov/articles/PMC4404856/) (2015), DOI 10.3163/1536-5050.103.2.001, inspected 2026-11-08 through indexed PMC full text. Its biomedical editorial context informs alignment and display checks; genre and current venue instructions govern actual structure. This original guidance does not copy its prose or impose its section conventions.
