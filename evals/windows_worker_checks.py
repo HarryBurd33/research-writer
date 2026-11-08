@@ -117,6 +117,30 @@ class NativeWindows(unittest.TestCase):
         path=self.root/m['job_id']/'work/result.txt';path.write_text('tampered')
         self.assertFalse(w.handle(self.request(m,'collect'))['ok'])
 
+    def test_native_exclusive_handle_then_bounded_metadata_read(self):
+        import ctypes
+        from ctypes import wintypes
+        path=Path(self.temp.name)/'read-state.json';w.atomic(path,{'value':'retained'})
+        kernel=ctypes.WinDLL('kernel32',use_last_error=True)
+        kernel.CreateFileW.argtypes=[wintypes.LPCWSTR,wintypes.DWORD,wintypes.DWORD,ctypes.c_void_p,
+                                    wintypes.DWORD,wintypes.DWORD,wintypes.HANDLE]
+        kernel.CreateFileW.restype=wintypes.HANDLE;kernel.CloseHandle.argtypes=[wintypes.HANDLE]
+        handle=kernel.CreateFileW(str(path),0x80000000,0,None,3,0x80,None)
+        self.assertNotEqual(handle,wintypes.HANDLE(-1).value)
+        closed=threading.Event()
+        def release():
+            time.sleep(.1);kernel.CloseHandle(handle);closed.set()
+        try:
+            with self.assertRaises(PermissionError) as denied:path.open('rb')
+            self.assertIn(denied.exception.winerror,(5,32,33))
+            print('OBSERVED_NATIVE_READ_DENIAL',denied.exception.winerror,flush=True)
+            reader_release=threading.Thread(target=release);reader_release.start();started=time.monotonic()
+            try:self.assertEqual(w.read_json(path),{'value':'retained'})
+            finally:reader_release.join(timeout=2)
+            self.assertLess(time.monotonic()-started,1.5)
+        finally:
+            if not closed.is_set():kernel.CloseHandle(handle)
+
     def test_nonzero_and_output_bound(self):
         for code in ('raise SystemExit(7)',"from pathlib import Path;Path('result.txt').write_bytes(b'x'*8192)"):
             m=self.prepare(code);self.call(m,'submit');self.assertEqual(self.terminal(m)['status'],'failed')

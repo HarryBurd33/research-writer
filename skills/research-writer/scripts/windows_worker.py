@@ -56,8 +56,19 @@ def parse(raw):
 
 
 def read_json(path):
-    with Path(path).open('rb') as stream:
-        return parse(stream.read(MAX_REQUEST + 1))
+    path=Path(path);deadline=time.monotonic()+1.0
+    while True:
+        try:
+            if path.is_symlink() or (os.name=='nt' and reparse(path)):
+                raise ValueError('Metadata reparse point forbidden')
+            with path.open('rb') as stream:
+                return parse(stream.read(MAX_REQUEST + 1))
+        except PermissionError as exc:
+            # Replacement can temporarily deny an observer's open on Windows.
+            # Retry only the read: never change permissions, delete or dispatch.
+            if os.name!='nt' or getattr(exc,'winerror',None) not in (5,32,33) or time.monotonic()>=deadline:
+                raise
+            time.sleep(min(.02,max(0,deadline-time.monotonic())))
 
 
 def current_account_owns(path):
