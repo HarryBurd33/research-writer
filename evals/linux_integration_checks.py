@@ -84,6 +84,21 @@ class LinuxActual(unittest.TestCase):
                                       'oom_killed': last.get('oom_killed'),
                                       'effective_limits': last.get('effective_limits'),
                                       'cgroup_counters': last.get('cgroup_counters')}), flush=True)
+                    if last['state'] == 'artifacts_unavailable':
+                        # Preserve bounded supervisor diagnostics before fixture cleanup.
+                        # This is a disposable synthetic fixture; never relax acceptance.
+                        local = mod.read_json(state / 'state.json')
+                        try:
+                            diagnostic_code, diagnostic_out, diagnostic_err = mod.bounded_run(
+                                [self.p['docker_executable'], '--context', self.p['context'],
+                                 'logs', '--tail', '30', local['container_name']],
+                                timeout=10, maximum=8192)
+                            diagnostic = {'exit_code': diagnostic_code,
+                                          'stdout': diagnostic_out.decode('utf-8', errors='replace'),
+                                          'stderr': diagnostic_err.decode('utf-8', errors='replace')}
+                        except Exception as diagnostic_error:
+                            diagnostic = {'unavailable': str(diagnostic_error)[:1000]}
+                        print(json.dumps({'control': self.id(), 'supervisor_diagnostic': diagnostic}), flush=True)
                     return last
             except ValueError as exc:
                 # A read-only exec may race PID1 initialization or namespace cleanup.
