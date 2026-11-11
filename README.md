@@ -2,7 +2,7 @@
 
 A reusable agent skill for researching an idea and turning it into the finished work you want.
 
-**Version 0.16.0 candidate** adds optional Vina docking, Boltz CPU prediction, native Windows and Slurm adapters. See [capability validation](docs/capability-validation.md) for actual acceptance and remaining gaps. The prior workflow retains explicit proposal traceability, manuscript cross-artifact consistency and an optional source-grounded scientific-figure workflow. Quantitative plots require verified data and rerunnable code; conceptual illustrations receive factual and visual review. Missing figure tools leave a useful specification without blocking writing. See [proposal guidance](skills/research-writer/references/proposal-quality.md), [figures](skills/research-writer/references/scientific-figures.md) and [upgrade validation](docs/proposal-figure-validation.md).
+**Version 0.16.0** adds optional Vina docking, Boltz CPU prediction, native Windows and Slurm adapters. See [capability validation](docs/capability-validation.md) for actual acceptance and remaining gaps. The prior workflow retains explicit proposal traceability, manuscript cross-artifact consistency and an optional source-grounded scientific-figure workflow. Quantitative plots require verified data and rerunnable code; conceptual illustrations receive factual and visual review. Missing figure tools leave a useful specification without blocking writing. See [proposal guidance](skills/research-writer/references/proposal-quality.md), [figures](skills/research-writer/references/scientific-figures.md) and [upgrade validation](docs/proposal-figure-validation.md).
 
 **It has no default output target or destination.** When either is missing, it asks what you want to produce and where it should go: in chat, a Google Doc, a local document, or another supported location.
 
@@ -87,6 +87,6 @@ Live research requires browsing or suitable research tools. Full texts may requi
 
 ## Status and rights
 
-Version 0.16.0 candidate. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
+Version 0.16.0. Created with Skill Forge. The validation report distinguishes executed checks from untested capabilities; a small test set does not establish research quality across every discipline.
 
 The workflow text is original. Referenced methodological sources retain their own rights; their text is not redistributed. Original code, workflow instructions and documentation are licensed under the [MIT License](LICENSE). The aggregate example data retains its documented CC0 provenance. Project-specific research and private development notes are excluded from this repository.
