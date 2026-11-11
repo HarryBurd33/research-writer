@@ -243,6 +243,8 @@ jobs:
         with:
           python-version: "3.12"
           architecture: x64
+      - name: Check bounded Linux diagnostic observer contracts
+        run: PYTHONDONTWRITEBYTECODE=1 python3 evals/linux_observer_checks.py
       - name: Explicitly provision disposable official Python image and record local identity
         shell: bash
         run: |

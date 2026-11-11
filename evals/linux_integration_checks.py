@@ -7,12 +7,14 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
 import time
 import unittest
 import uuid
+from linux_observer import LiveObserver, QueryChronology, bounded_text, container_state
 
 SCRIPTS = Path(__file__).resolve().parents[1] / 'skills/research-writer/scripts'
 spec = importlib.util.spec_from_file_location('rw_linux', SCRIPTS / 'linux_tools.py')
@@ -72,11 +74,13 @@ class LinuxActual(unittest.TestCase):
             self.assertEqual(result['state'], 'submitted')
         return state
 
-    def terminal(self, state, timeout=18):
+    def terminal(self, state, timeout=18, chronology=None):
         until = time.monotonic() + timeout; last = None
         while time.monotonic() < until:
             try:
                 last = mod.operate('recover', state)
+                if chronology is not None:
+                    chronology.add('receipt_state', last['state'])
                 if last['state'] in mod.TERMINAL | {'artifacts_unavailable'}:
                     print(json.dumps({'control': self.id(), 'container_id': last.get('container_id'),
                                       'state': last['state'], 'reason': last.get('reason'),
@@ -84,25 +88,12 @@ class LinuxActual(unittest.TestCase):
                                       'oom_killed': last.get('oom_killed'),
                                       'effective_limits': last.get('effective_limits'),
                                       'cgroup_counters': last.get('cgroup_counters')}), flush=True)
-                    if last['state'] == 'artifacts_unavailable':
-                        # Preserve bounded supervisor diagnostics before fixture cleanup.
-                        # This is a disposable synthetic fixture; never relax acceptance.
-                        local = mod.read_json(state / 'state.json')
-                        try:
-                            diagnostic_code, diagnostic_out, diagnostic_err = mod.bounded_run(
-                                [self.p['docker_executable'], '--context', self.p['context'],
-                                 'logs', '--tail', '30', local['container_name']],
-                                timeout=10, maximum=8192)
-                            diagnostic = {'exit_code': diagnostic_code,
-                                          'stdout': diagnostic_out.decode('utf-8', errors='replace'),
-                                          'stderr': diagnostic_err.decode('utf-8', errors='replace')}
-                        except Exception as diagnostic_error:
-                            diagnostic = {'unavailable': str(diagnostic_error)[:1000]}
-                        print(json.dumps({'control': self.id(), 'supervisor_diagnostic': diagnostic}), flush=True)
                     return last
             except ValueError as exc:
                 # A read-only exec may race PID1 initialization or namespace cleanup.
                 last = {'read_uncertain': str(exc)}
+                if chronology is not None:
+                    chronology.add('read_error', exc)
             time.sleep(0.1)
         self.fail('No terminal receipt: ' + repr(last))
 
@@ -111,6 +102,16 @@ class LinuxActual(unittest.TestCase):
         result = mod.operate('collect', state, destination=destination)
         self.assertTrue(result['collected']); self.assertTrue((destination / '.collection.json').is_file())
         return result, destination
+
+    def observer_snapshot(self, state):
+        with mod.state_lock(state) as root:
+            local = mod.checked_state(root)
+            if not re.fullmatch('[0-9a-f]{64}', local.get('container_id') or ''):
+                raise ValueError('Observer needs a previously submitted pinned ID')
+            obj = mod.inspect_container(local)  # Production binding/configuration validation.
+            if obj is None or obj['Id'] != local['container_id']:
+                raise ValueError('Observer container missing or identity changed')
+            return local, obj
 
     def test_01_actual_limits_privileges_readonly_network_nested_collection(self):
         code = """import errno,json,os,socket
@@ -154,10 +155,49 @@ Path('data/result.json').write_text(json.dumps(out))
 
     def test_02_actual_cpu_throttling_rate(self):
         state = self.job("import time,json;from pathlib import Path;t=time.process_time();\nwhile time.process_time()-t<0.6: pass\nPath('result.json').write_text(json.dumps({'cpu_seconds':time.process_time()-t}))", {'cpu_millis': 250})
-        result = self.terminal(state); self.assertEqual(result['state'], 'succeeded')
-        self.assertEqual(result['effective_limits']['cpu_millis'], 250)
-        self.assertGreater(int(result['cgroup_counters']['cpu.stat']['nr_throttled']), 0)
-        _, dest = self.collected(state); self.assertGreaterEqual(json.loads((dest / 'result.json').read_text())['cpu_seconds'], 0.6)
+        observer = None; chronology = QueryChronology(); primary_failure = False
+        diagnostic = {'coverage': 'live_only_after_submit; earlier_output_unavailable'}
+        try:
+            try:
+                local, obj = self.observer_snapshot(state)
+                commit = os.environ.get('GITHUB_SHA', '')
+                diagnostic.update(container_id=obj['Id'], manifest_sha256=local['binding']['manifest_sha256'],
+                                  supervisor_sha256=local['binding']['supervisor_sha256'],
+                                  client_sha256=mod.digest(mod.regular(SCRIPTS / 'linux_tools.py')),
+                                  source_commit=commit if re.fullmatch('[0-9a-f]{40}|[0-9a-f]{64}', commit) else None,
+                                  initial_container_state=container_state(obj['State']))
+                if not obj['State'].get('Running'):
+                    raise ValueError('Container stopped before live attachment; early output unavailable')
+                observer = LiveObserver(local['profile']['docker_executable'], local['profile']['context'],
+                                        local['container_id'], obj['Id'])
+            except Exception as exc:
+                diagnostic['observer_unavailable'] = bounded_text(exc)
+            result = self.terminal(state, chronology=chronology); self.assertEqual(result['state'], 'succeeded')
+            self.assertEqual(result['effective_limits']['cpu_millis'], 250)
+            self.assertGreater(int(result['cgroup_counters']['cpu.stat']['nr_throttled']), 0)
+            _, dest = self.collected(state); self.assertGreaterEqual(json.loads((dest / 'result.json').read_text())['cpu_seconds'], 0.6)
+        except BaseException:
+            primary_failure = True
+            raise
+        finally:
+            cleanup_unverified = False
+            if observer is not None:
+                try:
+                    diagnostic['attachment'] = observer.finish()
+                    cleanup_unverified = diagnostic['attachment'].get('cleanup_verified') is not True
+                except Exception as exc:
+                    cleanup_unverified = True
+                    diagnostic['attachment'] = {'cleanup_verified': False,
+                                                'finish_error': bounded_text(type(exc).__name__ + ': ' + str(exc))}
+            try:
+                _, obj = self.observer_snapshot(state)
+                diagnostic['final_container_state'] = container_state(obj['State'])
+            except Exception as exc:
+                diagnostic['final_inspect_unavailable'] = bounded_text(exc)
+            diagnostic['status_queries'] = chronology.report()
+            print(json.dumps({'control': self.id(), 'supervisor_diagnostic': diagnostic}), flush=True)
+            if cleanup_unverified and not primary_failure:
+                self.fail('Local observer cleanup could not be verified; see supervisor_diagnostic')
 
     def test_03_actual_memory_pressure(self):
         state = self.job("from pathlib import Path;Path('result.json').write_text('started');x=bytearray(512*1024*1024)")
