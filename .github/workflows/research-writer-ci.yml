@@ -10,6 +10,10 @@ on:
         description: 'Run one bounded batch of at most eight fresh CPU fixtures'
         type: boolean
         default: false
+      linux_startup_diagnostic:
+        description: 'Capture startup for at most three fresh symlink fixtures (90 seconds)'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -249,15 +253,43 @@ jobs:
           python-version: "3.12"
           architecture: x64
       - name: Check bounded Linux diagnostic observer contracts
+        id: linux_diagnostic_contracts
         run: |
           python3 evals/linux_observer_checks.py
           python3 evals/linux_cpu_diagnostic_checks.py
+          python3 evals/linux_startup_diagnostic_checks.py
+      - name: Refuse combined diagnostic batches
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic && inputs.linux_startup_diagnostic }}
+        run: |
+          echo '::error::Select only one diagnostic; neither batch is admitted when both inputs are true.'
+          exit 1
       - name: Explicitly provision disposable official Python image and record local identity
+        id: provision_linux_image
+        if: ${{ !cancelled() && (success() || (github.event_name == 'workflow_dispatch' && inputs.linux_startup_diagnostic)) }}
         shell: bash
         run: |
           docker --context default pull python:3.12-slim-bookworm
           docker --context default image inspect --format '{{.Id}} {{json .RepoDigests}}' python:3.12-slim-bookworm
+      - name: Capture one bounded startup diagnostic with a 90 second watchdog
+        if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' && inputs.linux_startup_diagnostic && !inputs.linux_cpu_diagnostic && steps.linux_diagnostic_contracts.outcome == 'success' && steps.provision_linux_image.outcome == 'success' }}
+        timeout-minutes: 2
+        run: |
+          timeout --signal=KILL 90s python evals/linux_startup_diagnostic.py --docker "$(command -v docker)" --context default --report "$RUNNER_TEMP/linux-startup-diagnostic.jsonl"
+      - name: Report startup diagnostic prerequisite failure
+        if: ${{ !cancelled() && github.event_name == 'workflow_dispatch' && inputs.linux_startup_diagnostic && !inputs.linux_cpu_diagnostic && (steps.linux_diagnostic_contracts.outcome != 'success' || steps.provision_linux_image.outcome != 'success') }}
+        run: |
+          echo '::error::Startup diagnostic did not execute because its diagnostic contracts or image prerequisite did not succeed.'
+          exit 1
+      - name: Preserve bounded synthetic startup diagnostic records
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.linux_startup_diagnostic && !inputs.linux_cpu_diagnostic }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-startup-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/linux-startup-diagnostic.jsonl
+          if-no-files-found: error
+          retention-days: 7
       - name: Require actual Linux resource and interrupted-recovery controls
+        if: ${{ !cancelled() && steps.provision_linux_image.outcome == 'success' && (success() || (github.event_name == 'workflow_dispatch' && inputs.linux_startup_diagnostic)) }}
         shell: bash
         run: |
           IMAGE_ID=$(docker --context default image inspect --format '{{.Id}}' python:3.12-slim-bookworm)
@@ -266,7 +298,7 @@ jobs:
           python evals/linux_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
           python evals/durable_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
       - name: Observe one bounded batch of fresh CPU fixtures
-        if: ${{ github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic }}
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic && !inputs.linux_startup_diagnostic }}
         timeout-minutes: 3
         run: |
           python evals/linux_cpu_diagnostic.py --docker "$(command -v docker)" --context default --image-id "$RW_CPU_DIAGNOSTIC_IMAGE_ID" --report "$RUNNER_TEMP/linux-cpu-diagnostic.jsonl"
