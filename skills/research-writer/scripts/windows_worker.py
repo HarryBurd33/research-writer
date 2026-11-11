@@ -21,6 +21,7 @@ import sys
 import tempfile
 import time
 from contextlib import contextmanager
+from functools import lru_cache
 
 PROTOCOL = 1
 MAX_REQUEST = 32 * 1024 * 1024
@@ -56,22 +57,123 @@ def parse(raw):
     return json.loads(raw.decode('utf-8'), object_pairs_hook=pairs, parse_constant=constant)
 
 
+@contextmanager
+def _windows_handle_cleanup(ctypes, cleanup, handle):
+    failed = False
+    try:
+        yield
+    except BaseException:
+        failed = True
+        raise
+    finally:
+        if not cleanup(handle) and not failed:
+            raise ctypes.WinError(ctypes.get_last_error())
+
+
+@lru_cache(maxsize=1)
+def _metadata_mutex_runtime():
+    import ctypes
+    from ctypes import wintypes as w
+
+    kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+    adv = ctypes.WinDLL('advapi32', use_last_error=True)
+    pointer = ctypes.c_void_p
+    kernel.GetCurrentProcess.restype = w.HANDLE
+    kernel.CloseHandle.argtypes = [w.HANDLE]
+    kernel.CloseHandle.restype = w.BOOL
+    kernel.CreateMutexExW.argtypes = [pointer, w.LPCWSTR, w.DWORD, w.DWORD]
+    kernel.CreateMutexExW.restype = w.HANDLE
+    kernel.WaitForSingleObject.argtypes = [w.HANDLE, w.DWORD]
+    kernel.WaitForSingleObject.restype = w.DWORD
+    kernel.ReleaseMutex.argtypes = [w.HANDLE]
+    kernel.ReleaseMutex.restype = w.BOOL
+    adv.OpenProcessToken.argtypes = [w.HANDLE, w.DWORD, ctypes.POINTER(w.HANDLE)]
+    adv.GetTokenInformation.argtypes = [w.HANDLE, ctypes.c_int, pointer, w.DWORD, ctypes.POINTER(w.DWORD)]
+    adv.GetLengthSid.argtypes = [pointer]
+    adv.GetLengthSid.restype = w.DWORD
+
+    token = w.HANDLE()
+    if not adv.OpenProcessToken(kernel.GetCurrentProcess(), 8, ctypes.byref(token)):
+        raise ctypes.WinError(ctypes.get_last_error())
+    with _windows_handle_cleanup(ctypes, kernel.CloseHandle, token):
+        size = w.DWORD()
+        adv.GetTokenInformation(token, 1, None, 0, ctypes.byref(size))
+        if not size.value:
+            raise ctypes.WinError(ctypes.get_last_error())
+        buffer = ctypes.create_string_buffer(size.value)
+        if not adv.GetTokenInformation(token, 1, buffer, size, ctypes.byref(size)):
+            raise ctypes.WinError(ctypes.get_last_error())
+        sid = ctypes.cast(buffer, ctypes.POINTER(pointer))[0]
+        length = adv.GetLengthSid(sid) if sid else 0
+        if not 8 <= length <= 68:
+            raise ValueError('Windows TokenUser SID has an invalid size')
+        sid_bytes = ctypes.string_at(sid, length)
+    return ctypes, kernel, sid_bytes
+
+
+@contextmanager
+def _metadata_guard(path, deadline):
+    if os.name != 'nt':
+        yield False
+        return
+    ctypes, kernel, sid = _metadata_mutex_runtime()
+    # Resolve the existing parent, without following the replaceable leaf.
+    parent = path.parent.resolve(strict=True)
+    normalized = os.path.normcase(str(parent / path.name))
+    name = 'Global\\ResearchWriter.Metadata.' + digest(sid + normalized.encode('utf-16le'))
+    handle = kernel.CreateMutexExW(None, name, 0, 0x00100001)  # SYNCHRONIZE | MUTEX_MODIFY_STATE
+    if not handle:
+        raise ctypes.WinError(ctypes.get_last_error())
+    with _windows_handle_cleanup(ctypes, kernel.CloseHandle, handle):
+        remaining_ms = max(0, int((deadline - time.monotonic()) * 1000))
+        waited = kernel.WaitForSingleObject(handle, remaining_ms)
+        if waited == 258:
+            raise TimeoutError('Windows metadata mutex deadline expired')
+        if waited not in (0, 0x80):  # WAIT_OBJECT_0 or WAIT_ABANDONED
+            raise ctypes.WinError(ctypes.get_last_error())
+        with _windows_handle_cleanup(ctypes, kernel.ReleaseMutex, handle):
+            if time.monotonic() >= deadline:
+                raise TimeoutError('Windows metadata mutex deadline expired')
+            yield waited == 0x80
+
+
+def _check_metadata_file(path):
+    info = path.lstat()
+    if stat.S_ISLNK(info.st_mode) or (os.name == 'nt' and info.st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT):
+        raise ValueError('Metadata reparse point forbidden')
+    if os.name == 'nt' and not stat.S_ISREG(info.st_mode):
+        raise ValueError('Job metadata must remain regular files')
+
+
+def _read_metadata_bytes(path):
+    _check_metadata_file(path)
+    with path.open('rb') as stream:
+        if os.name == 'nt':
+            opened = os.fstat(stream.fileno())
+            if not stat.S_ISREG(opened.st_mode) or opened.st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT:
+                raise ValueError('Opened metadata must remain a regular file')
+        return stream.read(MAX_REQUEST + 1)
+
+
 def read_json(path):
     path=Path(path);deadline=time.monotonic()+1.0
     while True:
-        try:
-            if path.is_symlink() or (os.name=='nt' and reparse(path)):
-                raise ValueError('Metadata reparse point forbidden')
-            with path.open('rb') as stream:
-                return parse(stream.read(MAX_REQUEST + 1))
-        except PermissionError as exc:
-            # Replacement can temporarily deny an observer's open on Windows.
-            # Retry only the read: never change permissions, delete or dispatch.
-            code=getattr(exc,'winerror',None)
-            translated_denial=code is None and exc.errno==errno.EACCES
-            if os.name!='nt' or not (code in (5,32,33) or translated_denial) or time.monotonic()>=deadline:
-                raise
-            time.sleep(min(.02,max(0,deadline-time.monotonic())))
+        with _metadata_guard(path, deadline):
+            try:
+                raw = _read_metadata_bytes(path)
+            except PermissionError as exc:
+                # Retry a sharing denial from opening the file, not a mutex error.
+                code=getattr(exc,'winerror',None)
+                translated_denial=code is None and exc.errno==errno.EACCES
+                if os.name!='nt' or not (code in (5,32,33) or translated_denial) or time.monotonic()>=deadline:
+                    raise
+                denial = exc
+            else:
+                break
+        time.sleep(min(.02,max(0,deadline-time.monotonic())))
+        if time.monotonic() >= deadline:
+            raise denial
+    return parse(raw)
 
 
 def current_account_owns(path):
@@ -117,7 +219,7 @@ def retryable_metadata(source,target):
     return True
 
 
-def atomic(path, value):
+def atomic(path, value, *, require_existing=False):
     path = Path(path)
     descriptor, name = tempfile.mkstemp(prefix='.state-', dir=path.parent)
     try:
@@ -126,17 +228,30 @@ def atomic(path, value):
             stream.flush()
             os.fsync(stream.fileno())
         deadline=time.monotonic()+1.0
-        while True:
-            try:
-                os.replace(name,path)
-                break
-            except PermissionError as exc:
-                # Sharing/delete denial can be transient while a status reader holds
-                # the old file. Never chmod, unlink, retry other errors or dispatch again.
-                if (os.name!='nt' or getattr(exc,'winerror',None) not in (5,32,33)
-                        or time.monotonic()>=deadline or not retryable_metadata(name,path)):
-                    raise
-                time.sleep(min(.02,max(0,deadline-time.monotonic())))
+        with _metadata_guard(path, deadline) as abandoned:
+            if abandoned:
+                try:
+                    parse(_read_metadata_bytes(path))
+                except FileNotFoundError:
+                    if require_existing:
+                        raise
+            elif require_existing:
+                _check_metadata_file(path)
+            if os.name == 'nt' and time.monotonic() >= deadline:
+                raise TimeoutError('Windows metadata publication deadline expired')
+            while True:
+                try:
+                    os.replace(name,path)
+                    break
+                except PermissionError as exc:
+                    # A noncooperating handle can still cause transient sharing denial.
+                    # Retain the existing ownership predicate and bounded retry.
+                    if (os.name!='nt' or getattr(exc,'winerror',None) not in (5,32,33)
+                            or time.monotonic()>=deadline or not retryable_metadata(name,path)):
+                        raise
+                    time.sleep(min(.02,max(0,deadline-time.monotonic())))
+                    if time.monotonic() >= deadline:
+                        raise
     finally:
         if os.path.exists(name):
             os.unlink(name)
@@ -366,16 +481,16 @@ def checked_job(root, req):
         raise ValueError('Invalid job directory ownership/type')
     if not job.exists():
         return None
-    for name in ('prepared.json', 'manifest.json', 'controller.py', 'state.json'):
-        if (job / name).is_symlink() or reparse(job / name) or not (job / name).is_file():
-            raise ValueError('Job metadata must remain regular files')
+    controller = job / 'controller.py'
+    if controller.is_symlink() or reparse(controller) or not controller.is_file():
+        raise ValueError('Job metadata must remain regular files')
     saved = read_json(job / 'prepared.json')
     if saved['manifest_sha256'] != req['manifest_sha256']:
         raise ValueError('Job manifest binding mismatch')
     m = validate_manifest(read_json(job / 'manifest.json'))
     if digest(canonical(m)) != req['manifest_sha256'] or m['job_id'] != req['job_id']:
         raise ValueError('Stored manifest changed')
-    if digest((job / 'controller.py').read_bytes()) != saved['worker_sha256']:
+    if digest(controller.read_bytes()) != saved['worker_sha256']:
         raise ValueError('Stored controller changed')
     return job
 
@@ -458,7 +573,7 @@ def handle(req, *, ssh_controller=False):
                     pass
                 if s['status'] == 'prepared':
                     s = {**s, 'status': 'cancelled', 'reason': 'Cancelled before launch', 'updated_at': time.time()}
-                    atomic(job / 'state.json', s)
+                    atomic(job / 'state.json', s, require_existing=True)
                 return reply(ident, req, s['status'], state=s, cancel_requested=True)
             if (job / 'submission.json').exists():
                 return reply(ident, req, s['status'], state=s, already_submitted=True)
@@ -467,7 +582,8 @@ def handle(req, *, ssh_controller=False):
             with (job / 'submission.json').open('x', encoding='utf-8') as stream:
                 json.dump({'attempted_at': time.time(), 'manifest_sha256': req['manifest_sha256']}, stream)
                 stream.flush(); os.fsync(stream.fileno())
-            atomic(job / 'state.json', {'status': 'launching', 'updated_at': time.time(), 'heartbeat': time.time(), 'job_id': req['job_id']})
+            atomic(job / 'state.json', {'status': 'launching', 'updated_at': time.time(), 'heartbeat': time.time(), 'job_id': req['job_id']},
+                   require_existing=True)
             try:
                 flags = subprocess.CREATE_NEW_PROCESS_GROUP
                 if ssh_controller:
@@ -481,7 +597,7 @@ def handle(req, *, ssh_controller=False):
                 atomic(job / 'controller-receipt.json', {'pid': p.pid, 'purpose': 'diagnostic only; never used for PID-based cancellation'})
             except Exception as exc:
                 state = {'status': 'uncertain', 'updated_at': time.time(), 'reason': 'Launch attempted; operator reconciliation required'}
-                atomic(job / 'state.json', state)
+                atomic(job / 'state.json', state, require_existing=True)
                 if ssh_controller:
                     return {**reply(ident, req, 'uncertain', state=state), 'ok': False,
                             'error': {'code': type(exc).__name__, 'message': str(exc)[:2000]}}
@@ -606,7 +722,7 @@ def run_job(directory):
             with (job / 'stdout.log').open('xb') as stdout, (job / 'stderr.log').open('xb') as stderr:
                 child = windows_spawn(m['argv'], job / 'work', stdout, stderr, env)
                 state.update(status='running', heartbeat=time.time(), started_at=time.time())
-                atomic(job / 'state.json', state)
+                atomic(job / 'state.json', state, require_existing=True)
                 while True:
                     reason = None
                     if (job / 'cancel.request').exists():
@@ -625,7 +741,7 @@ def run_job(directory):
                         if child.returncode:
                             state['reason'] = 'Task exited nonzero'
                         break
-                    state['heartbeat'] = time.time(); atomic(job / 'state.json', state); time.sleep(0.1)
+                    state['heartbeat'] = time.time(); atomic(job / 'state.json', state, require_existing=True); time.sleep(0.1)
                 state['returncode'] = child.wait()
                 terminate(child)  # close/kill remaining descendants before artifact checkpoint
             total = 0
@@ -663,7 +779,7 @@ def run_job(directory):
                     state.update(status='failed', reason='Available diagnostic cleanup failed')
         state.update(updated_at=time.time(), finished_at=time.time())
         atomic(job / 'artifacts.json', artifacts)
-        atomic(job / 'state.json', state)
+        atomic(job / 'state.json', state, require_existing=True)
     return 0
 
 

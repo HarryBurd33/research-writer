@@ -183,10 +183,17 @@ def invoke(p,req,state,path,source):
         raise
     receipt = {key: result[key] for key in ('ok', 'status', 'job_id', 'manifest_sha256')}
     error = result.get('error')
-    message = error.get('message') if isinstance(error, dict) else None
-    state.update(status=result['status'], last_remote=receipt,
-                 last_error=message[:2000] if isinstance(message, str) else None)
-    state.pop('uncertain_operation',None)
+    if isinstance(error, dict):
+        diagnostic = {key: error[key][:limit] for key, limit in (('code', 128), ('message', 2000))
+                      if isinstance(error.get(key), str)}
+        if diagnostic:
+            receipt['error'] = diagnostic
+    state.update(status=result['status'] if result['ok'] else 'uncertain', last_remote=receipt,
+                 last_error=receipt.get('error', {}).get('message'))
+    if result['ok']:
+        state.pop('uncertain_operation', None)
+    else:
+        state['uncertain_operation'] = req['operation']
     save_state(path,state)
     return result
 

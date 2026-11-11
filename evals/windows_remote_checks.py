@@ -2,7 +2,8 @@
 # SPDX-License-Identifier: MIT
 """Portable transport contracts and an explicit native Windows SSH gate."""
 import base64
-from contextlib import nullcontext
+from concurrent.futures import ThreadPoolExecutor
+from contextlib import contextmanager, nullcontext
 import json
 import os
 from pathlib import Path
@@ -12,7 +13,7 @@ import tempfile
 import threading
 import time
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 import uuid
 
 SCRIPTS = Path(__file__).resolve().parents[1] / 'skills/research-writer/scripts'
@@ -160,6 +161,71 @@ class WindowsClientContracts(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(win.core.TransportError):
                 win.validate_response({**response, **change}, p, req)
 
+        native = Mock()
+        ctypes = Mock()
+        ctypes.WinError.side_effect = lambda code: OSError(code, 'fixture mutex error')
+        with tempfile.TemporaryDirectory() as folder:
+            path = Path(folder) / 'state.json'
+            for handle, wait, native_error, expected, release in ((None, 0, 5, OSError, 0),
+                        (None, 0, 6, OSError, 0), (37, 0xFFFFFFFF, 6, OSError, 0),
+                        (37, 258, 0, TimeoutError, 0), (37, 0x80, 0, None, 1)):
+                with self.subTest(handle=handle, wait=wait, native_error=native_error):
+                    native.reset_mock()
+                    ctypes.get_last_error.return_value = native_error
+                    native.CreateMutexExW.return_value = handle
+                    native.WaitForSingleObject.return_value = wait
+                    native.ReleaseMutex.return_value = True
+                    with patch.object(win.worker, '_metadata_mutex_runtime', return_value=(ctypes, native, b'sid')), \
+                            patch.object(win.worker.os, 'name', 'nt'):
+                        if expected:
+                            with self.assertRaises(expected), win.worker._metadata_guard(path, time.monotonic() + 1):
+                                self.fail('Failed mutex call entered the protected region')
+                        else:
+                            with win.worker._metadata_guard(path, time.monotonic() + 1) as abandoned:
+                                self.assertTrue(abandoned)
+                    self.assertEqual(native.ReleaseMutex.call_count, release)
+                    self.assertEqual(native.CloseHandle.call_count, int(handle is not None))
+                    args = native.CreateMutexExW.call_args.args
+                    self.assertTrue(args[1].startswith('Global\\ResearchWriter.Metadata.'))
+                    self.assertEqual((args[0], args[2], args[3]), (None, 0, 0x00100001))
+            native.CreateMutexExW.return_value = 37
+            native.WaitForSingleObject.return_value = 0
+            native.CloseHandle.return_value = False
+            native.ReleaseMutex.return_value = True
+            native.reset_mock()
+            with patch.object(win.worker, '_metadata_mutex_runtime', return_value=(ctypes, native, b'sid')), \
+                    patch.object(win.worker.os, 'name', 'nt'):
+                ctypes.get_last_error.return_value = 6
+                with self.assertRaisesRegex(OSError, 'fixture mutex error'), \
+                        win.worker._metadata_guard(path, time.monotonic() + 1):
+                    pass
+                self.assertEqual(native.ReleaseMutex.call_count, 1)
+                self.assertEqual(native.CloseHandle.call_count, 1)
+
+                native.reset_mock()
+                native.ReleaseMutex.return_value = False
+                primary = ValueError('original metadata error')
+                with self.assertRaises(ValueError) as observed, \
+                        win.worker._metadata_guard(path, time.monotonic() + 1):
+                    raise primary
+                self.assertIs(observed.exception, primary)
+                self.assertEqual(native.ReleaseMutex.call_count, 1)
+                self.assertEqual(native.CloseHandle.call_count, 1)
+            native.CloseHandle.return_value = True
+            native.ReleaseMutex.return_value = True
+            nested = path.parent / 'nested'
+            nested.mkdir()
+            cases = ((path, b'sid'), (path.with_name('other.json'), b'sid'),
+                     (nested / path.name, b'sid'), (path, b'other-sid'))
+            names = set()
+            native.WaitForSingleObject.return_value = 0
+            for target, sid in cases:
+                with patch.object(win.worker, '_metadata_mutex_runtime', return_value=(ctypes, native, sid)), \
+                        patch.object(win.worker.os, 'name', 'nt'), \
+                        win.worker._metadata_guard(target, time.monotonic() + 1):
+                    names.add(native.CreateMutexExW.call_args.args[1])
+            self.assertEqual(len(names), len(cases))
+
     def test_collection_checks_raw_hash_bounds_and_partial_declaration(self):
         m = manifest(['python', '-c', 'pass'])
         raw = b'\x00ok'
@@ -199,6 +265,72 @@ class WindowsClientContracts(unittest.TestCase):
                     win.operate(p, 'submit', identity, root, allow_execute=True)
                 self.assertEqual(rpc.call_count, 1)
             self.assertEqual(win.core.read_json(path)['status'], 'uncertain')
+
+            for operation in ('prepare', 'submit', 'status', 'recover', 'cancel', 'collect'):
+                with self.subTest(operation=operation):
+                    state = {**initial, 'status': 'succeeded', 'submit_attempted': True, 'cancel_attempted': True}
+                    request = win.request_for(p, operation, identity, initial['manifest_sha256'])
+                    raw = {'protocol': 1, 'ok': False, 'status': 'failed', 'job_id': identity,
+                           'manifest_sha256': initial['manifest_sha256'], 'error': {
+                               'code': 'PermissionError' if operation in ('prepare', 'cancel') else 'TimeoutError',
+                               'message': 'metadata observation failed' * 200},
+                           'identity': {'hostname': p['expected_hostname'], 'user': p['expected_user']},
+                           'files': [{'data': 'x' * 20000}]}
+                    self.assertIs(win.validate_response(raw, p, request), raw)
+                    with patch.object(win, 'rpc', return_value=raw):
+                        self.assertIs(win.invoke(p, request, state, path, 'pass'), raw)
+                    saved = win.core.read_json(path)
+                    self.assertEqual(saved['status'], 'uncertain')
+                    self.assertEqual(saved['uncertain_operation'], operation)
+                    self.assertTrue(saved['submit_attempted'] and saved['cancel_attempted'])
+                    for key in ('profile_sha256', 'worker_sha256', 'manifest_sha256'):
+                        self.assertEqual(saved[key], initial[key])
+                    self.assertEqual(saved['last_remote']['status'], 'failed')
+                    self.assertNotIn('files', saved['last_remote'])
+                    self.assertEqual(saved['last_remote']['error']['code'], raw['error']['code'])
+                    self.assertEqual(saved['last_error'], raw['error']['message'][:2000])
+
+            result = {**raw, 'ok': True, 'status': 'failed', 'error': None}
+            with patch.object(win, 'rpc', return_value=result):
+                win.invoke(p, request, state, path, 'pass')
+            saved = win.core.read_json(path)
+            self.assertEqual(saved['status'], 'failed')
+            self.assertNotIn('uncertain_operation', saved)
+            self.assertIsNone(saved['last_error'])
+
+            profile_path = root / 'profile.json'
+            transport.save_state(profile_path, p)
+            output = root / 'failed-collect.json'
+            destination = root / 'must-not-publish'
+            with patch.object(win, 'rpc', return_value=raw), patch.object(win.core, 'collect_files') as collect:
+                rc = win.main(['collect', '--job-id', identity, '--profile', str(profile_path), '--state-dir', str(root),
+                               '--destination', str(destination), '--output', str(output)])
+                collect.assert_not_called()
+            self.assertEqual(rc, 2)
+            self.assertEqual(win.core.read_json(output), raw)
+            self.assertFalse(destination.exists())
+            self.assertEqual(win.core.read_json(path)['status'], 'uncertain')
+            with patch.object(win, 'rpc', return_value={**raw, 'error': {'code': [], 'message': {}}}):
+                win.operate(p, 'status', identity, root)
+            saved = win.core.read_json(path)
+            self.assertIsNone(saved['last_error'])
+            self.assertNotIn('error', saved['last_remote'])
+
+            transport.save_state(path, initial)
+            with patch.object(win, 'rpc', return_value=raw) as observed:
+                self.assertIs(win.operate(p, 'submit', identity, root, allow_execute=True), raw)
+                with self.assertRaisesRegex(ValueError, 'never resubmit'):
+                    win.operate(p, 'submit', identity, root, allow_execute=True)
+                self.assertEqual(observed.call_count, 1)
+            manifest_path = root / 'manifest.json'
+            manifest_path.write_bytes(win.core.canonical(m))
+            fresh_state = root / 'fresh-state'
+            with patch.object(win, 'rpc', return_value=raw) as observed:
+                self.assertIs(win.prepare(p, manifest_path, fresh_state, allow_transfer=True), raw)
+                self.assertEqual(win.core.read_json(fresh_state / path.name)['status'], 'uncertain')
+                with self.assertRaisesRegex(FileExistsError, 'reconcile without preparing again'):
+                    win.prepare(p, manifest_path, fresh_state, allow_transfer=True)
+                self.assertEqual(observed.call_count, 1)
 
         # Exercise the actual worker transition using a denied CreateProcess call.
         flags = {'CREATE_NEW_PROCESS_GROUP': 0x200, 'CREATE_BREAKAWAY_FROM_JOB': 0x1000000,
@@ -332,6 +464,23 @@ $data=[Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -Compress -InputObject @($r
         self.diagnose_controller(identity)
         self.fail(f'Expected {statuses} from {operation}; last response: {result}')
 
+    def fixture_rpc(self, source, **values):
+        worker_source, worker_hash = win.worker_source()
+        request = {**win.request_for(self.p, 'inspect'), **values, 'worker_source': worker_source}
+        child = transport.run_bounded(win.ssh_argv(self.p), win.encode_request(self.p, request, source),
+                                      timeout=20, max_input=win.core.MAX_RPC, max_stdout=8192, max_stderr=4096)
+        self.assertEqual(child.returncode, 0, child.stderr)
+        response = win.validate_response(win.core.decode_json(child.stdout.decode('utf-8')), self.p, request)
+        self.assertTrue(response['ok'], response)
+        self.assertEqual(response['worker_sha256'], worker_hash)
+        return response
+
+    def wait_marker(self, path, timeout=4):
+        deadline = time.monotonic() + timeout
+        while not path.exists() and time.monotonic() < deadline:
+            time.sleep(.005)
+        self.assertTrue(path.exists(), f'Fixture marker did not appear: {path.name}')
+
     def test_inspect_and_refuse_unknown_or_changed_host_key_and_wrong_identity(self):
         inspected = self.command('inspect')
         identity = inspected['identity']
@@ -396,6 +545,126 @@ sys.stderr.buffer.write(b'\\x00\\x80\\xff\\r\\n')
                     'stdout': stdout.decode('ascii'),
                 }), flush=True)
 
+    def test_metadata_mutex_native_serialization_deadline_and_abandonment(self):
+        path = self.scratch / 'state.json'
+        old = {'value': 'old'}
+        new = {'value': 'new'}
+        win.worker.atomic(path, old)
+        release = self.scratch / 'release-reader'
+        opened = self.scratch / 'reader-open'
+        waiting = threading.Event()
+        names, statuses = [], []
+        with ThreadPoolExecutor(max_workers=2) as pool:
+            reader = pool.submit(self.fixture_rpc, HELD_METADATA_READER, path=str(path))
+            self.wait_marker(opened)
+            with observe_mutex_wait(waiting, names, statuses):
+                writer = pool.submit(win.worker.atomic, path.with_name('STATE.JSON'), new, require_existing=True)
+                try:
+                    self.assertTrue(waiting.wait(.4), 'Writer did not reach native mutex wait')
+                    self.assertFalse(writer.done(), 'Writer published while the reader handle was held')
+                    self.assertEqual(path.read_bytes(), win.core.canonical(old) + b'\n')
+                    time.sleep(.05)
+                    self.assertFalse(writer.done(), 'Writer bypassed the held reader')
+                finally:
+                    release.touch()
+                writer.result(timeout=3)
+            read = reader.result(timeout=6)
+            self.assertEqual(read['value'], old)
+            self.assertEqual(read['raw_hex'], (win.core.canonical(old) + b'\n').hex())
+            self.assertEqual(names, [read['mutex_name']])
+            self.assertEqual(statuses, [0])
+            self.assertEqual(win.worker.read_json(path), new)
+            check_wrong_mutex_object_type(path, names[0])
+            print('WINDOWS_METADATA_MUTEX_OVERLAP ' + json.dumps({
+                'old': read['raw_hex'], 'new': path.read_bytes().hex(),
+                'reader_session_id': read['session_id'], 'writer_session_id': windows_session_id(),
+                'reader_pid': read['pid'], 'writer_pid': os.getpid(), 'wait_status': statuses[0],
+            }, sort_keys=True), flush=True)
+
+            # The same lock is never a second deadline or a separate lockfile.
+            waiting.clear()
+            names.clear()
+            statuses.clear()
+            with win.worker._metadata_guard(path, time.monotonic() + 1):
+                with observe_mutex_wait(waiting, names, statuses):
+                    started = time.monotonic()
+                    writer = pool.submit(win.worker.atomic, path, old, require_existing=True)
+                    self.assertTrue(waiting.wait(.4))
+                    with self.assertRaisesRegex(TimeoutError, 'mutex deadline'):
+                        writer.result(timeout=1.4)
+                    self.assertLess(time.monotonic() - started, 1.5)
+            self.assertEqual(statuses, [258])
+            self.assertEqual(win.worker.read_json(path), new)
+
+            with observe_mutex_wait(threading.Event(), names, statuses):
+                for index in range(6):
+                    update = {'sequence': index, 'data': str(index) * 1024}
+                    writer = pool.submit(win.worker.atomic, path, update, require_existing=True)
+                    observed = win.worker.read_json(path)
+                    self.assertIn(observed, (new, update))
+                    writer.result(timeout=2)
+                    self.assertEqual(win.worker.read_json(path), update)
+                    new = update
+
+            for case in ('before', 'after', 'corrupt', 'missing', 'reparse'):
+                with self.subTest(case=case):
+                    self.check_abandoned_mutex(pool, case)
+
+    def check_abandoned_mutex(self, pool, case):
+        folder = self.scratch / case
+        folder.mkdir()
+        target = folder / 'state.json'
+        orphan = folder / '.state-orphan'
+        orphan.write_bytes(b'fixture orphan must remain untouched')
+        holder_ready = folder / 'holder-ready'
+        sentinel = folder / 'outside'
+        if case == 'reparse':
+            sentinel.mkdir()
+            (sentinel / 'sentinel').write_bytes(b'unchanged')
+            subprocess.run(['cmd.exe', '/d', '/c', 'mklink', '/J', str(target), str(sentinel)],
+                           capture_output=True, timeout=5, check=True)
+        elif case != 'missing':
+            target.write_bytes(b'{"value":' if case == 'corrupt' else b'{"value":"old"}\n')
+        holder = subprocess.Popen([sys.executable, '-I', '-c', ABANDON_METADATA_OWNER,
+                                   str(SCRIPTS), str(target), case], stdin=subprocess.DEVNULL,
+                                  stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        waiting = threading.Event()
+        names, statuses = [], []
+        try:
+            self.wait_marker(holder_ready)
+            with observe_mutex_wait(waiting, names, statuses):
+                if case in ('before', 'after'):
+                    waiter = pool.submit(win.worker.read_json, target)
+                else:
+                    waiter = pool.submit(win.worker.atomic, target, {'value': 'forbidden'}, require_existing=True)
+                self.assertTrue(waiting.wait(.4), 'Waiter did not open the exact mutex before owner loss')
+                self.assertIsNone(holder.poll(), 'Fixture mutex owner already exited')
+                holder.kill()
+                holder.wait(timeout=2)
+                if case in ('before', 'after'):
+                    self.assertEqual(waiter.result(timeout=2), {'value': 'new' if case == 'after' else 'old'})
+                else:
+                    with self.assertRaises(FileNotFoundError if case == 'missing' else ValueError):
+                        waiter.result(timeout=2)
+            self.assertEqual(statuses, [0x80], 'Native waiter did not receive WAIT_ABANDONED')
+            if case == 'corrupt':
+                self.assertEqual(target.read_bytes(), b'{"value":')
+            if case == 'missing':
+                self.assertFalse(target.exists())
+            if case == 'reparse':
+                self.assertEqual((sentinel / 'sentinel').read_bytes(), b'unchanged')
+            self.assertEqual(list(folder.glob('.state-*')), [orphan])
+            self.assertEqual(orphan.read_bytes(), b'fixture orphan must remain untouched')
+            print('WINDOWS_METADATA_MUTEX_ABANDONED ' + json.dumps({
+                'case': case, 'wait_status': statuses[0], 'owned_holder_exit': holder.returncode,
+            }, sort_keys=True), flush=True)
+        finally:
+            if holder.poll() is None:
+                holder.kill()
+                holder.wait(timeout=2)
+            if case == 'reparse':
+                target.rmdir()
+
     def test_native_roundtrip_with_binary_unicode_and_fresh_client(self):
         path = 'space 研究/入力.bin'
         name = 'output 研究/結果.bin'
@@ -417,6 +686,7 @@ sys.stderr.buffer.write(b'\\x00\\x80\\xff\\r\\n')
         self.assertEqual(recovered['state'], terminal['state'])
         self.assertEqual(recovered['reconciliation']['mode'], 'read_only')
         self.assertFalse(recovered['reconciliation']['restarted'])
+        self.check_failed_native_observation(identity, terminal)
         with self.subTest('one dispatch'):
             refused = self.call('submit', identity, '--allow-execute', expected=2)
             self.assertIn('never resubmit', refused['error'])
@@ -429,6 +699,41 @@ sys.stderr.buffer.write(b'\\x00\\x80\\xff\\r\\n')
         for name, content in (('stdout.log', b'\x00\xff\n'), ('stderr.log', b'\x80\r\n')):
             self.assertEqual(base64.b64decode(collected['logs'][name]['data']), content)
             self.assertEqual(collected['logs'][name]['sha256'], win.core.digest(content))
+
+    def check_failed_native_observation(self, identity, terminal):
+        job = self.jobs / identity
+        before = snapshot_fixture_metadata(job)
+        local_path = self.state_dir / (identity + '.json')
+        local_before = win.core.read_json(local_path)
+        ready, release = threading.Event(), threading.Event()
+
+        def hold():
+            with win.worker._metadata_guard(job / 'state.json', time.monotonic() + 1):
+                ready.set()
+                if not release.wait(8):
+                    raise TimeoutError('Native observation fixture did not release its mutex')
+
+        with ThreadPoolExecutor(max_workers=1) as pool:
+            holder = pool.submit(hold)
+            try:
+                self.assertTrue(ready.wait(2))
+                failure = self.call('status', identity, expected=2)
+                self.assertFalse(failure['ok'])
+                self.assertEqual(failure['status'], 'failed')
+                self.assertEqual(failure['error']['code'], 'TimeoutError')
+                local = win.core.read_json(local_path)
+                self.assertEqual(local['status'], 'uncertain')
+                self.assertEqual(local['uncertain_operation'], 'status')
+                self.assertTrue(local['submit_attempted'])
+                for key in ('manifest_sha256', 'profile_sha256', 'worker_sha256'):
+                    self.assertEqual(local[key], local_before[key])
+            finally:
+                release.set()
+            holder.result(timeout=2)
+        recovered = self.call('recover', identity)
+        self.assertEqual(recovered['state'], terminal['state'])
+        self.assertFalse(recovered['reconciliation']['restarted'])
+        self.assertEqual(snapshot_fixture_metadata(job), before)
 
     def drop_acknowledgement(self, op, identity, source=None):
         crash = '''
@@ -608,6 +913,167 @@ def terminate_fixture_controller(pid, python, job):
         kernel.CloseHandle(handle)
 
 
+def windows_session_id():
+    import ctypes
+    from ctypes import wintypes
+    kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+    kernel.ProcessIdToSessionId.argtypes = [wintypes.DWORD, ctypes.POINTER(wintypes.DWORD)]
+    session = wintypes.DWORD()
+    if not kernel.ProcessIdToSessionId(os.getpid(), ctypes.byref(session)):
+        raise ctypes.WinError(ctypes.get_last_error())
+    return session.value
+
+
+def check_wrong_mutex_object_type(path, name):
+    import ctypes
+    from ctypes import wintypes as w
+
+    kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+    kernel.CreateEventW.argtypes = [ctypes.c_void_p, w.BOOL, w.BOOL, w.LPCWSTR]
+    kernel.CreateEventW.restype = w.HANDLE
+    kernel.CloseHandle.argtypes = [w.HANDLE]
+    before = path.read_bytes()
+    handle = kernel.CreateEventW(None, False, False, name)
+    if not handle:
+        raise ctypes.WinError(ctypes.get_last_error())
+    try:
+        try:
+            win.worker.atomic(path, {'value': 'must not replace'}, require_existing=True)
+        except OSError as exc:
+            if exc.winerror != 6:
+                raise
+        else:
+            raise AssertionError('Unexpected mutex acquisition using an existing event name')
+        if path.read_bytes() != before or list(path.parent.glob('.state-*')):
+            raise AssertionError('Wrong-type mutex collision changed metadata or left a temporary file')
+    finally:
+        kernel.CloseHandle(handle)
+
+
+def snapshot_fixture_metadata(job):
+    import ctypes
+    from ctypes import wintypes as w
+
+    ptr = ctypes.c_void_p
+    adv = ctypes.WinDLL('advapi32', use_last_error=True)
+    kernel = ctypes.WinDLL('kernel32', use_last_error=True)
+    adv.GetNamedSecurityInfoW.argtypes = [w.LPWSTR, w.DWORD, w.DWORD, ptr, ptr, ptr, ptr, ctypes.POINTER(ptr)]
+    adv.GetNamedSecurityInfoW.restype = w.DWORD
+    adv.ConvertSecurityDescriptorToStringSecurityDescriptorW.argtypes = [ptr, w.DWORD, w.DWORD,
+                                                                        ctypes.POINTER(w.LPWSTR), ptr]
+    kernel.LocalFree.argtypes = [ptr]
+    kernel.LocalFree.restype = ptr
+    snapshot = {}
+    for path in (job, *sorted(job.iterdir())):
+        descriptor, text = ptr(), w.LPWSTR()
+        code = adv.GetNamedSecurityInfoW(str(path), 1, 7, None, None, None, None, ctypes.byref(descriptor))
+        if code:
+            raise ctypes.WinError(code)
+        try:
+            if not adv.ConvertSecurityDescriptorToStringSecurityDescriptorW(descriptor, 1, 7, ctypes.byref(text), None):
+                raise ctypes.WinError(ctypes.get_last_error())
+            raw = win.core.read_bytes(path) if path.is_file() else None
+            snapshot[path.name] = (text.value, None if raw is None else win.core.digest(raw))
+        finally:
+            if text:
+                kernel.LocalFree(ctypes.cast(text, ptr))
+            kernel.LocalFree(descriptor)
+    return snapshot
+
+
+@contextmanager
+def observe_mutex_wait(waiting, names, statuses):
+    ctypes, kernel, sid = win.worker._metadata_mutex_runtime()
+
+    class ObservedKernel:
+        def __getattr__(self, name):
+            return getattr(kernel, name)
+
+        def CreateMutexExW(self, attributes, name, flags, rights):
+            names.append(name)
+            return kernel.CreateMutexExW(attributes, name, flags, rights)
+
+        def WaitForSingleObject(self, handle, timeout):
+            waiting.set()  # CreateMutexExW has already opened the actual handle.
+            result = kernel.WaitForSingleObject(handle, timeout)
+            statuses.append(result)
+            return result
+
+    with patch.object(win.worker, '_metadata_mutex_runtime', return_value=(ctypes, ObservedKernel(), sid)):
+        yield
+
+
+HELD_METADATA_READER = r'''
+import ctypes, json, os, sys, time
+from contextlib import contextmanager
+from ctypes import wintypes
+from pathlib import Path
+
+request = json.load(sys.stdin)
+worker = {'__name__': 'held_metadata_reader'}
+exec(compile(request['worker_source'], '<metadata-probe-worker>', 'exec'), worker)
+path = Path(request['path'])
+root = worker['root_path'](str(path.parent.parent))
+if root != Path(request['remote_root']).parent or not path.parent.name.startswith('client-') or path.name != 'state.json':
+    raise ValueError('Expected the owned metadata probe path')
+original_open = Path.open
+ct, kernel, sid = worker['_metadata_mutex_runtime']()
+evidence = {}
+
+class ObservedKernel:
+    def __getattr__(self, name):
+        return getattr(kernel, name)
+
+    def CreateMutexExW(self, attrs, name, flags, rights):
+        evidence['mutex_name'] = name
+        return kernel.CreateMutexExW(attrs, name, flags, rights)
+
+@contextmanager
+def observed_open(candidate, *args, **kwargs):
+    with original_open(candidate, *args, **kwargs) as stream:
+        if candidate == path:
+            (path.parent / 'reader-open').touch()
+            deadline = time.monotonic() + 2
+            release = path.parent / 'release-reader'
+            while not release.exists() and time.monotonic() < deadline:
+                time.sleep(.005)
+            if not release.exists():
+                raise TimeoutError('Owned fixture never released the metadata reader')
+            evidence['raw_hex'] = stream.read(128).hex()
+            stream.seek(0)
+        yield stream
+
+worker['_metadata_mutex_runtime'] = lambda: (ct, ObservedKernel(), sid)
+Path.open = observed_open
+try:
+    evidence['value'] = worker['read_json'](path)
+finally:
+    Path.open = original_open
+session = wintypes.DWORD()
+kernel.ProcessIdToSessionId.argtypes = [wintypes.DWORD, ctypes.POINTER(wintypes.DWORD)]
+if not kernel.ProcessIdToSessionId(os.getpid(), ctypes.byref(session)):
+    raise ctypes.WinError(ctypes.get_last_error())
+result = {'protocol': 1, 'ok': True, 'status': 'inspected', 'supported_remote_os': 'windows',
+          'identity': worker['identity'](), 'session_id': session.value, 'pid': os.getpid(),
+          'worker_sha256': worker['digest'](request['worker_source'].encode('utf-8')), **evidence}
+sys.stdout.buffer.write(worker['canonical'](result) + b'\n')
+'''
+
+
+ABANDON_METADATA_OWNER = r'''
+from pathlib import Path
+import sys, time
+sys.path.insert(0, sys.argv[1])
+import windows_worker as worker
+target = Path(sys.argv[2])
+with worker._metadata_guard(target, time.monotonic() + 1):
+    if sys.argv[3] == 'after':
+        worker.atomic(target, {'value': 'new'}, require_existing=True)
+    (target.parent / 'holder-ready').touch()
+    time.sleep(8)
+'''
+
+
 METADATA_PROBE = r'''
 import ctypes as c
 from ctypes import wintypes as wt
@@ -778,7 +1244,7 @@ def main():
         classes.append(NativeWindowsSSH)
     suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(cls) for cls in classes)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
-    passed = probe_ok and result.wasSuccessful() and not result.skipped and result.testsRun == (17 if native else 9)
+    passed = probe_ok and result.wasSuccessful() and not result.skipped and result.testsRun == (18 if native else 9)
     print('WINDOWS_SSH_CHECKS ' + json.dumps({
         'mode': 'native_loopback_ssh' if native else 'portable_source_contracts',
         'passed': passed, 'methods': result.testsRun, 'skipped': len(result.skipped),
