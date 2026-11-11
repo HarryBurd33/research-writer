@@ -45,10 +45,32 @@ def find_openssh():
     return bin_dir
 
 
-def lock_key(path, owner, *readers):
+def lock_key(path, owner, *readers, remove_creator=None):
     grants = [f'*{sid}:F' for sid in (owner, *readers)]
     checked(['icacls.exe', str(path), '/grant:r', *grants, '/inheritance:r'])
     checked(['icacls.exe', str(path), '/setowner', '*' + owner])
+    if remove_creator is not None:
+        # ssh-keygen's explicit creator ACE survives removal of inherited ACEs.
+        checked(['icacls.exe', str(path), '/remove', '*' + remove_creator])
+
+
+def verify_server_key_permissions(host_key, authorized):
+    powershell(
+        "$sidType=[System.Security.Principal.SecurityIdentifier]\n"
+        "foreach ($path in @($env:RW_CI_HOST_KEY, $env:RW_CI_AUTHORIZED)) {\n"
+        "  $acl=Get-Acl -LiteralPath $path\n"
+        "  $rules=@($acl.GetAccessRules($true, $true, $sidType))\n"
+        "  $ids=@($rules | ForEach-Object { $_.IdentityReference.Value } | Sort-Object)\n"
+        "  $bad=@($rules | Where-Object { $_.IsInherited -or $_.AccessControlType -ne 'Allow' "
+        "-or $_.FileSystemRights -ne 'FullControl' })\n"
+        "  if ($acl.GetOwner($sidType).Value -ne 'S-1-5-32-544' -or -not $acl.AreAccessRulesProtected "
+        "-or ($ids -join ',') -ne 'S-1-5-18,S-1-5-32-544' -or $bad.Count -ne 0) {\n"
+        "    throw ('Unexpected SSH fixture key ACL: ' + $path)\n"
+        "  }\n"
+        "  Write-Output ('WINDOWS_SSH_ACL verified ' + (Split-Path -Leaf $path))\n"
+        "}",
+        env={'RW_CI_HOST_KEY': str(host_key), 'RW_CI_AUTHORIZED': str(authorized)},
+    )
 
 
 def quote_config(path):
@@ -72,9 +94,10 @@ def fixture(root, openssh):
     host_public = host_key.with_suffix('.pub').read_bytes().split()[:2]
     client_public = client_key.with_suffix('.pub').read_bytes().split()[:2]
     authorized.write_bytes(b' '.join(client_public) + b'\n')
-    lock_key(host_key, admins, system)
-    lock_key(authorized, admins, system)
+    lock_key(host_key, admins, system, remove_creator=sid)
+    lock_key(authorized, admins, system, remove_creator=sid)
     lock_key(client_key, sid, system, admins)
+    verify_server_key_permissions(host_key, authorized)
 
     with socket.socket() as sock:
         sock.bind(('127.0.0.1', 0))
@@ -133,16 +156,35 @@ def default_shell():
         return 'cmd.exe'
 
 
-def require_listener_closed(port):
-    deadline = time.monotonic() + 5
-    while time.monotonic() < deadline:
-        try:
-            with socket.create_connection(('127.0.0.1', port), timeout=0.5):
-                time.sleep(0.1)
-        except ConnectionRefusedError:
-            print('WINDOWS_SSH_CLEANUP isolated listener closed; task removed', flush=True)
-            return
-    raise RuntimeError('Isolated listener did not close after task cleanup')
+def cleanup_fixture(env, port):
+    powershell(
+        r"""
+$ProgressPreference='SilentlyContinue'
+function Get-FixtureTask {
+  Get-ScheduledTask | Where-Object { $_.TaskPath -eq '\' -and $_.TaskName -eq $env:RW_CI_TASK }
+}
+$task=Get-FixtureTask
+if ($null -ne $task) {
+  Get-ScheduledTaskInfo -InputObject $task | Select-Object LastTaskResult | Format-List
+  if ($task.State -in @('Running', 'Queued')) { Stop-ScheduledTask -InputObject $task }
+  Unregister-ScheduledTask -InputObject $task -Confirm:$false
+}
+$timer=[System.Diagnostics.Stopwatch]::StartNew()
+do {
+  $listener=Get-NetTCPConnection | Where-Object {
+    $_.LocalPort -eq [uint16]$env:RW_CI_PORT -and $_.State -eq 'Listen'
+  }
+  $fixtureTask=Get-FixtureTask
+  if ($null -eq $listener -and $null -eq $fixtureTask) {
+    Write-Output 'WINDOWS_SSH_CLEANUP no TCP listener at fixture port; task absent'
+    exit 0
+  }
+  Start-Sleep -Milliseconds 150
+} while ($timer.Elapsed.TotalSeconds -lt 5)
+throw 'Fixture cleanup remains uncertain: listener or task still present'
+""",
+        env={**env, 'RW_CI_PORT': str(port)},
+    )
 
 
 def run_fixture(root, openssh):
@@ -158,6 +200,7 @@ def run_fixture(root, openssh):
         'RW_CI_TASK': task, 'RW_CI_SSHD': str(sshd),
         'RW_CI_ARGUMENTS': subprocess.list2cmdline(['-D', '-E', str(log), '-f', str(config)]),
     }
+    primary_error = None
     try:
         powershell(
             "$action=New-ScheduledTaskAction -Execute $env:RW_CI_SSHD -Argument $env:RW_CI_ARGUMENTS\n"
@@ -189,23 +232,24 @@ def run_fixture(root, openssh):
                                      'PATH': str(openssh) + os.pathsep + os.environ['PATH']},
                                 timeout=235)
         return result.returncode
+    except BaseException as exc:
+        primary_error = exc
+        raise
     finally:
         try:
-            powershell(
-                "$task=Get-ScheduledTask -TaskName $env:RW_CI_TASK -ErrorAction SilentlyContinue\n"
-                "if ($null -ne $task) {\n"
-                "  Get-ScheduledTaskInfo -InputObject $task | Select-Object LastTaskResult | Format-List\n"
-                "  if ($task.State -eq 'Running') { Stop-ScheduledTask -InputObject $task }\n"
-                "  Unregister-ScheduledTask -InputObject $task -Confirm:$false\n"
-                "}",
-                env=env,
-            )
-            require_listener_closed(port)
+            cleanup_fixture(env, port)
+        except Exception as exc:
+            print(f'WINDOWS_SSH_CLEANUP uncertain: {exc}', file=sys.stderr, flush=True)
+            if primary_error is None:
+                raise
         finally:
-            if log.exists():
-                with log.open('rb') as stream:
-                    stream.seek(max(0, log.stat().st_size - 16 * 1024))
-                    print('WINDOWS_SSHD_LOG\n' + stream.read().decode('utf-8', 'replace'), flush=True)
+            try:
+                if log.exists():
+                    with log.open('rb') as stream:
+                        stream.seek(max(0, log.stat().st_size - 16 * 1024))
+                        print('WINDOWS_SSHD_LOG\n' + stream.read().decode('utf-8', 'replace'), flush=True)
+            except OSError as exc:
+                print(f'WINDOWS_SSHD_LOG unavailable: {exc}', file=sys.stderr, flush=True)
 
 
 def main():
