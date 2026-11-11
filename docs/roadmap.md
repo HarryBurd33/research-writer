@@ -1,5 +1,7 @@
 # Research Writer: remaining work and acceptance plan
 
+This page preserves the historical v0.6–v0.14 plan and implementation notes. For the current v0.17 work, use the [remaining capability plan](capability-plan.md) and [observed validation](capability-validation.md). Historical “next” and “pending” statements below describe their original release stage.
+
 Plan begun 2026-10-27; status reviewed 2026-10-28. Proposed work is distinct from executed acceptance. Phases 1–4 were delivered through v0.8.0; phase 5 bounded evaluation is delivered in v0.9.0, and the next bounded retrieval/inventory stage is delivered in v0.10.0. The historical starting release is v0.6.0; see [validation](validation.md), [runtime setup](runtime-setup.md) and [tool catalog](../skills/research-writer/references/tool-catalog.json). Preserve the user's device-adaptable design, genre/audience/destination intake, renewed literature search before substantive writing, and tested prior behavior.
 
 ## Phase 1 implementation status

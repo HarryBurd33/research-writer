@@ -70,6 +70,63 @@ class StructureChecks(unittest.TestCase):
         launcher=self.root/'venv-python';launcher.symlink_to(Path(sys.executable).resolve())
         paths=S.validate_spec({**self.spec,'python':str(launcher)})
         self.assertEqual(paths['python'],launcher)
+    def msa_spec(self, raw=b'>query\nAAAA\n>homolog\nAAa-A\n'):
+        path=self.root/'local.a3m';path.write_bytes(raw)
+        return {**self.spec,'schema':S.SCHEMA_V2,'msa':{
+            'mode':'local_a3m','path':str(path.resolve()),'sha256':hashlib.sha256(raw).hexdigest()}}
+    def test_v2_closed_modes_preserve_v1_empty_input(self):
+        empty={**self.spec,'schema':S.SCHEMA_V2,'msa':{'mode':'empty'}}
+        S.validate_spec(empty)
+        self.assertEqual(S.sequence_input(empty,self.root),S.sequence_input(self.spec,self.root))
+        for value in (None,{}, {'mode':'server'}, {'mode':'empty','path':'unused'}):
+            with self.subTest(msa=value),self.assertRaises(ValueError):
+                S.validate_spec({**empty,'msa':value})
+        with self.assertRaises(ValueError):S.validate_spec({**self.spec,'msa':{'mode':'empty'}})
+    def test_local_a3m_query_width_alphabet_and_sequence_bound(self):
+        item=self.msa_spec();S.validate_spec(item)
+        raw,evidence=S.msa_bytes(item)
+        self.assertEqual(evidence['sequences'],2);self.assertEqual(evidence['alignment_columns'],4)
+        for bad in (b'>query\nAAAT\n',b'AAAA\n',b'>query\nAAAA\n>h\nAAA\n',
+                    b'>query\nAAAA\n>h\nAAXA\n',b'>\nAAAA\n',b'>query\nAAAA\n>h\n',
+                    b'>query\nAAAA\n>h\nAAAA\x00\n'):
+            with self.subTest(raw=bad),self.assertRaises(ValueError):S.validate_spec(self.msa_spec(bad))
+        valid=b'>query\nAAAA\n'+b'>h\nAAAA\n'*1023
+        self.assertEqual(S.msa_bytes(self.msa_spec(valid))[1]['sequences'],1024)
+        with self.assertRaises(ValueError):S.validate_spec(self.msa_spec(valid+b'>extra\nAAAA\n'))
+        with self.assertRaises(ValueError):S.validate_spec(self.msa_spec(b'x'*(S.MAX_MSA+1)))
+    def test_local_a3m_hash_staging_and_overlap_before_launch(self):
+        item=self.msa_spec();raw,evidence=S.msa_bytes(item)
+        destination=Path(item['output_dir']);destination.mkdir()
+        (destination/'input.a3m').write_bytes(raw)
+        self.assertEqual(S.staged_msa(item,destination),evidence)
+        (destination/'input.a3m').write_bytes(raw.replace(b'AAAA',b'AAAT',1))
+        with self.assertRaises(ValueError):S.staged_msa(item,destination)
+        Path(item['msa']['path']).write_bytes(raw+b'\n')
+        with self.assertRaises(ValueError):S.msa_bytes(item)
+        original=self.msa_spec();nested=self.root/'msa-parent';nested.mkdir()
+        nested_msa=nested/'input.a3m';nested_msa.write_bytes(raw)
+        overlap={**original,'output_dir':str(nested),'msa':{**original['msa'],'path':str(nested_msa.resolve())}}
+        path=self.root/'overlap-msa.json';path.write_text(json.dumps(overlap))
+        with patch.object(S,'bounded_process') as launch:
+            with self.assertRaises(ValueError):S.run(path)
+            launch.assert_not_called()
+        self.assertEqual(list(nested.iterdir()),[nested_msa])
+    def test_invalid_msa_does_not_reserve_output(self):
+        item=self.msa_spec();item['msa']['sha256']='0'*64
+        path=self.root/'invalid-msa.json';path.write_text(json.dumps(item))
+        with patch.object(S,'bounded_process') as launch:
+            with self.assertRaises(ValueError):S.run(path)
+            launch.assert_not_called()
+        self.assertFalse(Path(item['output_dir']).exists())
+    def test_msa_symlink_ancestor_refused_before_output(self):
+        item=self.msa_spec();alias=self.root/'alias'
+        alias.symlink_to(self.root.resolve(),target_is_directory=True)
+        item['msa']['path']=str(alias.absolute()/'local.a3m')
+        path=self.root/'alias-msa.json';path.write_text(json.dumps(item))
+        with patch.object(S,'bounded_process') as launch:
+            with self.assertRaises(ValueError):S.run(path)
+            launch.assert_not_called()
+        self.assertFalse(Path(item['output_dir']).exists())
     def test_source_tree_content_and_injected_module_detection(self):
         files={'src/boltz/main.py':b'# source fixture\n','pyproject.toml':b'version="2.2.1"\n'}
         rows=[]

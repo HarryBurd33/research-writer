@@ -29,6 +29,8 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/discovery_tools.py', 'scripts/claim_audit.py',
             'scripts/docking_tools.py', 'scripts/structure_tools.py',
             'scripts/windows_worker.py', 'scripts/slurm_tools.py', 'scripts/accelerator_tools.py',
+            'scripts/windows_remote_tools.py', 'scripts/transport_common.py',
+            'scripts/accelerator_remote_tools.py', 'scripts/accelerator_remote_worker.py',
             'scripts/linux_tools.py', 'scripts/linux_supervisor.py',
             'scripts/checkpoint_tools.py', 'scripts/backup_tools.py', 'scripts/stream_backup_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
@@ -39,6 +41,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
                 'molecular-conversion', 'protein-embeddings', 'remote-execution',
                 'docking', 'structure-prediction', 'windows-worker', 'slurm-execution', 'accelerator-acceptance',
+                'windows-remote-execution', 'accelerator-remote-execution',
                 'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints', 'off-device-backups', 'streaming-backups')))
 
 
@@ -139,6 +142,8 @@ def core_check(work):
     run_cli(work, 'conversion_tools.py', ['--help'])
     run_cli(work, 'protein_tools.py', ['--help'])
     run_cli(work, 'remote_tools.py', ['--help'])
+    run_cli(work, 'windows_remote_tools.py', ['--help'])
+    run_cli(work, 'accelerator_remote_tools.py', ['--help'])
     run_cli(work, 'linux_tools.py', ['--help'])
     run_cli(work, 'linux_supervisor.py', ['--help'])
     source = work / 'source.txt'

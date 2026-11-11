@@ -71,3 +71,5 @@ Use `scripts/stream_backup_tools.py` for optional binary whole-store backups and
 Use [docking](docking.md), [structure prediction](structure-prediction.md), [native Windows](windows-worker.md) and [Slurm](slurm-execution.md) only for explicitly selected compatible tasks. Each has its own versioned contract and provisioning/acceptance requirements.
 
 [Local accelerator acceptance](accelerator-acceptance.md) verifies one explicit MPS/CUDA control against a frozen CPU comparison. It does not change CPU remote manifests or imply external-host acceptance.
+
+[Windows jobs over SSH](windows-remote-execution.md) and [POSIX accelerator jobs over SSH](accelerator-remote-execution.md) have separate profiles and entry points. Select an authorized host and verify its identity before transferring or executing. Both retain one-shot intent and uncertain outcomes. The accelerator route requires existing pinned runtime, source and model files; it never silently substitutes CPU execution for the selected device.

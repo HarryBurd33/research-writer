@@ -64,6 +64,45 @@ python /absolute/research-writer/scripts/structure_tools.py validate-output --st
 
 Boltz `confidence_score`, `ptm` and `complex_plddt` must be finite numbers in [0,1]. Their definitions come from the pinned [prediction specification](https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/docs/prediction.md). They are model confidence, not measured physical accuracy, affinity or biological validity. Single-sequence/reduced-step settings can reduce prediction quality; valid output from such a smoke is not equivalent to default-quality inference.
 
+## Optional local alignment input
+
+Existing `research-writer.structure.v1` requests retain their exact fields and
+single-sequence behavior. To supply a local alignment, use
+`"schema": "research-writer.structure.v2"`, retain every other v1 field, and add
+exactly one `msa` object:
+
+```json
+{"msa": {"mode": "local_a3m", "path": "/absolute/alignment.a3m", "sha256": "64 lowercase hexadecimal characters"}}
+```
+
+Use `{"msa":{"mode":"empty"}}` for explicit single-sequence v2 execution.
+Other modes, missing fields and unknown fields are refused. There is no automatic
+alignment download or MSA-server request. The path must identify an existing
+nonsymlink `.a3m` file, outside the output directory, with a matching SHA-256.
+Its ancestors must also be free of symlinks/reparse points; use the canonical
+physical path rather than a directory alias.
+
+The alignment is limited to 1 MiB and 1,024 sequences. Its first sequence must
+exactly equal the requested uppercase canonical query. Every row must have the
+same aligned width after lowercase insertions are removed; uppercase canonical
+amino acids, lowercase canonical insertions and `-` gaps are supported. Headers
+are bounded to 256 ASCII characters and each sequence row to 8,192 characters.
+Ambiguous residues and other alphabets are refused by this limited adapter.
+
+Validated bytes are copied to the new run directory. The worker checks the staged
+and original checksums before and after prediction, and the parent checks the
+binding again before accepting the result. Reports retain the alignment checksum,
+byte count, sequence count and aligned width. A changed input fails acceptance.
+Format validation cannot establish homology, input rights or scientific quality;
+the user must supply a scientifically suitable alignment with appropriate rights.
+The alignment and its metadata remain local run data, outside the installable skill.
+
+Upstream documents precomputed A3M input and warns that single-sequence prediction
+can reduce accuracy. This input option removes the adapter's forced-empty-MSA
+restriction; it does not guarantee that any alignment improves a prediction.
+A query-only A3M execution validates this input path and is not evidence of
+improved structural accuracy. The original frozen benchmark below is unchanged.
+
 ## Frozen reference protocol
 
 The first optional scientific fixture is **1CRN chain A**, 46-residue crambin, using the sequence above and independently acquired [PDB archive coordinates](https://files.rcsb.org/download/1CRN.pdb). Record its exact downloaded hash and [entry identity](https://www.rcsb.org/structure/1CRN). For the reference gate, use seed 20261108, 3 recycles, 200 sampling steps and one diffusion sample. The threshold is C-alpha RMSD <=2.0 Å across all 46 sequence-matched residues after least-squares rigid alignment. Freeze this rule before any inference; retain failure if it is not met. This is a known-reference engineering check, possibly overlapping training data, not a held-out general-accuracy result.

@@ -5,6 +5,11 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      linux_cpu_diagnostic:
+        description: 'Run one bounded batch of at most eight fresh CPU fixtures'
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -80,6 +85,10 @@ jobs:
           python evals/protein_checks.py
           python evals/accelerator_checks.py
           python evals/windows_worker_checks.py
+          python evals/windows_remote_checks.py
+      - name: POSIX accelerator transport contracts
+        if: runner.os != 'Windows'
+        run: python evals/accelerator_remote_checks.py
       - name: POSIX Slurm contracts
         if: runner.os != 'Windows'
         run: python evals/slurm_checks.py
@@ -239,6 +248,10 @@ jobs:
         with:
           python-version: "3.12"
           architecture: x64
+      - name: Check bounded Linux diagnostic observer contracts
+        run: |
+          python3 evals/linux_observer_checks.py
+          python3 evals/linux_cpu_diagnostic_checks.py
       - name: Explicitly provision disposable official Python image and record local identity
         shell: bash
         run: |
@@ -248,8 +261,23 @@ jobs:
         shell: bash
         run: |
           IMAGE_ID=$(docker --context default image inspect --format '{{.Id}}' python:3.12-slim-bookworm)
+          [[ "$IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]]
+          printf 'RW_CPU_DIAGNOSTIC_IMAGE_ID=%s\n' "$IMAGE_ID" >> "$GITHUB_ENV"
           python evals/linux_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
           python evals/durable_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
+      - name: Observe one bounded batch of fresh CPU fixtures
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic }}
+        timeout-minutes: 3
+        run: |
+          python evals/linux_cpu_diagnostic.py --docker "$(command -v docker)" --context default --image-id "$RW_CPU_DIAGNOSTIC_IMAGE_ID" --report "$RUNNER_TEMP/linux-cpu-diagnostic.jsonl"
+      - name: Preserve bounded synthetic CPU diagnostic records
+        if: ${{ always() && github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-cpu-diagnostic-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/linux-cpu-diagnostic.jsonl
+          if-no-files-found: error
+          retention-days: 7
 
   required:
     # Stable aggregate check name; do not rename when extending the matrix.
