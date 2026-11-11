@@ -80,6 +80,8 @@ jobs:
           python evals/protein_checks.py
           python evals/accelerator_checks.py
           python evals/windows_worker_checks.py
+          python evals/windows_remote_checks.py
+          python evals/accelerator_remote_checks.py
       - name: POSIX Slurm contracts
         if: runner.os != 'Windows'
         run: python evals/slurm_checks.py

@@ -19,6 +19,7 @@ import threading
 import time
 
 SCHEMA = 'research-writer.structure.v1'
+SCHEMA_V2 = 'research-writer.structure.v2'
 REVISION = 'b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc'
 MODEL_REVISION = '7c1d83b779e4c65ecc37dfdf0c6b2788076f31e1'
 ASSETS = {
@@ -33,6 +34,8 @@ REQUIRED = {'schema', 'python', 'boltz_source', 'assets_dir', 'output_dir', 'seq
             'sampling_steps', 'max_output_bytes', 'max_log_bytes', 'memory_budget_bytes'}
 MAX_INPUT = 65536
 MAX_STRUCTURE = 8 * 1024 * 1024
+MAX_MSA = 1024 * 1024
+MAX_MSA_SEQUENCES = 1024
 
 
 def digest(path):
@@ -89,8 +92,11 @@ def absolute(value, label):
 
 
 def validate_spec(spec):
-    if not isinstance(spec, dict) or set(spec) != REQUIRED or spec.get('schema') != SCHEMA:
-        raise ValueError('Require exact structure.v1 fields; unknown schemas/fields refused')
+    if not isinstance(spec, dict):
+        raise ValueError('Structure request must be an object')
+    expected = REQUIRED if spec.get('schema') == SCHEMA else REQUIRED | {'msa'}
+    if spec.get('schema') not in (SCHEMA, SCHEMA_V2) or set(spec) != expected:
+        raise ValueError('Require exact structure.v1 or structure.v2 fields')
     sequence = spec['sequence']
     if (not isinstance(sequence, str) or not 4 <= len(sequence) <= 128 or
             set(sequence) - set(AA3.values()) or spec['chain_id'] != 'A'):
@@ -118,7 +124,88 @@ def validate_spec(spec):
     regular(paths['python'].resolve())
     if not os.access(paths['python'], os.X_OK):
         raise ValueError('Selected Python is not executable')
+    msa_bytes(spec)
     return paths
+
+
+def msa_bytes(spec):
+    """Validate an explicitly supplied alignment; this does not establish homology."""
+    msa = {'mode': 'empty'} if spec.get('schema') == SCHEMA else spec.get('msa')
+    if not isinstance(msa, dict):
+        raise ValueError('structure.v2 requires an explicit msa object')
+    if msa == {'mode': 'empty'}:
+        return None, {'mode': 'empty'}
+    if set(msa) != {'mode', 'path', 'sha256'} or msa.get('mode') != 'local_a3m':
+        raise ValueError('MSA must be empty or a checksummed local_a3m')
+    expected = msa['sha256']
+    if not isinstance(expected, str) or len(expected) != 64 or set(expected) - set('0123456789abcdef'):
+        raise ValueError('MSA requires a lowercase SHA-256')
+    source = Path(msa['path']) if isinstance(msa['path'], str) else None
+    if source is None or not source.is_absolute() or source.suffix.lower() != '.a3m':
+        raise ValueError('MSA requires an absolute .a3m file path')
+    for component in (source, *source.parents):
+        info = component.lstat()
+        if (stat.S_ISLNK(info.st_mode) or
+                getattr(info, 'st_file_attributes', 0) & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0)):
+            raise ValueError('MSA input and ancestors must not be symlinks or reparse points')
+    regular(source, MAX_MSA)
+    source = source.resolve()
+    output = absolute(spec['output_dir'], 'output_dir')
+    if source.is_relative_to(output) or output.is_relative_to(source):
+        raise ValueError('Output must not overlap the MSA input')
+    with source.open('rb') as stream:
+        raw = stream.read(MAX_MSA + 1)
+    if len(raw) > MAX_MSA or hashlib.sha256(raw).hexdigest() != expected:
+        raise ValueError('MSA exceeds its bound or checksum changed')
+    try:
+        text = raw.decode('ascii')
+    except UnicodeError as exc:
+        raise ValueError('MSA must use ASCII A3M text') from exc
+    rows, parts = [], None
+    for line in text.splitlines():
+        if not line:
+            continue
+        if line.startswith('>'):
+            if not line[1:].strip() or len(line) > 256:
+                raise ValueError('MSA header must be nonempty and bounded')
+            if parts is not None:
+                rows.append(''.join(parts))
+            parts = []
+            if len(rows) >= MAX_MSA_SEQUENCES:
+                raise ValueError('MSA sequence count exceeds bound')
+        elif parts is None or set(line) - (set(AA3.values()) | set(''.join(AA3.values()).lower()) | {'-'}):
+            raise ValueError('MSA sequence or header is malformed')
+        else:
+            parts.append(line)
+    if parts is not None:
+        rows.append(''.join(parts))
+    if not rows or rows[0] != spec['sequence']:
+        raise ValueError('First MSA sequence must exactly match the requested query')
+    for row in rows:
+        aligned = ''.join(c for c in row if not c.islower())
+        if len(row) > 8192 or len(aligned) != len(spec['sequence']):
+            raise ValueError('MSA alignment width or insertion bound differs')
+    return raw, {'mode': 'local_a3m', 'sha256': expected, 'bytes': len(raw),
+                 'sequences': len(rows), 'alignment_columns': len(spec['sequence']),
+                 'quality': 'format checked; homology and accuracy not established'}
+
+
+def staged_msa(spec, root):
+    raw, evidence = msa_bytes(spec)
+    if raw is not None:
+        path = regular(Path(root) / 'input.a3m', MAX_MSA)
+        with path.open('rb') as stream:
+            staged = stream.read(MAX_MSA + 1)
+        if staged != raw:
+            raise ValueError('Staged MSA differs from the pinned original input')
+    return evidence
+
+
+def sequence_input(spec, root):
+    use_local = spec.get('schema') == SCHEMA_V2 and spec['msa'].get('mode') == 'local_a3m'
+    return {'version': 1, 'sequences': [{'protein': {
+        'id': 'A', 'sequence': spec['sequence'],
+        'msa': str(Path(root) / 'input.a3m') if use_local else 'empty'}}]}
 
 
 def git(source, *args):
@@ -409,10 +496,10 @@ def worker(request_path):
             any(request[name] != str(value) for name, value in paths.items()) or
             Path(request_path).resolve().parent != paths['output_dir']):
         raise ValueError('Internal request paths differ from declared resources')
-    expected_input = {'version':1, 'sequences':[{'protein':{
-        'id':'A', 'sequence':spec['sequence'], 'msa':'empty'}}]}
+    expected_input = sequence_input(spec, paths['output_dir'])
     if read_json(paths['output_dir']/'input.yaml') != expected_input:
         raise ValueError('Staged sequence input differs from declared request')
+    msa_evidence = staged_msa(spec, paths['output_dir'])
     state = read_json(paths['output_dir']/'report.json')
     # The child may start before the parent has atomically recorded Popen success.
     if (state.get('status') not in ('starting', 'running') or
@@ -464,6 +551,7 @@ def worker(request_path):
     if not runtime_libraries:
         raise RuntimeError('CPU runtime library hash could not be recorded')
     receipt = {'source': source_evidence, 'assets': asset_evidence, 'observed': observed,
+               'msa': msa_evidence,
                'python': platform.python_version(), 'python_sha256': digest(Path(sys.executable).resolve()),
                'torch': torch.__version__, 'platform': platform.platform(), 'model': 'boltz1',
                'runtime_library_sha256':runtime_libraries,
@@ -472,6 +560,8 @@ def worker(request_path):
                'network_policy': 'in-process sockets denied; trusted dependencies, not sandbox'}
     try:
         main.cli.main(args=boltz_argv(request), prog_name='boltz', standalone_mode=False)
+        if staged_msa(spec, paths['output_dir']) != msa_evidence:
+            raise ValueError('MSA identity changed during prediction')
         if observed['forward_calls'] < 1:
             raise RuntimeError('No observed Boltz-1 forward workload')
         receipt['completed'] = True
@@ -493,8 +583,11 @@ def run(spec_path):
         if destination.is_relative_to(protected) or protected.is_relative_to(destination):
             raise ValueError('Output must not overlap source or assets')
     if not destination.parent.is_dir(): raise ValueError('Output parent must exist')
+    # Reject an overlapping or malformed alignment before reserving any output.
+    if spec.get('schema') == SCHEMA_V2:
+        msa_bytes(spec)
     destination.mkdir()  # exclusive reservation: never modify an existing output
-    report = {'schema': SCHEMA, 'status': 'preflight', 'accepted': False, 'engine_started': False,
+    report = {'schema': spec.get('schema'), 'status': 'preflight', 'accepted': False, 'engine_started': False,
               'actual_runtime_verified': False, 'scientific_accuracy': 'not_evaluated',
               'spec_sha256': hashlib.sha256(raw).hexdigest(), 'model': 'boltz1',
               'source_revision': REVISION, 'model_revision': MODEL_REVISION}
@@ -505,14 +598,17 @@ def run(spec_path):
         report['assets'] = verify_assets(paths['assets_dir'])
         report['python_sha256'] = digest(paths['python'])
         report['sequence_sha256'] = hashlib.sha256(spec['sequence'].encode()).hexdigest()
+        msa_raw, report['msa'] = msa_bytes(spec)
+        if msa_raw is not None:
+            with (destination/'input.a3m').open('xb') as stream:
+                stream.write(msa_raw); stream.flush(); os.fsync(stream.fileno())
         report['settings'] = {k: spec[k] for k in ('device','seed','threads','timeout_seconds',
                             'recycling_steps','sampling_steps','max_output_bytes','max_log_bytes','memory_budget_bytes')}
         request = {'spec': spec, **{key: str(value) for key, value in paths.items()}}
         atomic_json(destination/'request.json', request)
         report['worker_request_sha256'] = digest(destination/'request.json')
         # JSON is a strict subset of YAML; no string interpolation in YAML values.
-        atomic_json(destination/'input.yaml', {'version':1, 'sequences':[{'protein':{
-            'id':'A', 'sequence':spec['sequence'], 'msa':'empty'}}]})
+        atomic_json(destination/'input.yaml', sequence_input(spec, destination))
         argv = [str(paths['python']), '-I', '-B', str(Path(__file__).resolve()), '_worker',
                 '--request', str(destination/'request.json')]
         report.update(status='starting'); atomic_json(target, report)
@@ -528,6 +624,7 @@ def run(spec_path):
         if (receipt.get('completed') is not True or receipt.get('source') != report['source'] or
                 receipt.get('assets') != report['assets'] or receipt.get('python_sha256') != report['python_sha256'] or
                 receipt.get('model') != 'boltz1' or receipt.get('observed',{}).get('device') != 'cpu' or
+                receipt.get('msa') != report['msa'] or staged_msa(spec, destination) != report['msa'] or
                 type(receipt.get('observed',{}).get('forward_calls')) is not int or receipt['observed']['forward_calls'] < 1 or
                 not receipt.get('runtime_library_sha256')):
             raise ValueError('Worker provenance or workload evidence mismatch')
