@@ -44,7 +44,7 @@ External acceptance must exercise prepare, single submission, status, checksumme
 
 The POSIX accelerator SSH adapter does not target a native Windows endpoint. Local Windows CUDA acceptance is separate; external CUDA transport needs a selected POSIX CUDA host or a separately reviewed Windows accelerator transport extension. Do not treat the CPU Windows SSH client as GPU transport.
 
-A physical backup check requires an independent destination, full checksummed readback/restore and a fresh recovery directory without the original source/staging files. Preserve the original data. Do not induce power loss or destroy source files. Loopback tests cannot prove physical device independence or power-loss durability.
+The existing backup adapter requires an authorized POSIX SSH destination; the native Windows CPU worker is not that backup protocol. A physical backup check requires an independent destination, full checksummed readback/restore and a fresh recovery directory without the original source/staging files. Preserve the original data. Do not induce power loss or destroy source files. Loopback tests cannot prove physical device independence or power-loss durability.
 
 ## Keep the acceptance report useful
 

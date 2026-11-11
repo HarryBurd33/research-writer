@@ -28,11 +28,20 @@ $raw = [System.Text.UTF8Encoding]::new($false, $true).GetString($header.ToArray(
 $header.Dispose()
 $e = ConvertFrom-Json -InputObject $raw
 if ($null -eq $e.python_path -or $e.python_path -notmatch '^[A-Za-z]:\\') { throw 'Missing absolute Python path' }
+if (($e.body_bytes -isnot [int] -and $e.body_bytes -isnot [long]) -or
+    $e.body_bytes -lt 1 -or $e.body_bytes -gt (33554432 - $count)) { throw 'Invalid RPC body length' }
 $start = New-Object System.Diagnostics.ProcessStartInfo
 $start.FileName = [string]$e.python_path
-$start.Arguments = '-I -c "import io,json,sys; e=json.loads(sys.stdin.buffer.read()); sys.stdin=io.TextIOWrapper(io.BytesIO(json.dumps(e[''request'']).encode(''utf-8'')),encoding=''utf-8''); exec(compile(e[''source''],''<windows-worker>'',''exec''),{''__name__'':''__main__''})"'
+$start.Arguments = ('-I -c "import io,json,os,sys; ' +
+  'n=int(os.environ.pop(''RW_WINDOWS_BODY_BYTES'')); raw=sys.stdin.buffer.read(n); ' +
+  'len(raw)==n or sys.exit(''Incomplete RPC body''); e=json.loads(raw.decode(''utf-8'')); ' +
+  'sys.stdin=io.TextIOWrapper(io.BytesIO(json.dumps(e[''request'']).encode(''utf-8'')),encoding=''utf-8''); ' +
+  'exec(compile(e[''source''],''<windows-worker>'',''exec''),{''__name__'':''__main__''})"')
+$start.EnvironmentVariables['RW_WINDOWS_BODY_BYTES'] = [string]$e.body_bytes
 $start.UseShellExecute = $false
-$start.RedirectStandardInput = $true
+# Python inherits the existing SSH stdin handle at the byte after the header.
+# Redirecting output enables explicit standard-handle assignment in .NET.
+$start.RedirectStandardInput = $false
 $start.RedirectStandardOutput = $true
 $start.RedirectStandardError = $true
 $start.CreateNoWindow = $true
@@ -40,16 +49,9 @@ $p = [System.Diagnostics.Process]::Start($start)
 try {
   $stdoutTask = $p.StandardOutput.BaseStream.CopyToAsync([Console]::OpenStandardOutput())
   $stderrTask = $p.StandardError.BaseStream.CopyToAsync([Console]::OpenStandardError())
-  $chunk = New-Object byte[] 65536
-  while (($read = $stdin.Read($chunk, 0, $chunk.Length)) -gt 0) {
-    $count += $read
-    if ($count -gt 33554432) { throw 'RPC input exceeds 32 MiB' }
-    $p.StandardInput.BaseStream.Write($chunk, 0, $read)
-  }
-  $p.StandardInput.Close()
   $p.WaitForExit()
-  $stdoutTask.GetAwaiter().GetResult()
-  $stderrTask.GetAwaiter().GetResult()
+  [void]$stdoutTask.GetAwaiter().GetResult()
+  [void]$stderrTask.GetAwaiter().GetResult()
   exit $p.ExitCode
 } finally {
   if (-not $p.HasExited) { $p.Kill() }
@@ -122,11 +124,16 @@ def request_for(p, operation, identity=None, manifest_hash=None):
             'job_id':identity,'manifest_sha256':manifest_hash}
 
 
+def encode_request(p, request, source):
+    body = core.canonical({'source': source, 'request': request})
+    header = core.canonical({'python_path': p['remote_python'], 'body_bytes': len(body)})
+    return header + b'\n' + body
+
+
 def rpc(p, request, *, source=None):
     if source is None:
         source, _ = worker_source()
-    header = core.canonical({'python_path': p['remote_python']})
-    payload = header + b'\n' + core.canonical({'source': source, 'request': request})
+    payload = encode_request(p, request, source)
     try:
         child = run_bounded(ssh_argv(p), payload, timeout=p['connect_timeout_seconds'] + 30,
                             max_input=core.MAX_RPC, max_stdout=core.MAX_RPC, max_stderr=core.MAX_ERROR)

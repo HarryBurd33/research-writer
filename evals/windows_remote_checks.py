@@ -118,6 +118,15 @@ class WindowsClientContracts(unittest.TestCase):
         self.assertEqual(decoded, win.PS_BOOTSTRAP)
         self.assertNotIn(p['remote_root'], decoded)
         self.assertNotIn(p['remote_python'], decoded)
+        request = {'value': '研究'}
+        header, body = win.encode_request(p, request, 'pass').split(b'\n', 1)
+        self.assertEqual(json.loads(header), {'python_path': p['remote_python'], 'body_bytes': len(body)})
+        self.assertGreater(len(body), len(body.decode('utf-8')))
+        self.assertEqual(json.loads(body), {'request': request, 'source': 'pass'})
+        polluted = subprocess.CompletedProcess(argv, 0, b'{"ok":true}\nextra\n', b'')
+        with patch.object(win, 'run_bounded', return_value=polluted), self.assertRaisesRegex(
+                win.core.TransportError, 'Malformed remote JSON'):
+            win.rpc(p, request, source='pass')
 
     def test_windows_aliases_and_reserved_root_refused_before_transfer(self):
         with tempfile.TemporaryDirectory() as folder:
@@ -273,6 +282,45 @@ class NativeWindowsSSH(unittest.TestCase):
         bad_profile = self.scratch / 'bad_identity.json'
         transport.save_state(bad_profile, {**self.p, 'expected_user': 'wrong-user'})
         self.assertIn('identity mismatch', self.command('inspect', use_profile=bad_profile, expected=2)['error'])
+
+    def test_bootstrap_exact_single_json_and_large_binary_stream(self):
+        source = '''
+import base64, hashlib, json, sys
+request = json.load(sys.stdin)
+raw = base64.b64decode(request['data'], validate=True)
+response = {'bytes': len(raw), 'sha256': hashlib.sha256(raw).hexdigest()}
+sys.stdout.buffer.write(json.dumps(response, sort_keys=True, separators=(',', ':')).encode() + b'\\n')
+sys.stderr.buffer.write(b'\\x00\\x80\\xff\\r\\n')
+'''
+        argv = win.ssh_argv(self.p)
+
+        def capture(raw, command):
+            request = {'data': base64.b64encode(raw).decode('ascii')}
+            payload = win.encode_request(self.p, request, source)
+            response = win.core.canonical({'bytes': len(raw), 'sha256': win.core.digest(raw)}) + b'\n'
+            process = transport.run_bounded(command, payload, timeout=self.p['connect_timeout_seconds'] + 30,
+                                            max_input=win.core.MAX_RPC, max_stdout=4096, max_stderr=4096)
+            self.assertEqual(process.returncode, 0, process.stderr)
+            self.assertEqual(process.stderr, b'\x00\x80\xff\r\n')
+            return process.stdout, response
+
+        # Change only the PowerShell result suppression in this small, read-only probe.
+        uncast = win.PS_BOOTSTRAP.replace('[void]$stdoutTask', '$stdoutTask').replace(
+            '[void]$stderrTask', '$stderrTask')
+        uncast_arg = base64.b64encode(uncast.encode('utf-16le')).decode('ascii')
+        old_stdout, expected = capture(b'control', [*argv[:-1], argv[-1].replace(win.ENCODED, uncast_arg)])
+        self.assertTrue(old_stdout.startswith(expected), old_stdout)
+        print('WINDOWS_SSH_BOOTSTRAP_PROBE ' + json.dumps({
+            'uncast_trailing_stdout_base64': base64.b64encode(old_stdout[len(expected):]).decode('ascii'),
+        }), flush=True)
+        for raw in (b'control', bytes(range(256)) * 10000):
+            with self.subTest(bytes=len(raw)):
+                stdout, expected = capture(raw, argv)
+                self.assertEqual(stdout, expected)
+                print('WINDOWS_SSH_BOOTSTRAP_PROBE ' + json.dumps({
+                    'payload_bytes': len(raw), 'stdout_sha256': win.core.digest(stdout),
+                    'stdout': stdout.decode('ascii'),
+                }), flush=True)
 
     def test_native_roundtrip_with_binary_unicode_and_fresh_client(self):
         path = 'space 研究/入力.bin'
@@ -493,7 +541,7 @@ def main():
         classes.append(NativeWindowsSSH)
     suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(cls) for cls in classes)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
-    passed = result.wasSuccessful() and not result.skipped and result.testsRun == (16 if native else 9)
+    passed = result.wasSuccessful() and not result.skipped and result.testsRun == (17 if native else 9)
     print('WINDOWS_SSH_CHECKS ' + json.dumps({
         'mode': 'native_loopback_ssh' if native else 'portable_source_contracts',
         'passed': passed, 'methods': result.testsRun, 'skipped': len(result.skipped),

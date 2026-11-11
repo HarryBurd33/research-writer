@@ -1,0 +1,21 @@
+# Remaining capability plan
+
+This plan addresses the requested Research Writer gaps found in the focused project audit on 2026-11-11. Previously accepted writing, retrieval, CPU tools, docking, checkpoints, backup transfer and Slurm capabilities remain in place. Acceptance means the observed, bounded tests described in the validation report; it does not guarantee scientific accuracy or compatibility with every device.
+
+| Work package | Change and acceptance | Current status |
+|---|---|---|
+| Windows remote jobs | Add a native Windows SSH client with authenticated host identity, bounded transfer, one-shot submission, restart recovery, cancellation, timeout and verified collection. Require real hosted Windows SSH tests as well as portable contracts. | Client and independent portable review complete. Hosted fixture repaired after a host-key ACL failure; native transport acceptance pending. |
+| Accelerator remote jobs | Add a separate POSIX SSH protocol that pins source, runtime and existing assets, performs actual MPS/CUDA work, and checks raw output against the fixed CPU tolerance. | Source and authenticated Mac MPS loopback independently accepted. The narrower controller-loss fixture is disclosed in the validation report. Independent host and CUDA remain untested. |
+| Larger structure prediction | Diagnose the failed Boltz control against the upstream entry point. Support bounded, hash-pinned local alignments without sequence upload. Preserve the reference and accuracy threshold. | Both controls completed; local A3M support and independent negative controls accepted. The upstream and query-only alignment runs reproduce the same 8.28 Å result, which fails 2 Å. Accuracy acceptance remains open. |
+| Deliver accepted changes | Verify the copied package and portable bundle, pass relevant CI and independent review, preserve the installed rollback, update the managed Codex skill, and merge through protected GitHub checks. | Candidate PR17 published. Installation and final merge pending native acceptance. |
+
+## Remaining prerequisites
+
+- **Actual Windows laptop:** run the [laptop instructions](windows-laptop-acceptance.md). Native worker acceptance, a real connection between devices, local CUDA and backup recovery are separate stages. Existing local research files are not required.
+- **External accelerator:** choose an authorized POSIX host with an existing pinned runtime/model and a verified SSH key. MPS loopback cannot establish physical independence or CUDA compatibility. A native Windows CPU SSH job is not accelerator transport.
+- **Independent backup:** choose an approved POSIX SSH destination on a separate device or service for the existing adapter, then perform checksummed readback and restore into a fresh directory while preserving the original. No destructive power-loss experiment is planned.
+- **Prediction accuracy:** a valid result file and an accepted input path do not resolve the failed benchmark. A further experiment needs a justified, provenance-checked homologous alignment or another explicit scientific hypothesis; do not tune the reference, residue mapping or threshold after seeing results.
+- **Production scheduler:** the real disposable Slurm lifecycle is accepted; an actual production cluster needs its own selected account, limits and compatibility checks.
+- **Held experiments and additional engines:** held private experiments stay held. Additional large model/design pipelines remain choices for a concrete research task, with separate data, runtime, rights and budget checks.
+
+The Improve System review found no need for another persistent global rule. The applicable rules already require current runtime evidence, preserved uncertainty, separate scientific acceptance and independent review. This work repairs missing project code and tests and keeps each remaining prerequisite visible. See [observed validation](capability-validation.md) for evidence and limitations.

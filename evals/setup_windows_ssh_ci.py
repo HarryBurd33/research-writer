@@ -255,8 +255,18 @@ def run_fixture(root, openssh):
 def main():
     require_hosted_windows()
     openssh = find_openssh()
-    with tempfile.TemporaryDirectory(prefix='rw-winssh-', dir=os.environ['RUNNER_TEMP']) as folder:
-        return run_fixture(Path(folder).resolve(), openssh)
+    folder = tempfile.TemporaryDirectory(prefix='rw-winssh-', dir=os.environ['RUNNER_TEMP'])
+    result = None
+    try:
+        result = run_fixture(Path(folder.name).resolve(), openssh)
+        return result
+    finally:
+        try:
+            folder.cleanup()
+        except OSError as exc:
+            print(f'WINDOWS_SSH_FIXTURE_REMOVAL uncertain: {exc}', file=sys.stderr, flush=True)
+            if result == 0:
+                raise
 
 
 if __name__ == '__main__':
