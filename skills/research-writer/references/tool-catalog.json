@@ -153,7 +153,8 @@
         "Startup downloads missing checkpoints/assets; preflight those dependencies before execution and do not add MSA upload automatically.",
         "Modified positions are 1-based; covalent/chemical support is restricted.",
         "Affinity targets one small-molecule ligand against protein; RNA/DNA/cofactor targets are unreliable. log10(IC50 in micromolar) and binder probability are predictions, not measured Kd/free energy.",
-        "No audited native macOS MPS or universal RAM/VRAM guarantee."
+        "No audited native macOS MPS or universal RAM/VRAM guarantee.",
+        "Original structure_tools.py supplies a separately tested Boltz-1 CPU adapter with strict source/assets and one canonical chain; this broader upstream recipe is not its command."
       ],
       "evidence_urls": [
         "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/README.md",
@@ -540,6 +541,37 @@
         "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/LICENSE.GNU",
         "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/CMakeLists.txt",
         "https://github.com/gnina/gnina/blob/01cae6aa6e014e0bf11e511f1fe7a61b17975855/gninasrc/lib/models/README.md"
+      ],
+      "status": "source-audited"
+    },
+    {
+      "id": "vina",
+      "name": "AutoDock Vina",
+      "repository": "https://github.com/ccsb-scripps/AutoDock-Vina",
+      "revision": "8eb40404f4f45608acb3b01427587ac049f27c1f",
+      "role": "Optional prepared protein/ligand CPU docking through original docking_tools.py wrapper.",
+      "code_license": "Apache-2.0 upstream; original wrapper MIT.",
+      "weights_terms": "No model weights for this selected Vina scoring route.",
+      "data_service_terms": "Prepared inputs remain local; structure/data terms are independent.",
+      "import_name": null,
+      "distribution": null,
+      "cli_name": "vina",
+      "prerequisites": [
+        "Explicitly selected Vina1.2.7 binary with matching SHA-256/version.",
+        "RDKit-capable interpreter; mapped prepared PDBQT ligand and standard-protein receptor.",
+        "New output directory; finite search box, seed, thread, walltime and output limits."
+      ],
+      "inputs": "Versioned JSON specification with executable/input hashes and optional independently prepared mapped reference.",
+      "outputs": "Checked PDBQT poses, retained logs and provenance report; optional fixed-frame heavy-atom RMSD.",
+      "example_argv": null,
+      "limitations": [
+        "One known-reference macOS arm64 CPU acceptance is not general docking accuracy or measured affinity.",
+        "No automatic chemistry preparation, downloads, unsupported cofactor mapping or GPU route.",
+        "Source catalog status is not local runtime or scientific acceptance."
+      ],
+      "evidence_urls": [
+        "https://github.com/ccsb-scripps/AutoDock-Vina/releases/tag/v1.2.7",
+        "https://github.com/ccsb-scripps/AutoDock-Vina/blob/8eb40404f4f45608acb3b01427587ac049f27c1f/LICENSE"
       ],
       "status": "source-audited"
     }

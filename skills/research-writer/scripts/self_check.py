@@ -27,6 +27,8 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/conversion_tools.py', 'scripts/protein_tools.py',
             'scripts/remote_tools.py', 'scripts/remote_worker.py',
             'scripts/discovery_tools.py', 'scripts/claim_audit.py',
+            'scripts/docking_tools.py', 'scripts/structure_tools.py',
+            'scripts/windows_worker.py', 'scripts/slurm_tools.py', 'scripts/accelerator_tools.py',
             'scripts/linux_tools.py', 'scripts/linux_supervisor.py',
             'scripts/checkpoint_tools.py', 'scripts/backup_tools.py', 'scripts/stream_backup_tools.py',
             'templates/research-record.md', 'references/tool-catalog.json',
@@ -36,6 +38,7 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
                 'question-development', 'research-and-sources', 'standards',
                 'tool-usage', 'testing', 'literature-retrieval', 'source-support',
                 'molecular-conversion', 'protein-embeddings', 'remote-execution',
+                'docking', 'structure-prediction', 'windows-worker', 'slurm-execution', 'accelerator-acceptance',
                 'deeper-retrieval', 'claim-audit', 'linux-isolation', 'durable-checkpoints', 'off-device-backups', 'streaming-backups')))
 
 
@@ -64,7 +67,7 @@ def package_check():
     require(re.search(r'^name: research-writer$', text, re.M), 'Skill discovery name differs')
     entries = json.loads((ROOT / 'references/tool-catalog.json').read_text(encoding='utf-8'))
     engines = entries.get('engines') if isinstance(entries, dict) else None
-    require(isinstance(engines, list) and len(engines) == 13, 'Incomplete engine catalog')
+    require(isinstance(engines, list) and len(engines) == 14, 'Incomplete engine catalog')
 
 
 def run_cli(work, script, arguments, expected=0):

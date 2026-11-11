@@ -1,4 +1,4 @@
-# Research Writer — version 0.15.0
+# Research Writer — version 0.16.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
 
@@ -12,7 +12,7 @@ Proposal work adds an explicit [question-to-deliverable trace](references/propos
 
 ## Optional tools and device adaptation
 
-The original Python utilities provide bibliography normalization and public metadata lookup, project records, artifact/context-linked evidence checks, FASTA inspection, and RDKit/OpenMM CPU utilities when installed. [Computational guidance](references/computational-research.md) explains use; [device profiles](references/device-profiles.md) adapt local or remote environments. The [13-engine catalog](references/tool-catalog.json) records inspected revisions, inputs/outputs, dependencies, distinct rights and scientific limits.
+The original Python utilities provide bibliography normalization and public metadata lookup, project records, artifact/context-linked evidence checks, FASTA inspection, and RDKit/OpenMM CPU utilities when installed. [Computational guidance](references/computational-research.md) explains use; [device profiles](references/device-profiles.md) adapt local or remote environments. The [14-engine catalog](references/tool-catalog.json) records inspected revisions, inputs/outputs, dependencies, distinct rights and scientific limits.
 
 No heavy engine, model weights, paid API, remote compute service or external app is bundled or automatically enabled. An inventory is not a successful inference run. The standard-library tools run with Python 3.10+; molecular utilities require separate compatible RDKit/OpenMM packages. Use a project environment or user-owned runtime profile outside this skill.
 
@@ -95,3 +95,9 @@ to require actual local SQLite installation controls.
 ## Streaming and connection migration
 
 [Streaming backups](references/streaming-backups.md) use bounded binary transfer buffers with an explicit whole-store cap up to 512 MiB. Temporary disk still scales with the backup. An explicit migration verifies the same immutable backup through new client settings and creates new read-only recovery state; the old state and destination identity remain intact.
+
+## Additional optional execution routes
+
+[Vina docking](references/docking.md) and [Boltz CPU prediction](references/structure-prediction.md) have bounded original wrappers and explicit input/output checks. [Native Windows](references/windows-worker.md) and [Slurm](references/slurm-execution.md) expose separate platform routes. Each guide distinguishes source contracts, actual runtime evidence and scientific or host-specific acceptance. No selected host, model asset or runtime is installed by merely installing the skill.
+
+[Accelerator acceptance](references/accelerator-acceptance.md) supplies an optional explicit MPS/CUDA control with actual-device proof and a CPU numerical comparison; external host/CUDA acceptance remains separate from the observed local MPS run.

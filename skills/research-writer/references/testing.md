@@ -93,3 +93,5 @@ claims. A valid checkpoint is not an execution or scientific-consistency grant.
 Optional backup contracts use `evals/backup_checks.py` in the repository and actual disposable transport uses `evals/backup_loopback_checks.py --run-ssh` on POSIX. See [backup usage](off-device-backups.md). A package self-check has no SSH connections; it cannot certify a second device.
 
 Repository streaming contracts run with `evals/stream_backup_checks.py`; actual POSIX transport and migration acceptance use `evals/stream_backup_loopback_checks.py --run-ssh`. These complement the earlier backup/checkpoint controls. See [usage](streaming-backups.md); actual second-device and physical-loss assurance require separate operator acceptance.
+
+Optional adapter checks: `evals/docking_checks.py --require-rdkit`, `evals/structure_checks.py` (psutil on POSIX for process bounds), `evals/windows_worker_checks.py` and `evals/slurm_checks.py`. Native Windows and live Slurm require the separate hosted acceptance harness and zero skips; local contract checks cannot substitute. Structure reference execution needs the explicitly provisioned assets/spec/reference described in its guide.
