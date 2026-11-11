@@ -17,6 +17,7 @@ HERE = Path(__file__).resolve().parent
 # No profile, manifest, path, or request value is interpolated into this script.
 # Use .NET byte streams because Windows PowerShell 5.1's text pipeline can recode UTF-8.
 PS_BOOTSTRAP = r'''$ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
 $stdin = [Console]::OpenStandardInput()
 $header = New-Object System.IO.MemoryStream
 while (($byte = $stdin.ReadByte()) -ne 10) {
@@ -36,6 +37,7 @@ $start.Arguments = ('-I -c "import io,json,os,sys; ' +
   'n=int(os.environ.pop(''RW_WINDOWS_BODY_BYTES'')); raw=sys.stdin.buffer.read(n); ' +
   'len(raw)==n or sys.exit(''Incomplete RPC body''); e=json.loads(raw.decode(''utf-8'')); ' +
   'sys.stdin=io.TextIOWrapper(io.BytesIO(json.dumps(e[''request'']).encode(''utf-8'')),encoding=''utf-8''); ' +
+  'sys.argv.append(''--ssh-controller''); ' +
   'exec(compile(e[''source''],''<windows-worker>'',''exec''),{''__name__'':''__main__''})"')
 $start.EnvironmentVariables['RW_WINDOWS_BODY_BYTES'] = [string]$e.body_bytes
 $start.UseShellExecute = $false

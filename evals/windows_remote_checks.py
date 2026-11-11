@@ -2,6 +2,7 @@
 # SPDX-License-Identifier: MIT
 """Portable transport contracts and an explicit native Windows SSH gate."""
 import base64
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
@@ -174,7 +175,7 @@ class WindowsClientContracts(unittest.TestCase):
             with self.subTest(changed=changed), self.assertRaises(ValueError):
                 win.validate_collection({**result, **changed}, m)
 
-    def test_lost_ack_persists_single_dispatch_intent(self):
+    def test_failed_or_unacknowledged_launch_preserves_single_intent(self):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             p = profile()
@@ -199,6 +200,36 @@ class WindowsClientContracts(unittest.TestCase):
                 self.assertEqual(rpc.call_count, 1)
             self.assertEqual(win.core.read_json(path)['status'], 'uncertain')
 
+        # Exercise the actual worker transition using a denied CreateProcess call.
+        flags = {'CREATE_NEW_PROCESS_GROUP': 0x200, 'CREATE_BREAKAWAY_FROM_JOB': 0x1000000,
+                 'DETACHED_PROCESS': 0x8}
+        p = profile()
+        request = win.request_for(p, 'submit', 'a' * 32, 'b' * 64)
+        for ssh_controller in (False, True):
+            with self.subTest(ssh_controller=ssh_controller), tempfile.TemporaryDirectory() as folder:
+                job = Path(folder) / request['job_id']
+                job.mkdir()
+                win.worker.atomic(job / 'state.json', {'status': 'prepared'})
+                ident = {'hostname': p['expected_hostname'], 'user': p['expected_user']}
+                with patch.multiple(win.worker, identity=lambda: ident, root_path=lambda _: job.parent,
+                                    checked_job=lambda *_: job, mutation_lock=lambda _: nullcontext()), \
+                        patch.multiple(win.worker.subprocess, create=True, **flags), \
+                        patch.object(win.worker.subprocess, 'Popen', side_effect=PermissionError('fixture launch denied')) as launch:
+                    denied = win.worker.handle(request, ssh_controller=ssh_controller)
+                    self.assertFalse(denied['ok'], denied)
+                    self.assertEqual(denied['status'], 'uncertain' if ssh_controller else 'failed')
+                    self.assertEqual(win.worker.read_json(job / 'state.json')['status'], 'uncertain')
+                    self.assertTrue((job / 'submission.json').is_file())
+                    repeated = win.worker.handle(request, ssh_controller=ssh_controller)
+                    self.assertTrue(repeated['already_submitted'], repeated)
+                    expected_flags = flags['CREATE_NEW_PROCESS_GROUP']
+                    if ssh_controller:
+                        expected_flags |= flags['CREATE_BREAKAWAY_FROM_JOB'] | flags['DETACHED_PROCESS']
+                    self.assertEqual(launch.call_count, 1)
+                    self.assertEqual(launch.call_args.kwargs['creationflags'], expected_flags)
+                    self.assertTrue(launch.call_args.kwargs['close_fds'])
+                    self.assertEqual(launch.call_args.kwargs['stdin'], subprocess.DEVNULL)
+
 
 class NativeWindowsSSH(unittest.TestCase):
     def setUp(self):
@@ -212,6 +243,43 @@ class NativeWindowsSSH(unittest.TestCase):
         self.state_dir = self.scratch / 'state'
         self.owned_ids = []
         self.addCleanup(self.reconcile_owned)
+
+    def diagnose_controller(self, identity):
+        if identity not in self.owned_ids:
+            return
+        job = self.jobs / identity
+        observed = {'job_id': identity}
+        for name in ('state.json', 'controller-receipt.json', 'controller.log'):
+            try:
+                with (job / name).open('rb') as stream:
+                    data = stream.read(4097)
+                observed[name] = {'prefix': data[:4096].decode('utf-8', 'replace'), 'truncated': len(data) > 4096}
+            except OSError as exc:
+                observed[name] = str(exc)[:400]
+        script = r'''
+$ErrorActionPreference='Stop'
+$ProgressPreference='SilentlyContinue'
+$target=ConvertFrom-Json -InputObject ([Console]::In.ReadToEnd())
+$rows=Get-CimInstance Win32_Process -Filter "Name='python.exe'" | Where-Object {
+  $_.CommandLine -and $_.CommandLine.IndexOf($target.controller, [StringComparison]::OrdinalIgnoreCase) -ge 0 `
+    -and $_.CommandLine.Contains('--run-job')
+} | Select-Object -First 4 ProcessId, ParentProcessId, ExecutablePath
+$data=[Text.Encoding]::UTF8.GetBytes((ConvertTo-Json -Compress -InputObject @($rows)))
+[Console]::OpenStandardOutput().Write($data, 0, $data.Length)
+'''
+        encoded = base64.b64encode(script.encode('utf-16le')).decode('ascii')
+        try:
+            process = transport.run_bounded(
+                ['powershell.exe', '-NoProfile', '-NonInteractive', '-EncodedCommand', encoded],
+                json.dumps({'controller': str(job / 'controller.py')}).encode('ascii'),
+                timeout=8, max_input=4096, max_stdout=8192, max_stderr=4096,
+            )
+            observed['matching_processes'] = json.loads(process.stdout) if process.returncode == 0 else {
+                'exit': process.returncode, 'stderr': process.stderr.decode('utf-8', 'replace')[:1000],
+            }
+        except (transport.CaptureError, ValueError) as exc:
+            observed['matching_processes'] = {'error': str(exc)[:400]}
+        print('WINDOWS_SSH_CONTROLLER_DIAGNOSTIC ' + json.dumps(observed, sort_keys=True), flush=True)
 
     def reconcile_owned(self):
         for identity in self.owned_ids:
@@ -245,7 +313,11 @@ class NativeWindowsSSH(unittest.TestCase):
         return m['job_id']
 
     def call(self, operation, identity, *flags, expected=0):
-        return self.command(operation, expected=expected, extra=('--job-id', identity, *flags))
+        try:
+            return self.command(operation, expected=expected, extra=('--job-id', identity, *flags))
+        except (AssertionError, subprocess.SubprocessError):
+            self.diagnose_controller(identity)
+            raise
 
     def wait_for(self, identity, statuses, *, operation='status', seconds=25):
         deadline = time.monotonic() + seconds
@@ -254,8 +326,10 @@ class NativeWindowsSSH(unittest.TestCase):
             if result['status'] in statuses:
                 return result
             if result['status'] in win.core.TERMINAL:
+                self.diagnose_controller(identity)
                 self.fail(f'Unexpected terminal state: {result}')
             time.sleep(0.1)
+        self.diagnose_controller(identity)
         self.fail(f'Expected {statuses} from {operation}; last response: {result}')
 
     def test_inspect_and_refuse_unknown_or_changed_host_key_and_wrong_identity(self):
@@ -484,7 +558,11 @@ else:
         self.assertTrue((job / 'work/started.txt').is_file())
         started = time.monotonic()
         controller = win.core.read_json(job / 'controller-receipt.json')
-        terminate_fixture_controller(controller['pid'], self.p['remote_python'], job)
+        try:
+            terminate_fixture_controller(controller['pid'], self.p['remote_python'], job)
+        except (OSError, RuntimeError, subprocess.SubprocessError):
+            self.diagnose_controller(identity)
+            raise
         receipt = self.wait_for(identity, {'uncertain'}, operation='recover', seconds=16)
         self.assertFalse(receipt['reconciliation']['restarted'])
         self.assertFalse(receipt['reconciliation']['pid_signal_sent'])

@@ -380,7 +380,7 @@ def checked_job(root, req):
     return job
 
 
-def handle(req):
+def handle(req, *, ssh_controller=False):
     ident = {}
     try:
         ident = identity()
@@ -469,14 +469,22 @@ def handle(req):
                 stream.flush(); os.fsync(stream.fileno())
             atomic(job / 'state.json', {'status': 'launching', 'updated_at': time.time(), 'heartbeat': time.time(), 'job_id': req['job_id']})
             try:
+                flags = subprocess.CREATE_NEW_PROCESS_GROUP
+                if ssh_controller:
+                    # The SSH session can end before the controller and its own Job Object.
+                    flags |= subprocess.CREATE_BREAKAWAY_FROM_JOB | subprocess.DETACHED_PROCESS
                 with (job / 'controller.log').open('xb') as log:
                     p = subprocess.Popen([sys.executable, str(job / 'controller.py'), '--run-job', str(job)],
                                          stdin=subprocess.DEVNULL, stdout=log, stderr=log,
-                                         creationflags=subprocess.CREATE_NEW_PROCESS_GROUP, close_fds=True)
+                                         creationflags=flags, close_fds=True)
                 _LOCAL_CONTROLLERS[req['job_id']] = p
                 atomic(job / 'controller-receipt.json', {'pid': p.pid, 'purpose': 'diagnostic only; never used for PID-based cancellation'})
-            except Exception:
-                atomic(job / 'state.json', {'status': 'uncertain', 'updated_at': time.time(), 'reason': 'Launch attempted; operator reconciliation required'})
+            except Exception as exc:
+                state = {'status': 'uncertain', 'updated_at': time.time(), 'reason': 'Launch attempted; operator reconciliation required'}
+                atomic(job / 'state.json', state)
+                if ssh_controller:
+                    return {**reply(ident, req, 'uncertain', state=state), 'ok': False,
+                            'error': {'code': type(exc).__name__, 'message': str(exc)[:2000]}}
                 raise
             return reply(ident, req, 'launching', state={'status': 'launching', 'job_id': req['job_id']})
     except Exception as exc:
@@ -661,13 +669,15 @@ def run_job(directory):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--run-job', help=argparse.SUPPRESS)
+    internal = parser.add_mutually_exclusive_group()
+    internal.add_argument('--run-job', help=argparse.SUPPRESS)
+    internal.add_argument('--ssh-controller', action='store_true', help=argparse.SUPPRESS)
     args = parser.parse_args()
     if args.run_job:
         return run_job(args.run_job)
     try:
         request = parse(sys.stdin.buffer.read(MAX_REQUEST + 1))
-        result = handle(request)
+        result = handle(request, ssh_controller=args.ssh_controller)
     except Exception as exc:
         result = {'protocol': PROTOCOL, 'ok': False, 'status': 'failed', 'error': {'code': type(exc).__name__, 'message': str(exc)[:2000]}}
     raw = canonical(result) + b'\n'
