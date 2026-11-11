@@ -608,18 +608,177 @@ def terminate_fixture_controller(pid, python, job):
         kernel.CloseHandle(handle)
 
 
+METADATA_PROBE = r'''
+import ctypes as c
+from ctypes import wintypes as wt
+import json, msvcrt, os, stat, sys, tempfile, time
+from contextlib import nullcontext
+from pathlib import Path
+
+request = json.load(sys.stdin)
+worker = {'__name__': 'metadata_probe_worker'}
+exec(compile(request['worker_source'], '<metadata-probe-worker>', 'exec'), worker)
+kernel = c.WinDLL('kernel32', use_last_error=True)
+adv = c.WinDLL('advapi32', use_last_error=True)
+ptr = c.c_void_p
+kernel.GetCurrentProcess.restype = wt.HANDLE
+kernel.CloseHandle.argtypes = [wt.HANDLE]
+kernel.LocalFree.argtypes = [ptr]
+kernel.LocalFree.restype = ptr
+kernel.CreateFileW.argtypes = [wt.LPCWSTR, wt.DWORD, wt.DWORD, ptr, wt.DWORD, wt.DWORD, wt.HANDLE]
+kernel.CreateFileW.restype = wt.HANDLE
+adv.OpenProcessToken.argtypes = [wt.HANDLE, wt.DWORD, c.POINTER(wt.HANDLE)]
+adv.GetTokenInformation.argtypes = [wt.HANDLE, c.c_int, ptr, wt.DWORD, c.POINTER(wt.DWORD)]
+adv.ConvertSidToStringSidW.argtypes = [ptr, c.POINTER(wt.LPWSTR)]
+adv.GetNamedSecurityInfoW.argtypes = [wt.LPWSTR, wt.DWORD, wt.DWORD, c.POINTER(ptr), ptr, ptr, ptr, c.POINTER(ptr)]
+adv.GetNamedSecurityInfoW.restype = wt.DWORD
+
+def sid_string(sid):
+    value = wt.LPWSTR()
+    if not adv.ConvertSidToStringSidW(sid, c.byref(value)):
+        raise c.WinError(c.get_last_error())
+    try:
+        return value.value
+    finally:
+        kernel.LocalFree(c.cast(value, ptr))
+
+def token_sid(token, info_class):
+    size = wt.DWORD()
+    adv.GetTokenInformation(token, info_class, None, 0, c.byref(size))
+    if not size.value:
+        raise c.WinError(c.get_last_error())
+    value = c.create_string_buffer(size.value)
+    if not adv.GetTokenInformation(token, info_class, value, size, c.byref(size)):
+        raise c.WinError(c.get_last_error())
+    return sid_string(c.cast(value, c.POINTER(ptr))[0])
+
+def metadata(path):
+    owner, descriptor = ptr(), ptr()
+    code = adv.GetNamedSecurityInfoW(str(path), 1, 1, c.byref(owner), None, None, None, c.byref(descriptor))
+    if code:
+        raise c.WinError(code)
+    try:
+        info = path.lstat()
+        return {'owner_sid': sid_string(owner), 'nlink': info.st_nlink,
+                'reparse': bool(info.st_file_attributes & stat.FILE_ATTRIBUTE_REPARSE_POINT),
+                'regular': stat.S_ISREG(info.st_mode), 'directory': stat.S_ISDIR(info.st_mode)}
+    finally:
+        kernel.LocalFree(descriptor)
+
+def open_reader(path, share):
+    handle = kernel.CreateFileW(str(path), 0x80000000, share, None, 3, 0x00200000, None)
+    if handle == wt.HANDLE(-1).value:
+        raise c.WinError(c.get_last_error())
+    try:
+        fd = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+    except BaseException:
+        kernel.CloseHandle(handle)
+        raise
+    try:
+        return os.fdopen(fd, 'rb')
+    except BaseException:
+        os.close(fd)
+        raise
+
+token = wt.HANDLE()
+if not adv.OpenProcessToken(kernel.GetCurrentProcess(), 8, c.byref(token)):
+    raise c.WinError(c.get_last_error())
+try:
+    probe = {'token_user_sid': token_sid(token, 1), 'token_owner_sid': token_sid(token, 4), 'cases': []}
+finally:
+    kernel.CloseHandle(token)
+
+root = worker['root_path'](request['fixture'])
+if root != Path(request['remote_root']).parent or not root.name.startswith('rw-winssh-'):
+    raise ValueError('Expected the disposable SSH fixture root')
+old, new = b'{"value":"old"}\n', b'{"value":"new"}\n'
+with tempfile.TemporaryDirectory(prefix='metadata-probe-', dir=root) as folder:
+    for share in (None, 3, 7):
+        source, target = Path(folder) / f'source-{share}.json', Path(folder) / f'target-{share}.json'
+        source.write_bytes(new)
+        target.write_bytes(old)
+        case = {'share_mode': share, 'source': metadata(source), 'target': metadata(target),
+                'parent': metadata(target.parent)}
+        reader = nullcontext() if share is None else open_reader(target, share)
+        with reader as held:
+            try:
+                case['retryable_metadata'] = worker['retryable_metadata'](source, target)
+            except OSError as exc:
+                case.update(retryable_metadata=None, retryable_metadata_winerror=exc.winerror)
+            started = time.monotonic_ns()
+            try:
+                os.replace(source, target)
+            except OSError as exc:
+                case.update(replaced=False, winerror=exc.winerror)
+            else:
+                case.update(replaced=True, winerror=None)
+            finally:
+                case['elapsed_ns'] = time.monotonic_ns() - started
+            case['held_bytes'] = None if held is None else held.read(128).hex()
+            case['target_bytes'] = target.read_bytes().hex()
+            case['source_bytes'] = source.read_bytes().hex() if source.exists() else None
+        probe['cases'].append(case)
+ident = worker['identity']()
+result = {'protocol': 1, 'ok': True, 'status': 'inspected', 'supported_remote_os': 'windows',
+          'identity': ident, 'worker_sha256': worker['digest'](request['worker_source'].encode('utf-8')),
+          'metadata_probe': probe}
+sys.stdout.buffer.write(worker['canonical'](result) + b'\n')
+'''
+
+
+def native_metadata_probe():
+    fixture = Path(os.environ['RW_WINSSH_FIXTURE']).resolve(strict=True)
+    p = win.profile(win.core.read_json(fixture / 'profile.json'))
+    win.core.pinned(p)
+    if Path(p['remote_root']).parent != fixture:
+        raise ValueError('Metadata probe requires the isolated Windows SSH fixture')
+    worker_source, worker_hash = win.worker_source()
+    request = {**win.request_for(p, 'inspect'), 'fixture': str(fixture), 'worker_source': worker_source}
+    child = transport.run_bounded(win.ssh_argv(p), win.encode_request(p, request, METADATA_PROBE),
+                                  timeout=20, max_input=win.core.MAX_RPC, max_stdout=8192, max_stderr=4096)
+    if child.returncode:
+        raise RuntimeError(f'Metadata probe SSH exited {child.returncode}: {child.stderr[-2000:]!r}')
+    result = win.validate_response(win.core.decode_json(child.stdout.decode('utf-8')), p, request)
+    probe = result['metadata_probe']
+    print('WINDOWS_METADATA_PROBE ' + json.dumps({'worker_sha256': result['worker_sha256'], **probe},
+                                                sort_keys=True), flush=True)
+    if not result['ok'] or result['worker_sha256'] != worker_hash or [c['share_mode'] for c in probe['cases']] != [None, 3, 7]:
+        raise ValueError('Metadata probe source or sharing controls differ')
+    old, new = b'{"value":"old"}\n'.hex(), b'{"value":"new"}\n'.hex()
+    for case in probe['cases']:
+        expected_held = None if case['share_mode'] is None else old
+        if case['held_bytes'] != expected_held or not case['source']['regular'] or not case['target']['regular'] or not case['parent']['directory']:
+            raise ValueError('Metadata probe file type or held-reader bytes differ')
+        if type(case['elapsed_ns']) is not int or case['elapsed_ns'] < 0:
+            raise ValueError('Metadata probe lacks a monotonic replacement duration')
+        if case['replaced']:
+            if case['target_bytes'] != new or case['source_bytes'] is not None:
+                raise ValueError('Successful replacement did not publish exact new bytes')
+        elif case['target_bytes'] != old or case['source_bytes'] != new:
+            raise ValueError('Denied replacement changed source or target bytes')
+    if not probe['cases'][0]['replaced']:
+        raise ValueError('Uncontended replacement baseline failed')
+
+
 def main():
     native = sys.argv[1:] == ['--run-ssh']
     if sys.argv[1:] and not native:
         raise SystemExit('Usage: windows_remote_checks.py [--run-ssh]')
     if native and (os.name != 'nt' or not os.environ.get('RW_WINSSH_FIXTURE')):
         raise SystemExit('Native Windows and an explicit CI loopback fixture are required')
+    probe_ok = True
+    if native:
+        try:
+            native_metadata_probe()
+        except (KeyError, ValueError, OSError, RuntimeError) as exc:
+            print('WINDOWS_METADATA_PROBE ' + json.dumps({'error': str(exc)[:2000]}), flush=True)
+            probe_ok = False
     classes = [TransportContracts, WindowsClientContracts]
     if native:
         classes.append(NativeWindowsSSH)
     suite = unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromTestCase(cls) for cls in classes)
     result = unittest.TextTestRunner(verbosity=2).run(suite)
-    passed = result.wasSuccessful() and not result.skipped and result.testsRun == (17 if native else 9)
+    passed = probe_ok and result.wasSuccessful() and not result.skipped and result.testsRun == (17 if native else 9)
     print('WINDOWS_SSH_CHECKS ' + json.dumps({
         'mode': 'native_loopback_ssh' if native else 'portable_source_contracts',
         'passed': passed, 'methods': result.testsRun, 'skipped': len(result.skipped),
