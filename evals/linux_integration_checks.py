@@ -113,6 +113,9 @@ class LinuxActual(unittest.TestCase):
                 raise ValueError('Observer container missing or identity changed')
             return local, obj
 
+    def emit_supervisor_diagnostic(self, diagnostic):
+        print(json.dumps({'control': self.id(), 'supervisor_diagnostic': diagnostic}), flush=True)
+
     def test_01_actual_limits_privileges_readonly_network_nested_collection(self):
         code = """import errno,json,os,socket
 from pathlib import Path
@@ -195,7 +198,7 @@ Path('data/result.json').write_text(json.dumps(out))
             except Exception as exc:
                 diagnostic['final_inspect_unavailable'] = bounded_text(exc)
             diagnostic['status_queries'] = chronology.report()
-            print(json.dumps({'control': self.id(), 'supervisor_diagnostic': diagnostic}), flush=True)
+            self.emit_supervisor_diagnostic(diagnostic)
             if cleanup_unverified and not primary_failure:
                 self.fail('Local observer cleanup could not be verified; see supervisor_diagnostic')
 
