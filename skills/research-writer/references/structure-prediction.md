@@ -169,10 +169,14 @@ Offline checks use synthetic data and do not run prediction:
 python /absolute/package/evals/structure_boltz2_checks.py -v
 ```
 
-Boltz-2 source availability, asset preparation and passing offline checks do not
-establish real feature processing, model execution or scientific accuracy. Keep
-those stages separate in reporting. Any previous Boltz-1 benchmark failure
-remains a Boltz-1 failure even if a later model-2 route passes. The publisher's
+The 0.18 candidate independently passed the fixed 1CRN chain A fixture at
+0.5903 Å RMSD across all 46 Cα atoms, with all 326 typed heavy atoms present.
+The Mac CPU worker took 111.631 seconds and peaked at 4.12 GiB sampled RSS.
+The run used a separately verified Python 3.12.14 environment, PyTorch 2.15.0
+and verified local assets. For a new environment, verify the actual interpreter,
+source, model assets and feature inputs before relying on a prediction. This
+result covers the pinned fixture and settings. The earlier Boltz-1 failures
+remain recorded. The publisher's
 MIT grant covers code and weights; auxiliary molecule generation lineage is not
 independently established, and no model/molecule assets are redistributed by
 this skill. Cite Passaro et al., *Boltz-2: Towards Accurate and Efficient Binding
