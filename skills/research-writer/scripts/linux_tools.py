@@ -285,9 +285,13 @@ def inspect_engine(p):
 
 
 def inspect_image(p, image_id):
-    fmt = '{"id":{{json .Id}},"os":{{json .Os}},"architecture":{{json .Architecture}},"volumes":{{json .Config.Volumes}}}'
+    # Docker 29 omits empty image Config.Volumes; index preserves an explicit null.
+    fmt = '{"id":{{json .Id}},"os":{{json .Os}},"architecture":{{json .Architecture}},"volumes":{{json (index .Config "Volumes")}}}'
     image = decode(docker(p, ['image', 'inspect', image_id, '--format', fmt]))
-    if image.get('id') != image_id or image.get('os') != 'linux' or image.get('volumes'):
+    if (not isinstance(image, dict) or set(image) != {'id', 'os', 'architecture', 'volumes'} or
+            image['id'] != image_id or image['os'] != 'linux' or
+            not isinstance(image['architecture'], str) or not image['architecture'] or
+            not (image['volumes'] is None or isinstance(image['volumes'], dict) and not image['volumes'])):
         raise ValueError('Image identity/OS mismatch or declared writable volumes')
     return image
 
