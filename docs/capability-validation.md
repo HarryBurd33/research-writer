@@ -1,4 +1,13 @@
-# Capability extension validation — 0.17.0
+# Capability extension validation — 0.18 candidate
+
+
+## Version 0.18 acceptance in progress
+
+The candidate adds a bounded supervisor fault receipt and an explicit `research-writer.structure.v3` Boltz-2 CPU route. Version 0.17 remains the installed baseline until native checks and independent result review pass. The completed 0.17 evidence below remains valid within its recorded scope.
+
+The Linux source repair preserves task-failure semantics, original resource limits and prepared-job compatibility. It retains a small infrastructure-fault capsule only when launch never began or namespace cleanup is positively complete; uncertain cleanup does not gain a retention delay. The first fully validated host receipt is immutable. Independent review passed 19 supplied and eight held-out controls. The full local Linux, observer, diagnostic and checkpoint suites also passed. Two deterministic native fault cases and the unchanged ten Linux and six durable controls are required before adoption. This repairs demonstrated diagnostic loss; it does not identify the historical exit-2 cause.
+
+Boltz-2 is explicitly selected; existing Boltz-1 v1/v2 contracts are unchanged. Both publisher-pinned assets were verified, and all 21 canonical molecule files match an independently checked archive inventory. Thirteen new offline controls passed, and the existing structure suite passed 23 controls with the real inference test explicitly skipped. Source review, actual feature preflight, one bounded CPU inference and independent fixed-reference accuracy evaluation remain separate gates. No new scientific result is claimed here. The original 8.28 Å and 9.39 Å failures and unchanged 2 Å threshold are preserved.
 
 Observed through 2026-11-11. Version 0.17 adds Windows SSH transport, a separate POSIX accelerator SSH protocol and a closed Boltz v2 local-A3M contract. Hosted Windows SSH acceptance passed at `f675c2937d3ab5e9533d676a2ba1c4747606a82e`. The installed 63-file package matches source commit `6f87840c0074805b42918401eeaedb2fcbcd0d7a` byte for byte, with managed hash `c0b5f22ed95ce30a201e7f030346ce29cf918623e0117e049f5c25ef3d4594b2`. Installed package, core, retrieval and durable-checkpoint controls passed from an unrelated working directory; the prior 0.16 installation is preserved for rollback. These offline controls do not constitute scientific validation.
 

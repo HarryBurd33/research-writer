@@ -166,6 +166,36 @@ cleanup. This release does not supply durable checkpointing or guarantee output
 survival across host/controller death. A new job ID can duplicate scientific work;
 resolve uncertainty about the original first.
 
+Newly prepared supervisors distinguish an internal supervisor fault from an
+ordinary task or output-validation failure. A validated fault reports
+`artifacts_unavailable` with a `supervisor_fault` capsule; it cannot satisfy an
+ordinary `failed` result or be collected as task output or a checkpoint. The
+capsule is capped at 4 KiB, with a 1 KiB encoded message, and binds the job,
+nonce, manifest and supervisor source. It contains no environment, task-file
+payload or traceback locals. Docker logging remains disabled.
+
+Fault retention is permitted only before any task launch attempt or after the
+existing namespace cleanup positively completes. A missing child handle after
+an attempted launch is uncertain. Unconfirmed cleanup, invalid binding or failed
+fault publication exits promptly without a diagnostic retention promise. A safe
+fault uses at most the existing retention window and still ends with supervisor
+exit 2; retention errors do not restart that window. OOM, SIGKILL, interpreter
+failure and unavailable control storage can still prevent capture.
+
+After full container, source and packet validation, status/recovery preserves
+the first observed capsule in the existing private host state, within an 8 KiB
+cache envelope. Identical observations are accepted; contradictory observations
+are refused without overwriting the first. If local caching fails, the report
+keeps the validated remote fault separate from `fault_cache_error` and does not
+claim durable caching. Later reports label cached faults as historical evidence
+when the container is stopped or absent. A capsule never authorizes re-execution,
+signals or cleanup. Older prepared supervisors continue their existing normal
+receipt protocol and do not gain fault-capture behavior retroactively.
+
+This is an observability mechanism, not an explanation of the historical Linux
+exit-2 failures. It preserves only an observed cause under the stated conditions;
+a successful ordinary run cannot demonstrate all fatal-path behavior.
+
 Kernel enforcement evidence is distinct from scientific validation. A successful
 control run proves only the stated lifecycle behavior for that configuration.
 Predictions, simulations and embeddings still need suitable controls and task

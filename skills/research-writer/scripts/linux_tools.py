@@ -7,6 +7,7 @@ import base64
 import ctypes
 from contextlib import contextmanager
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
@@ -26,6 +27,8 @@ MAX_RPC = 32 * 1024 * 1024
 MAX_FILE = 8 * 1024 * 1024
 MAX_INPUT = 16 * 1024 * 1024
 TERMINAL = {'succeeded', 'failed', 'timed_out', 'cancelled'}
+FAULT_CACHE_BYTES = 8192
+_FAULT_PROTOCOL = None
 LIMITS = {'wall_seconds': (1, 3600), 'retention_seconds': (5, 3600),
           'memory_bytes': (64 * 1024**2, 8 * 1024**3), 'cpu_millis': (100, 16000),
           'pids': (16, 512), 'work_bytes': (1024**2, 256 * 1024**2),
@@ -521,22 +524,98 @@ def receipt(state, operation):
                        ('nonce', state['binding']['nonce']), ('manifest_sha256', state['binding']['manifest_sha256'])]:
         if result.get(key) != value:
             raise ValueError('Supervisor receipt binding mismatch')
-    if result.get('state') not in TERMINAL | {'running'}:
+    if result.get('state') == 'artifacts_unavailable':
+        if operation != 'status' or set(result) != {'schema_version', 'job_id', 'nonce', 'manifest_sha256', 'state', 'supervisor_fault'}:
+            raise ValueError('Invalid supervisor fault receipt envelope')
+        if type(result['schema_version']) is not int or result['schema_version'] != 1:
+            raise ValueError('Invalid supervisor fault receipt version')
+        fault_protocol().validate_fault(result['supervisor_fault'], state['manifest'], state['binding'])
+    elif result.get('state') not in TERMINAL | {'running'}:
         raise ValueError('Unknown supervisor state')
     return result
 
 
+def fault_protocol():
+    global _FAULT_PROTOCOL
+    if _FAULT_PROTOCOL is None:
+        spec = importlib.util.spec_from_file_location('research_writer_fault_protocol', ROOT / 'linux_supervisor.py')
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        _FAULT_PROTOCOL = module
+    return _FAULT_PROTOCOL
+
+
+def validate_fault_cache(state, envelope):
+    fields = {'schema_version', 'container_id', 'container_name', 'image_id', 'engine_id', 'observed_at', 'capsule'}
+    if not isinstance(envelope, dict) or set(envelope) != fields or type(envelope['schema_version']) is not int or envelope['schema_version'] != 1:
+        raise ValueError('Invalid supervisor fault cache schema')
+    if not isinstance(envelope['container_id'], str) or not re.fullmatch('[0-9a-f]{64}', envelope['container_id']) or envelope['container_id'] != state.get('container_id'):
+        raise ValueError('Supervisor fault cache immutable ID mismatch')
+    for key, expected in [('container_name', state['container_name']), ('image_id', state['manifest']['image_id']), ('engine_id', state['profile']['expected_engine_id'])]:
+        if envelope[key] != expected:
+            raise ValueError('Supervisor fault cache provenance mismatch')
+    protocol = fault_protocol()
+    if type(envelope['observed_at']) not in (int, float) or not protocol.math.isfinite(envelope['observed_at']) or envelope['observed_at'] < 0:
+        raise ValueError('Invalid supervisor fault observation time')
+    protocol.validate_fault(envelope['capsule'], state['manifest'], state['binding'])
+    if len(canonical(envelope)) > FAULT_CACHE_BYTES:
+        raise ValueError('Supervisor fault cache byte cap')
+    return envelope
+
+
+def fault_observation(state, envelope, provenance, cache_error=None):
+    result = {'schema_version': 1, 'state': 'artifacts_unavailable', 'job_id': state['manifest']['job_id'],
+              'container_id': envelope['container_id'], 'reason': 'Bound supervisor fault; task artifacts are unavailable',
+              'supervisor_fault': envelope['capsule'], 'fault_observation': provenance,
+              'fault_observed_at': envelope['observed_at'], 'fault_cached': cache_error is None,
+              'reexecuted': False}
+    if cache_error is not None:
+        result['fault_cache_error'] = fault_protocol().error_detail(cache_error, 'receipt_publish')
+    return result
+
+
+def cache_fault(root, state, capsule):
+    fault_protocol().validate_fault(capsule, state['manifest'], state['binding'])
+    prior = state.get('supervisor_fault_cache')
+    if 'supervisor_fault_cache' in state:
+        validate_fault_cache(state, prior)
+        if canonical(prior['capsule']) != canonical(capsule):
+            raise ValueError('Contradictory supervisor fault; first validated capsule is immutable')
+        return fault_observation(state, prior, 'current_remote_identical_to_cached')
+    envelope = {'schema_version': 1, 'container_id': state['container_id'], 'container_name': state['container_name'],
+                'image_id': state['manifest']['image_id'], 'engine_id': state['profile']['expected_engine_id'],
+                'observed_at': time.time(), 'capsule': capsule}
+    validate_fault_cache(state, envelope)
+    updated = {**state, 'supervisor_fault_cache': envelope}
+    try:
+        save(root / 'state.json', updated)
+    except Exception as exc:
+        return fault_observation(state, envelope, 'current_remote_cache_write_unverified', exc)
+    state['supervisor_fault_cache'] = envelope
+    return fault_observation(state, envelope, 'current_remote_cached')
+
+
 def reconcile(root, state):
     obj = inspect_container(state)
+    cached = state.get('supervisor_fault_cache')
+    if 'supervisor_fault_cache' in state:
+        validate_fault_cache(state, cached)
     if obj is None:
+        if cached is not None:
+            return {**fault_observation(state, cached, 'historical_cached_container_absent'), 'container_present': False}
         return {'schema_version': 1, 'state': 'uncertain' if state['submit_attempted'] else 'prepared',
                 'job_id': state['manifest']['job_id'], 'reason': 'No bound container found; no relaunch performed', 'reexecuted': False}
-    state['container_id'] = obj['Id']; save(root / 'state.json', state)
+    if state.get('container_id') != obj['Id']:
+        state['container_id'] = obj['Id']; save(root / 'state.json', state)
     if not obj['State'].get('Running'):
-        return {'schema_version': 1, 'state': 'artifacts_unavailable', 'job_id': state['manifest']['job_id'],
+        return {**(fault_observation(state, cached, 'historical_cached_container_stopped') if cached is not None else {}),
+                'schema_version': 1, 'state': 'artifacts_unavailable', 'job_id': state['manifest']['job_id'],
                 'container_id': obj['Id'], 'reason': 'Container stopped/expired; tmpfs artifacts are unavailable',
                 'container_exit_code': obj['State'].get('ExitCode'), 'oom_killed': obj['State'].get('OOMKilled'), 'reexecuted': False}
     result = receipt(state, 'status')
+    if result.get('state') == 'artifacts_unavailable':
+        return cache_fault(root, state, result['supervisor_fault'])
+    if cached is not None:
+        raise ValueError('Current receipt contradicts an immutable supervisor fault observation')
     return {**result, 'container_id': obj['Id'], 'reexecuted': False}
 
 

@@ -154,7 +154,7 @@
         "Modified positions are 1-based; covalent/chemical support is restricted.",
         "Affinity targets one small-molecule ligand against protein; RNA/DNA/cofactor targets are unreliable. log10(IC50 in micromolar) and binder probability are predictions, not measured Kd/free energy.",
         "No audited native macOS MPS or universal RAM/VRAM guarantee.",
-        "Original structure_tools.py supplies a separately tested Boltz-1 CPU adapter with strict source/assets and one canonical chain; this broader upstream recipe is not its command."
+        "Original structure_tools.py provides bounded Boltz-1 v1/v2 and explicit Boltz-2 v3 CPU contracts with strict source/assets, verified canonical molecule files and one canonical chain; this broader upstream recipe is not their command. Execution and scientific accuracy require separate observed acceptance."
       ],
       "evidence_urls": [
         "https://github.com/jwohlwend/boltz/blob/b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc/README.md",
