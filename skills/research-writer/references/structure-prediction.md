@@ -103,6 +103,85 @@ restriction; it does not guarantee that any alignment improves a prediction.
 A query-only A3M execution validates this input path and is not evidence of
 improved structural accuracy. The original frozen benchmark below is unchanged.
 
+## Explicit optional Boltz-2 route
+
+`research-writer.structure.v3` is a separate, closed request: retain every v2
+field, including explicit `msa`, and add exactly `"model":"boltz2"`. Existing
+v1/v2 requests continue to select Boltz-1; there is no implicit default-model
+upgrade. V3 accepts the same canonical single-chain inputs, with tighter ceilings:
+2 CPU threads, 8 GiB sampled process-tree RSS, 64 MiB output, 1 MiB logs and
+3600 seconds. It uses the pinned source already listed above and its official
+model-2 defaults, including CPU `bf16-mixed` precision, 64 Pairformer blocks,
+step scale 1.5, paired-MSA features and one diffusion sample. No affinity,
+template, constraints, modifications, method override, MSA service or silent
+precision/device fallback is exposed. A configuration accepted by source does
+not establish that a particular CPU supports every operation or fits the limit.
+
+Prepare a **separate fresh cache** with exactly these previously acquired files
+from [official model revision
+6fdef46d763fee7fbb83ca5501ccceff43b85607](https://huggingface.co/boltz-community/boltz-2/tree/6fdef46d763fee7fbb83ca5501ccceff43b85607):
+
+| File | Exact bytes | SHA-256 |
+| --- | ---: | --- |
+| `boltz2_conf.ckpt` | 2286561469 | `090e82ac8c92f5e943fa1b39e7410a44027bea7243c0bbb3caa67a77fc1428e1` |
+| `mols.tar` | 1855662080 | `39e076d96dbec6b4e86982bbda16f3a53a2a60c9bdc17828d88f6f9a0c7d1fd7` |
+
+The adapter never downloads these assets. Run the explicit offline preparation
+command once before supplying that cache as `assets_dir`:
+
+```text
+python /absolute/research-writer/scripts/structure_tools.py prepare-boltz2-assets --assets-dir /absolute/fresh-boltz2-assets
+```
+
+Preparation hashes both files, validates the complete raw tar stream, and
+extracts only the 21 source-defined canonical protein molecule files to `mols/`.
+It permits at most 100000 headers, 3 GiB declared regular payload, bounded PAX
+metadata (16 KiB per extension, 1 MiB total), 4 MiB per selected molecule and
+64 MiB selected payload. Paths must be unambiguous ASCII paths under `mols/`;
+links, devices, traversal, duplicate/case-aliased paths, unsupported extensions,
+invalid checksums and non-padding appended content are refused. Every output
+file is new. Existing prepared caches are not overwritten or repaired in place;
+partial preparation remains unaccepted and needs explicit reconciliation.
+
+`boltz2-assets.json` records the archive-derived inventory. Runtime verification
+re-derives that inventory from the publisher-pinned tar and hashes the actual
+molecules; editing a molecule and its receipt together cannot authorize altered
+bytes. Unknown or missing cache entries and file/ancestor aliases are refused.
+No pickle is loaded during preparation. The required canonical molecule files
+are deserialized only by the trusted scientific runtime after verification.
+The unused affinity checkpoint is neither required nor represented by a fake
+file. The upstream automatic downloader is replaced by the offline verifier.
+
+V3 validates the request, source and prepared assets before reserving output.
+Its worker guards the upstream dataset's recursive error fallback, preserving
+the first error instead of retrying another input. Receipts bind the actual
+checkpoint, CPU input/parameter/output devices, CPU BF16 autocast state, route
+settings and exactly one forward. Mixed precision does not imply every model
+parameter has BF16 dtype. Afterward source/assets are reverified and PDB output
+must contain every canonical heavy atom with its correct element, in addition
+to the existing sequence, finite-coordinate and backbone checks. For the frozen
+crambin query this means 326 heavy atoms and all 46 C-alpha atoms, with no OXT;
+the reference's terminal OXT remains outside the unchanged C-alpha metric.
+
+Offline checks use synthetic data and do not run prediction:
+
+```text
+python /absolute/package/evals/structure_boltz2_checks.py -v
+```
+
+The 0.18 candidate independently passed the fixed 1CRN chain A fixture at
+0.5903 Å RMSD across all 46 Cα atoms, with all 326 typed heavy atoms present.
+The Mac CPU worker took 111.631 seconds and peaked at 4.12 GiB sampled RSS.
+The run used a separately verified Python 3.12.14 environment, PyTorch 2.15.0
+and verified local assets. For a new environment, verify the actual interpreter,
+source, model assets and feature inputs before relying on a prediction. This
+result covers the pinned fixture and settings. The earlier Boltz-1 failures
+remain recorded. The publisher's
+MIT grant covers code and weights; auxiliary molecule generation lineage is not
+independently established, and no model/molecule assets are redistributed by
+this skill. Cite Passaro et al., *Boltz-2: Towards Accurate and Efficient Binding
+Affinity Prediction* (2025), DOI 10.1101/2025.06.14.659707.
+
 ## Frozen reference protocol
 
 The first optional scientific fixture is **1CRN chain A**, 46-residue crambin, using the sequence above and independently acquired [PDB archive coordinates](https://files.rcsb.org/download/1CRN.pdb). Record its exact downloaded hash and [entry identity](https://www.rcsb.org/structure/1CRN). For the reference gate, use seed 20261108, 3 recycles, 200 sampling steps and one diffusion sample. The threshold is C-alpha RMSD <=2.0 Å across all 46 sequence-matched residues after least-squares rigid alignment. Freeze this rule before any inference; retain failure if it is not met. This is a known-reference engineering check, possibly overlapping training data, not a held-out general-accuracy result.

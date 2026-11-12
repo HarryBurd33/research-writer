@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # SPDX-License-Identifier: MIT
-"""Optional, local-only Boltz-1 adapter; this is a trusted-code runner, not a sandbox."""
+"""Optional, local-only explicitly versioned Boltz adapter; this is a trusted-code runner, not a sandbox."""
 from __future__ import annotations
 import argparse
 import hashlib
@@ -20,6 +20,13 @@ import time
 
 SCHEMA = 'research-writer.structure.v1'
 SCHEMA_V2 = 'research-writer.structure.v2'
+SCHEMA_V3 = 'research-writer.structure.v3'
+MODEL2_REVISION = '6fdef46d763fee7fbb83ca5501ccceff43b85607'
+ASSETS2 = {
+    'boltz2_conf.ckpt': (2286561469, '090e82ac8c92f5e943fa1b39e7410a44027bea7243c0bbb3caa67a77fc1428e1'),
+    'mols.tar': (1855662080, '39e076d96dbec6b4e86982bbda16f3a53a2a60c9bdc17828d88f6f9a0c7d1fd7'),
+}
+CANONICAL_MOLS = tuple('ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL UNK'.split())
 REVISION = 'b1ebfc46ecf57f5414e0d1a6f9027bbb122c53bc'
 MODEL_REVISION = '7c1d83b779e4c65ecc37dfdf0c6b2788076f31e1'
 ASSETS = {
@@ -29,6 +36,8 @@ ASSETS = {
 AA3 = dict(zip('ALA ARG ASN ASP CYS GLN GLU GLY HIS ILE LEU LYS MET PHE PRO SER THR TRP TYR VAL'.split(),
                'ARNDCQEGHILKMFPSTWYV'))
 BACKBONE = {'N', 'CA', 'C', 'O'}
+# Canonical heavy-atom names from pinned Boltz const.ref_atoms (MIT).
+HEAVY_ATOMS = {'ALA': ['N', 'CA', 'C', 'O', 'CB'], 'ARG': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD', 'NE', 'CZ', 'NH1', 'NH2'], 'ASN': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'OD1', 'ND2'], 'ASP': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'OD1', 'OD2'], 'CYS': ['N', 'CA', 'C', 'O', 'CB', 'SG'], 'GLN': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD', 'OE1', 'NE2'], 'GLU': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD', 'OE1', 'OE2'], 'GLY': ['N', 'CA', 'C', 'O'], 'HIS': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'ND1', 'CD2', 'CE1', 'NE2'], 'ILE': ['N', 'CA', 'C', 'O', 'CB', 'CG1', 'CG2', 'CD1'], 'LEU': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2'], 'LYS': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD', 'CE', 'NZ'], 'MET': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'SD', 'CE'], 'PHE': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE1', 'CE2', 'CZ'], 'PRO': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD'], 'SER': ['N', 'CA', 'C', 'O', 'CB', 'OG'], 'THR': ['N', 'CA', 'C', 'O', 'CB', 'OG1', 'CG2'], 'TRP': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'NE1', 'CE2', 'CE3', 'CZ2', 'CZ3', 'CH2'], 'TYR': ['N', 'CA', 'C', 'O', 'CB', 'CG', 'CD1', 'CD2', 'CE1', 'CE2', 'CZ', 'OH'], 'VAL': ['N', 'CA', 'C', 'O', 'CB', 'CG1', 'CG2']}
 REQUIRED = {'schema', 'python', 'boltz_source', 'assets_dir', 'output_dir', 'sequence',
             'chain_id', 'device', 'seed', 'threads', 'timeout_seconds', 'recycling_steps',
             'sampling_steps', 'max_output_bytes', 'max_log_bytes', 'memory_budget_bytes'}
@@ -95,8 +104,12 @@ def validate_spec(spec):
     if not isinstance(spec, dict):
         raise ValueError('Structure request must be an object')
     expected = REQUIRED if spec.get('schema') == SCHEMA else REQUIRED | {'msa'}
-    if spec.get('schema') not in (SCHEMA, SCHEMA_V2) or set(spec) != expected:
-        raise ValueError('Require exact structure.v1 or structure.v2 fields')
+    if spec.get('schema') == SCHEMA_V3:
+        expected |= {'model'}
+    if spec.get('schema') not in (SCHEMA, SCHEMA_V2, SCHEMA_V3) or set(spec) != expected:
+        raise ValueError('Require exact structure.v1, structure.v2 or structure.v3 fields')
+    if spec.get('schema') == SCHEMA_V3 and spec['model'] != 'boltz2':
+        raise ValueError('structure.v3 requires explicit model boltz2')
     sequence = spec['sequence']
     if (not isinstance(sequence, str) or not 4 <= len(sequence) <= 128 or
             set(sequence) - set(AA3.values()) or spec['chain_id'] != 'A'):
@@ -111,6 +124,13 @@ def validate_spec(spec):
     for name, (lo, hi) in limits.items():
         if type(spec[name]) is not int or not lo <= spec[name] <= hi:
             raise ValueError(name + ' is outside its integer bound')
+    if spec.get('schema') == SCHEMA_V3:
+        for name in ('boltz_source', 'assets_dir', 'output_dir'):
+            no_alias_path(spec[name], allow_missing=name == 'output_dir')
+        for name, maximum in {'threads': 2, 'memory_budget_bytes': 8*1024**3,
+                              'max_output_bytes': 64*1024**2, 'max_log_bytes': 1024**2}.items():
+            if spec[name] > maximum:
+                raise ValueError('structure.v3 exceeds fixed bound: ' + name)
     paths = {name: absolute(spec[name], name) for name in
              ('python', 'boltz_source', 'assets_dir', 'output_dir')}
     # Preserve a venv launcher path: resolving its symlink before execution would
@@ -202,7 +222,7 @@ def staged_msa(spec, root):
 
 
 def sequence_input(spec, root):
-    use_local = spec.get('schema') == SCHEMA_V2 and spec['msa'].get('mode') == 'local_a3m'
+    use_local = spec.get('schema') in (SCHEMA_V2, SCHEMA_V3) and spec['msa'].get('mode') == 'local_a3m'
     return {'version': 1, 'sequences': [{'protein': {
         'id': 'A', 'sequence': spec['sequence'],
         'msa': str(Path(root) / 'input.a3m') if use_local else 'empty'}}]}
@@ -262,6 +282,302 @@ def verify_assets(directory):
     if total > 5 * 1024 ** 3:
         raise ValueError('Asset total exceeds fixed 5 GiB budget')
     return result
+
+
+def selected_model(spec):
+    return 'boltz2' if spec.get('schema') == SCHEMA_V3 else 'boltz1'
+
+
+def no_alias_path(value, allow_missing=False):
+    p = Path(value)
+    if not p.is_absolute() or '..' in p.parts:
+        raise ValueError('Require absolute nontraversing resource path')
+    for entry in (p, *p.parents):
+        try:
+            info = entry.lstat()
+        except FileNotFoundError:
+            if allow_missing and entry == p:
+                continue
+            raise
+        if stat.S_ISLNK(info.st_mode) or getattr(info, 'st_file_attributes', 0) & getattr(stat, 'FILE_ATTRIBUTE_REPARSE_POINT', 0):
+            raise ValueError('Resource path or ancestor is an alias')
+    return p
+
+
+def scan_mols_archive(path, expected_sha, retain=False):
+    """Bounded raw tar reader: no tarfile extension parser or deserialization.
+
+    All bytes, including extensions and trailing padding, participate in the hash.
+    Only canonical member bytes can be retained (<=64 MiB aggregate).
+    """
+    canonical = {f'mols/{name}.pkl' for name in CANONICAL_MOLS}
+    inventory, contents, seen, path_types, parents_seen = {}, {}, set(), {}, set()
+    if regular(path).stat().st_size % 512:
+        raise ValueError('Tar length must contain complete 512-byte blocks')
+    total = selected = entries = extensions = 0
+    pending = {}; global_pax = {}
+    hasher = hashlib.sha256()
+    def octal(raw):
+        if raw and raw[0] & 128:
+            raise ValueError('Base-256 tar numbers unsupported')
+        value = raw.rstrip(b'\0 ').lstrip(b' ')
+        if not value or set(value) - set(b'01234567'):
+            raise ValueError('Malformed tar numeric field')
+        return int(value, 8)
+    def text_field(raw):
+        value, _, rest = raw.partition(b'\0')
+        if rest.strip(b'\0'):
+            raise ValueError('Hidden content after tar string terminator')
+        return value.decode('utf-8', errors='strict')
+    def pax(raw):
+        result = {}; at = 0
+        while at < len(raw):
+            space = raw.find(b' ', at, at + 12)
+            digits = raw[at:space] if space >= 0 else b''
+            if not digits.isdigit() or len(digits) > 8:
+                raise ValueError('Malformed PAX record length')
+            length = int(digits); end = at + length
+            if length <= space-at+2 or end > len(raw) or raw[end-1:end] != b'\n':
+                raise ValueError('Truncated PAX record')
+            key, sep, value = raw[space+1:end-1].partition(b'=')
+            key = key.decode('ascii'); value = value.decode('utf-8')
+            if not sep or key in result or key not in {'path','size','mtime','atime','ctime','uid','gid','uname','gname'} or '\0' in value:
+                raise ValueError('Unsupported or duplicate PAX attribute')
+            result[key] = value; at = end
+        return result
+    with regular(path).open('rb') as stream:
+        def read_exact(count):
+            data = stream.read(count); hasher.update(data)
+            if len(data) != count:
+                raise ValueError('Truncated tar archive')
+            return data
+        while True:
+            header = read_exact(512)
+            if header == bytes(512):
+                if pending or read_exact(512) != bytes(512):
+                    raise ValueError('Malformed tar end markers')
+                trailing = 0
+                while True:
+                    block = stream.read(65536); hasher.update(block)
+                    if not block: break
+                    trailing += len(block)
+                    if trailing > 1024*1024 or any(block):
+                        raise ValueError('Nonpadding or excessive trailing tar content')
+                break
+            entries += 1
+            if entries > 100000:
+                raise ValueError('Tar header count exceeds bound')
+            if octal(header[148:156]) != sum(header[:148]) + 8*32 + sum(header[156:]):
+                raise ValueError('Tar header checksum mismatch')
+            if header[257:263] not in (b'ustar\0', b'ustar '):
+                raise ValueError('Require explicit USTAR/GNU tar header')
+            size = octal(header[124:136]); kind = header[156:157]
+            name = text_field(header[:100]); prefix = text_field(header[345:500])
+            if prefix:
+                if header[257:263] != b'ustar\0':
+                    raise ValueError('Unsupported GNU header extension fields')
+                name = prefix + '/' + name
+            if kind in (b'x', b'g'):
+                extensions += size
+                if size > 16384 or extensions > 1024*1024:
+                    raise ValueError('Tar metadata extension exceeds bound')
+                values = pax(read_exact(size))
+                if any(read_exact((-size) % 512)):
+                    raise ValueError('Nonzero tar extension padding')
+                if kind == b'g':
+                    if {'path','size'} & set(values):
+                        raise ValueError('Global PAX path/size refused')
+                    global_pax.update(values)
+                else:
+                    if pending:
+                        raise ValueError('Stacked per-file PAX extensions refused')
+                    pending = values
+                continue
+            if kind not in (b'0', b'\0', b'5'):
+                raise ValueError('Tar links/devices/unsupported extensions refused')
+            attributes = {**global_pax, **pending}; pending = {}
+            name = attributes.get('path', name)
+            if 'size' in attributes:
+                value = attributes['size']
+                if not value.isascii() or not value.isdigit() or len(value) > 12:
+                    raise ValueError('Invalid PAX size')
+                size = int(value)
+            name = name[:-1] if kind == b'5' and name.endswith('/') else name
+            components = name.split('/')
+            if (not name or not name.isascii() or len(name) > 4096 or '\\' in name or ':' in name or
+                    any(c in ('', '.', '..') for c in components) or components[0] != 'mols' or
+                    any(ord(c) < 32 for c in name)):
+                raise ValueError('Unsafe tar member path')
+            alias = name.casefold()
+            if alias in seen:
+                raise ValueError('Duplicate or case-aliased tar path')
+            ancestors = ['/'.join(components[:i]).casefold() for i in range(1, len(components))]
+            if any(a in path_types and path_types[a] != b'5' for a in ancestors) or (kind != b'5' and alias in parents_seen):
+                raise ValueError('Conflicting file/directory tar path')
+            seen.add(alias)
+            path_types[alias] = kind
+            parents_seen.update(ancestors)
+            if kind == b'5' and size:
+                raise ValueError('Directory tar payload refused')
+            if kind != b'5':
+                total += size
+                if total > 3*1024**3:
+                    raise ValueError('Tar declared payload exceeds bound')
+            wanted = name in canonical and kind != b'5'
+            if wanted:
+                selected += size
+                if not 0 < size <= 4*1024**2 or selected > 64*1024**2:
+                    raise ValueError('Canonical molecule payload exceeds bound')
+            member = hashlib.sha256(); chunks = []
+            remaining = size
+            while remaining:
+                chunk = read_exact(min(65536, remaining)); remaining -= len(chunk)
+                if wanted:
+                    member.update(chunk)
+                    if retain: chunks.append(chunk)
+            if any(read_exact((-size) % 512)):
+                raise ValueError('Nonzero tar member padding')
+            if wanted:
+                inventory[name] = {'bytes': size, 'sha256': member.hexdigest()}
+                if retain: contents[name] = b''.join(chunks)
+    if hasher.hexdigest() != expected_sha:
+        raise ValueError('Scanned tar differs from publisher pin')
+    if set(inventory) != canonical:
+        raise ValueError('Tar must contain exactly all 21 canonical molecule members')
+    return {'archive_sha256': expected_sha, 'members': inventory,
+            'header_count': entries, 'declared_payload_bytes': total,
+            'canonical_payload_bytes': selected}, contents
+
+
+def verify_boltz2_raw(directory):
+    root = no_alias_path(directory)
+    result = {}
+    for name, (size, expected) in ASSETS2.items():
+        path = regular(root/name, size)
+        if path.stat().st_nlink != 1 or path.stat().st_size != size or digest(path) != expected:
+            raise ValueError('Pinned model-2 asset mismatch: ' + name)
+        result[name] = {'bytes': size, 'sha256': expected}
+    return root, result
+
+
+def prepare_boltz2_assets(directory):
+    """Explicit offline preparation; never downloads or deserializes model data."""
+    root = no_alias_path(directory)
+    if {p.name for p in root.iterdir()} != set(ASSETS2):
+        raise ValueError('Preparation requires fresh two-file model-2 asset directory')
+    root, assets = verify_boltz2_raw(root)
+    inventory, contents = scan_mols_archive(root/'mols.tar', ASSETS2['mols.tar'][1], retain=True)
+    target = root/'mols'; target.mkdir(mode=0o700)
+    for name, raw in contents.items():
+        path = target/Path(name).name
+        with path.open('xb') as stream:
+            stream.write(raw); stream.flush(); os.fsync(stream.fileno())
+    receipt = {'schema': 'research-writer.boltz2-assets.v1', 'model_revision': MODEL2_REVISION,
+               'assets': assets, 'inventory': inventory}
+    atomic_json(root/'boltz2-assets.json', receipt)
+    return {'status': 'prepared_assets', 'actual_runtime_verified': False,
+            'assets': verify_boltz2_assets(root)}
+
+
+def verify_boltz2_assets(directory):
+    root, assets = verify_boltz2_raw(directory)
+    if {p.name for p in root.iterdir()} != set(ASSETS2) | {'mols', 'boltz2-assets.json'}:
+        raise ValueError('Unexpected model-2 asset-root entry')
+    # A mutable receipt is never the authority: rederive from pinned archive bytes.
+    inventory, _ = scan_mols_archive(root/'mols.tar', ASSETS2['mols.tar'][1])
+    expected = {'schema': 'research-writer.boltz2-assets.v1', 'model_revision': MODEL2_REVISION,
+                'assets': assets, 'inventory': inventory}
+    if read_json(root/'boltz2-assets.json') != expected:
+        raise ValueError('Molecule receipt differs from publisher-derived inventory')
+    moldir = no_alias_path(root/'mols')
+    if not moldir.is_dir() or {p.name for p in moldir.iterdir()} != {n+'.pkl' for n in CANONICAL_MOLS}:
+        raise ValueError('Canonical molecule directory membership differs')
+    for name, evidence in inventory['members'].items():
+        path = regular(root/name, 4*1024**2)
+        if path.stat().st_nlink != 1 or path.stat().st_size != evidence['bytes'] or digest(path) != evidence['sha256']:
+            raise ValueError('Canonical molecule bytes differ from pinned tar: ' + name)
+    return expected
+
+
+def verify_for_spec(spec, directory):
+    return verify_boltz2_assets(directory) if selected_model(spec) == 'boltz2' else verify_assets(directory)
+
+
+def no_recursive_fallback(original):
+    active = set()
+    def guarded(self, index):
+        identity = id(self)
+        if identity in active:
+            cause = sys.exc_info()[1]
+            raise RuntimeError('Model-2 dataset fallback refused; original error: ' + repr(cause)) from cause
+        active.add(identity)
+        try:
+            return original(self, index)
+        finally:
+            active.remove(identity)
+    return guarded
+
+
+def validate_heavy_atoms(path, sequence):
+    reverse = {v:k for k,v in AA3.items()}
+    expected = {(i, reverse[aa], name, name[0]) for i, aa in enumerate(sequence, 1)
+                for name in HEAVY_ATOMS[reverse[aa]]}
+    actual = []
+    for line in regular(path, MAX_STRUCTURE).read_text().splitlines():
+        if line.startswith('ATOM  '):
+            actual.append((int(line[22:26]), line[17:20].strip(), line[12:16].strip(), line[76:78].strip()))
+    if len(actual) != len(expected) or set(actual) != expected:
+        raise ValueError('Model-2 typed heavy-atom inventory differs from pinned canonical residues')
+    return {'atoms': len(actual), 'CA_count': len(sequence),
+            'typed_inventory_sha256': hashlib.sha256(json.dumps(sorted(expected)).encode()).hexdigest()}
+
+
+def install_model2_guards(main, model_class, boltz1_class, paths, spec, observed):
+    """Bind the real checkpoint/class/settings, and refuse the affinity route."""
+    load = model_class.load_from_checkpoint
+    observed['checkpoint_loads'] = 0
+    def guarded_load(cls, checkpoint, *args, **kwargs):
+        expected = paths['assets_dir']/'boltz2_conf.ckpt'
+        if (Path(checkpoint) != expected or observed['checkpoint_loads'] or args or
+                kwargs.get('strict') is not True or kwargs.get('map_location') != 'cpu'):
+            raise RuntimeError('Unexpected model-2 checkpoint load')
+        if kwargs.get('msa_args', {}).get('use_paired_feature') is not True or kwargs.get('pairformer_args', {}).get('num_blocks') != 64 or kwargs.get('diffusion_process_args', {}).get('step_scale') != 1.5:
+            raise RuntimeError('Model-2 official route settings differ')
+        observed.update(checkpoint_loads=1, checkpoint_sha256=ASSETS2['boltz2_conf.ckpt'][1],
+                        checkpoint_path=str(expected), predict_args=kwargs['predict_args'],
+                        diffusion_process_args=kwargs['diffusion_process_args'],
+                        pairformer_args=kwargs['pairformer_args'], msa_args=kwargs['msa_args'])
+        # Explicitly constrain construction, not only a later affinity forward.
+        kwargs.update(affinity_prediction=False, affinity_ensemble=False)
+        return load(checkpoint, **kwargs)
+    model_class.load_from_checkpoint = classmethod(guarded_load)
+    def forbidden(*args, **kwargs):
+        raise RuntimeError('Nonselected model/affinity route refused')
+    boltz1_class.load_from_checkpoint = classmethod(forbidden)
+    original_process = main.process_inputs
+    def process(*args, **kwargs):
+        if kwargs.get('boltz2') is not True or kwargs.get('use_msa_server'):
+            raise RuntimeError('Model-2 offline preprocessing contract differs')
+        result = original_process(*args, **kwargs)
+        manifest = read_json(kwargs['out_dir']/'processed/manifest.json')
+        records = manifest.get('records', [])
+        if len(records) != 1 or records[0].get('affinity'):
+            raise RuntimeError('Require one structure-only manifest record')
+        for record in records:
+            chains = record.get('chains', [])
+            if (record.get('id') != 'input' or len(chains) != 1 or chains[0].get('chain_id') != 0 or
+                    chains[0].get('chain_name') != 'A' or chains[0].get('mol_type') != 0 or
+                    chains[0].get('num_residues') != len(spec['sequence']) or record.get('md')):
+                raise RuntimeError('Model-2 processed chain/record differs')
+            options = record.get('inference_options')
+            if options and any(options.get(k) for k in ('pocket_constraints', 'contact_constraints')):
+                raise RuntimeError('Unexpected model-2 conditioning constraints')
+            if record.get('templates'):
+                raise RuntimeError('Unexpected model-2 template')
+        observed['processed_manifest_sha256'] = digest(kwargs['out_dir']/'processed/manifest.json')
+        observed['affinity'] = False
+        return result
+    main.process_inputs = process
 
 
 def cif_tokens(text):
@@ -483,7 +799,7 @@ def bounded_process(argv, directory, timeout, max_log, max_output, memory_budget
 
 def boltz_argv(request):
     s = request['spec']; root = Path(request['output_dir'])
-    return ['predict', str(root/'input.yaml'), '--model', 'boltz1', '--accelerator', 'cpu',
+    return ['predict', str(root/'input.yaml'), '--model', selected_model(s), '--accelerator', 'cpu',
             '--devices', '1', '--cache', request['assets_dir'], '--out_dir', str(root/'engine'),
             '--no_kernels', '--num_workers', '0', '--preprocessing-threads', '1',
             '--recycling_steps', str(s['recycling_steps']), '--sampling_steps', str(s['sampling_steps']),
@@ -513,24 +829,45 @@ def worker(request_path):
     socket.socket.connect = no_network; socket.socket.connect_ex = no_network
     socket.create_connection = no_network
     source = Path(request['boltz_source']); source_evidence = verify_source(source)
-    asset_evidence = verify_assets(request['assets_dir'])
+    asset_evidence = verify_for_spec(spec, request['assets_dir'])
     sys.dont_write_bytecode = True; sys.path.insert(0, str(source/'src'))
     os.environ.update(OMP_NUM_THREADS=str(spec['threads']), MKL_NUM_THREADS=str(spec['threads']),
                       OPENBLAS_NUM_THREADS=str(spec['threads']), WANDB_MODE='disabled')
+    if selected_model(spec) == 'boltz2':
+        os.environ.update(NUMBA_NUM_THREADS=str(spec['threads']), VECLIB_MAXIMUM_THREADS=str(spec['threads']),
+                          NUMEXPR_NUM_THREADS=str(spec['threads']))
     import torch
     if not (3, 10) <= sys.version_info[:2] < (3, 13):
         raise RuntimeError('Pinned Boltz requires Python 3.10–3.12')
     torch.set_num_threads(spec['threads']); torch.set_num_interop_threads(1)
     import boltz.main as main
     from boltz.model.models.boltz1 import Boltz1
+    model_name = selected_model(spec)
+    model_class = Boltz1
+    if model_name == 'boltz2':
+        from boltz.model.models.boltz2 import Boltz2
+        from boltz.data.module.inferencev2 import PredictionDataset
+        model_class = Boltz2
+        PredictionDataset.__getitem__ = no_recursive_fallback(PredictionDataset.__getitem__)
     observed = {'forward_calls': 0, 'device': None, 'output_tensor_shapes': []}
-    original = Boltz1.forward
+    original = model_class.forward
     def tensor_list(item):
         if isinstance(item, torch.Tensor): return [item]
         if isinstance(item, dict): return [t for value in item.values() for t in tensor_list(value)]
         if isinstance(item, (list, tuple)): return [t for value in item for t in tensor_list(value)]
         return []
     def forward(self, *args, **kwargs):
+        if model_name == 'boltz2':
+            if observed['forward_calls'] or self.affinity_prediction:
+                raise RuntimeError('Model-2 duplicate or affinity forward refused')
+            incoming = tensor_list((args, kwargs))
+            if not incoming or any(t.device.type != 'cpu' for t in incoming):
+                raise RuntimeError('Model-2 input tensors must be CPU')
+            if not torch.is_autocast_enabled('cpu') or torch.get_autocast_dtype('cpu') != torch.bfloat16:
+                raise RuntimeError('Model-2 requires official CPU BF16 mixed precision')
+            observed.update(cpu_autocast_enabled=True, cpu_autocast_dtype=str(torch.get_autocast_dtype('cpu')),
+                            parameter_dtypes=sorted({str(p.dtype) for p in self.parameters()}),
+                            input_dtypes=sorted({str(t.dtype) for t in incoming}), input_device='cpu')
         if {str(p.device) for p in self.parameters()} != {'cpu'}:
             raise RuntimeError('Model parameter device differs from required CPU')
         result = original(self, *args, **kwargs)
@@ -540,10 +877,12 @@ def worker(request_path):
         observed.update(forward_calls=observed['forward_calls']+1, device='cpu',
                         output_tensor_shapes=[list(t.shape) for t in tensors[:16]])
         return result
-    Boltz1.forward = forward
+    model_class.forward = forward
+    if model_name == 'boltz2':
+        install_model2_guards(main, model_class, Boltz1, paths, spec, observed)
     # Do not invoke the upstream downloader, even with a complete cache.
     main.download_boltz1 = lambda cache: verify_assets(cache)
-    main.download_boltz2 = no_network
+    main.download_boltz2 = (lambda cache: verify_boltz2_assets(cache)) if model_name == 'boltz2' else no_network
     runtime_libraries = {}
     for name in ('libtorch_cpu.dylib', 'libtorch_cpu.so'):
         library = Path(torch.__file__).resolve().parent/'lib'/name
@@ -553,7 +892,7 @@ def worker(request_path):
     receipt = {'source': source_evidence, 'assets': asset_evidence, 'observed': observed,
                'msa': msa_evidence,
                'python': platform.python_version(), 'python_sha256': digest(Path(sys.executable).resolve()),
-               'torch': torch.__version__, 'platform': platform.platform(), 'model': 'boltz1',
+               'torch': torch.__version__, 'platform': platform.platform(), 'model': model_name,
                'runtime_library_sha256':runtime_libraries,
                'versions':{name:importlib.metadata.version(name) for name in
                            ('torch','numpy','pytorch-lightning','rdkit','biopython')},
@@ -563,7 +902,12 @@ def worker(request_path):
         if staged_msa(spec, paths['output_dir']) != msa_evidence:
             raise ValueError('MSA identity changed during prediction')
         if observed['forward_calls'] < 1:
-            raise RuntimeError('No observed Boltz-1 forward workload')
+            raise RuntimeError('No observed Boltz forward workload')
+        if model_name == 'boltz2':
+            if verify_source(source) != source_evidence or verify_boltz2_assets(paths['assets_dir']) != asset_evidence:
+                raise RuntimeError('Model-2 source/assets changed during use')
+            if observed['forward_calls'] != 1 or observed.get('checkpoint_loads') != 1:
+                raise RuntimeError('Model-2 workload cardinality differs')
         receipt['completed'] = True
     except BaseException as exc:
         receipt.update(completed=False, error_type=type(exc).__name__, error=str(exc)[:2000])
@@ -584,18 +928,22 @@ def run(spec_path):
             raise ValueError('Output must not overlap source or assets')
     if not destination.parent.is_dir(): raise ValueError('Output parent must exist')
     # Reject an overlapping or malformed alignment before reserving any output.
-    if spec.get('schema') == SCHEMA_V2:
+    if spec.get('schema') in (SCHEMA_V2, SCHEMA_V3):
         msa_bytes(spec)
+    if spec.get('schema') == SCHEMA_V3:
+        checked = validate_spec(spec)
+        verify_source(checked['boltz_source'])
+        verify_boltz2_assets(checked['assets_dir'])
     destination.mkdir()  # exclusive reservation: never modify an existing output
     report = {'schema': spec.get('schema'), 'status': 'preflight', 'accepted': False, 'engine_started': False,
               'actual_runtime_verified': False, 'scientific_accuracy': 'not_evaluated',
-              'spec_sha256': hashlib.sha256(raw).hexdigest(), 'model': 'boltz1',
-              'source_revision': REVISION, 'model_revision': MODEL_REVISION}
+              'spec_sha256': hashlib.sha256(raw).hexdigest(), 'model': selected_model(spec),
+              'source_revision': REVISION, 'model_revision': MODEL2_REVISION if spec.get('schema') == SCHEMA_V3 else MODEL_REVISION}
     target = destination/'report.json'; atomic_json(target, report)
     try:
         paths = validate_spec(spec)
         report['source'] = verify_source(paths['boltz_source'])
-        report['assets'] = verify_assets(paths['assets_dir'])
+        report['assets'] = verify_for_spec(spec, paths['assets_dir'])
         report['python_sha256'] = digest(paths['python'])
         report['sequence_sha256'] = hashlib.sha256(spec['sequence'].encode()).hexdigest()
         msa_raw, report['msa'] = msa_bytes(spec)
@@ -623,13 +971,24 @@ def run(spec_path):
         receipt = read_json(destination/'worker-receipt.json')
         if (receipt.get('completed') is not True or receipt.get('source') != report['source'] or
                 receipt.get('assets') != report['assets'] or receipt.get('python_sha256') != report['python_sha256'] or
-                receipt.get('model') != 'boltz1' or receipt.get('observed',{}).get('device') != 'cpu' or
+                receipt.get('model') != selected_model(spec) or receipt.get('observed',{}).get('device') != 'cpu' or
                 receipt.get('msa') != report['msa'] or staged_msa(spec, destination) != report['msa'] or
                 type(receipt.get('observed',{}).get('forward_calls')) is not int or receipt['observed']['forward_calls'] < 1 or
                 not receipt.get('runtime_library_sha256')):
             raise ValueError('Worker provenance or workload evidence mismatch')
         pred = destination/'engine/boltz_results_input/predictions/input'
         report['structure'] = validate_structure(pred/'input_model_0.pdb', spec['sequence'])
+        if spec.get('schema') == SCHEMA_V3:
+            report['structure']['heavy_atom_inventory'] = validate_heavy_atoms(pred/'input_model_0.pdb', spec['sequence'])
+            if verify_boltz2_assets(paths['assets_dir']) != report['assets']:
+                raise ValueError('Model-2 assets changed during prediction')
+            observation = receipt.get('observed', {})
+            if (observation.get('forward_calls') != 1 or observation.get('checkpoint_loads') != 1 or
+                    observation.get('cpu_autocast_dtype') != 'torch.bfloat16' or
+                    observation.get('cpu_autocast_enabled') is not True or observation.get('input_device') != 'cpu' or
+                    observation.get('affinity') is not False or
+                    observation.get('checkpoint_sha256') != ASSETS2['boltz2_conf.ckpt'][1]):
+                raise ValueError('Model-2 single-forward/precision evidence mismatch')
         report['confidence'] = validate_confidence(pred/'confidence_input_model_0.json')
         report['workload'] = receipt
         report.update(status='succeeded', accepted=True, actual_runtime_verified=True)
@@ -655,10 +1014,14 @@ def main(argv=None):
     validate.add_argument('--structure', required=True); validate.add_argument('--confidence', required=True)
     validate.add_argument('--sequence', required=True)
     internal = sub.add_parser('_worker', help=argparse.SUPPRESS); internal.add_argument('--request', required=True)
+    prepare = sub.add_parser('prepare-boltz2-assets')
+    prepare.add_argument('--assets-dir', required=True)
     args = parser.parse_args(argv)
     try:
         if args.command == '_worker': worker(args.request); return 0
-        if args.command == 'run':
+        if args.command == 'prepare-boltz2-assets':
+            result = prepare_boltz2_assets(args.assets_dir)
+        elif args.command == 'run':
             result = run(args.spec)
         else:
             if not 4 <= len(args.sequence) <= 128 or set(args.sequence)-set(AA3.values()):
@@ -667,7 +1030,7 @@ def main(argv=None):
                       'scientific_accuracy':'not_evaluated',
                       'structure':validate_structure(args.structure,args.sequence),
                       'confidence':validate_confidence(args.confidence)}
-        print(json.dumps(result,allow_nan=False)); return 0 if result.get('status') in ('succeeded','validated_output_only') else 2
+        print(json.dumps(result,allow_nan=False)); return 0 if result.get('status') in ('succeeded','validated_output_only','prepared_assets') else 2
     except Exception as exc:
         print(json.dumps({'status':'failed','accepted':False,'actual_runtime_verified':False,
                           'error_type':type(exc).__name__,'error':str(exc)[:2000]}),file=sys.stderr)

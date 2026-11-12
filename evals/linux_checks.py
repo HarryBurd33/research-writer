@@ -145,6 +145,29 @@ class LinuxContracts(unittest.TestCase):
         obj = {'id': self.m['image_id'], 'os': 'linux', 'volumes': {'/data': {}}}
         with patch.object(mod, 'docker', return_value=mod.canonical(obj)), self.assertRaises(ValueError): mod.inspect_image(self.p, self.m['image_id'])
 
+    def test_image_optional_empty_volumes_keep_strict_inspection(self):
+        image = {'id': self.m['image_id'], 'os': 'linux', 'architecture': 'amd64', 'volumes': None}
+        for volumes in (None, {}):
+            obj = {**image, 'volumes': volumes}
+            with patch.object(mod, 'docker', return_value=mod.canonical(obj)) as docker:
+                self.assertEqual(mod.inspect_image(self.p, self.m['image_id']), obj)
+            args = docker.call_args.args[1]
+            self.assertEqual(args[:4], ['image', 'inspect', self.m['image_id'], '--format'])
+            self.assertIn('json (index .Config "Volumes")', args[4])
+            self.assertNotIn('.Config.Volumes', args[4])
+            self.assertNotIn('.Env', args[4])
+        for volumes in ({'/data': {}}, [], False, 0, '', 'null', ['/data']):
+            with self.subTest(volumes=volumes), patch.object(mod, 'docker', return_value=mod.canonical({**image, 'volumes': volumes})), self.assertRaises(ValueError):
+                mod.inspect_image(self.p, self.m['image_id'])
+        for obj in ([], None, {}, {k: v for k, v in image.items() if k != 'volumes'},
+                    {**image, 'id': 'sha256:' + 'd' * 64}, {**image, 'os': 'windows'},
+                    {**image, 'architecture': None}, {**image, 'architecture': ''}, {**image, 'extra': True}):
+            with self.subTest(image=obj), patch.object(mod, 'docker', return_value=mod.canonical(obj)), self.assertRaises(ValueError):
+                mod.inspect_image(self.p, self.m['image_id'])
+        for raw in (b'{', b'{"id":1,"id":2}', b'{"volumes":NaN}'):
+            with patch.object(mod, 'docker', return_value=raw), self.assertRaises(ValueError):
+                mod.inspect_image(self.p, self.m['image_id'])
+
     def test_effective_config_changes_refused(self):
         state = self.prepared(); obj = fake_inspect(state)
         self.assertEqual(mod.check_container(state, obj), obj)

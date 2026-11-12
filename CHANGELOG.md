@@ -1,5 +1,10 @@
 # Changes
 
+## 0.18.0 — candidate
+
+- Preserve a bounded Linux supervisor fault receipt after verified cleanup or before launch, with recovery by validated container identity. Native tests cover safe retention and unsafe cleanup refusal.
+- Add explicit Boltz-2 CPU prediction with verified local assets and one canonical chain. The fixed crambin benchmark passed at 0.5903 Å RMSD across 46 Cα atoms.
+
 ## 0.15.0 — 2026-11-08
 
 - Add prospective question/contribution/evidence/method/analysis/deliverable traceability, material access limits, alternatives and a contribution-weakening outcome.

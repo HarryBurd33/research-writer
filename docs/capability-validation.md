@@ -1,4 +1,16 @@
-# Capability extension validation — 0.17.0
+# Capability extension validation — 0.18 candidate
+
+## Version 0.18 candidate evidence
+
+The 0.18 candidate adds bounded Linux supervisor fault receipts and an explicit `research-writer.structure.v3` Boltz-2 CPU route. The installed baseline remains 0.17 pending final package review and delivery.
+
+**Linux fault observability.** The [native workflow](https://github.com/HarryBurd33/research-writer/actions/runs/43168471154) ran merge checkout `00463f27ce580b47628ffc7fec255fec34e02226` for PR head `32bc33648b24940b595a803a07d86cf4a07783c9` and passed the original ten Linux tests, six durable checkpoint tests and two injected fault cases. Docker 29 omitted the optional empty volumes field in the first run. The compatibility repair accepts that empty representation while retaining volume checks. The safe fault retained a bound receipt for 30 seconds. A fresh client recovered the same cached receipt after expiry without reexecution. The unsafe cleanup case exited without a receipt or retention delay. Both fixtures confirmed removal by exact container ID. These tests verify fault reporting and recovery under the injected conditions. The cause of historical spontaneous exit-2 failures remains unresolved.
+
+**Boltz-2 CPU benchmark.** Both publisher-pinned assets and the 21 canonical molecule files passed verification. The first preflight stopped at a changed Python binary hash before scientific processing. A separately verified Python 3.12.14 runtime with PyTorch 2.15.0 passed the saved feature preflight, including the exact four-row local alignment and 326 typed atoms. An independent verifier checked one CPU BF16 prediction with two threads, seed 20261108, three recycles, 200 sampling steps and one sample. It measured **0.5902563453 Å RMSD across all 46 Cα atoms** against the frozen **2 Å** threshold for 1CRN chain A. All 326 expected typed atoms were present. Worker time was 111.631 seconds, peak sampled process-tree RSS was 4,424,581,120 bytes, and final retained output was 284,073 bytes. Prediction SHA-256: `4733be6f5ba8bf2424e4548c5e1804152ff46a78efec553dddcbe78e01e9caea`.
+
+This result qualifies the full Boltz-2 route and runtime for one fixed reference fixture. It does not isolate the effect of the weights or establish held-out accuracy, larger-input capacity or GPU performance. The earlier Boltz-1 failures at 8.28 Å and 9.39 Å remain part of the record below.
+
+## Version 0.17 baseline and historical controls
 
 Observed through 2026-11-11. Version 0.17 adds Windows SSH transport, a separate POSIX accelerator SSH protocol and a closed Boltz v2 local-A3M contract. Hosted Windows SSH acceptance passed at `f675c2937d3ab5e9533d676a2ba1c4747606a82e`. The installed 63-file package matches source commit `6f87840c0074805b42918401eeaedb2fcbcd0d7a` byte for byte, with managed hash `c0b5f22ed95ce30a201e7f030346ce29cf918623e0117e049f5c25ef3d4594b2`. Installed package, core, retrieval and durable-checkpoint controls passed from an unrelated working directory; the prior 0.16 installation is preserved for rollback. These offline controls do not constitute scientific validation.
 

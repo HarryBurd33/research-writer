@@ -102,6 +102,7 @@ jobs:
           python evals/remote_worker_checks.py
           python evals/controller_recovery_checks.py
           python evals/linux_checks.py
+          python evals/linux_fault_checks.py
           python evals/checkpoint_checks.py
           python evals/backup_checks.py
           python evals/stream_backup_checks.py
@@ -155,6 +156,7 @@ jobs:
         run: |
           python -m pip install --only-binary=:all: psutil==7.2.2
           python evals/structure_checks.py
+          python evals/structure_boltz2_checks.py
       - name: Public regressions with actual molecular controls
         run: python evals/toolkit_regressions.py --molecular
       - name: Prepare isolated Open Babel runtime
@@ -258,6 +260,7 @@ jobs:
           python3 evals/linux_observer_checks.py
           python3 evals/linux_cpu_diagnostic_checks.py
           python3 evals/linux_startup_diagnostic_checks.py
+          python3 evals/linux_fault_checks.py
       - name: Refuse combined diagnostic batches
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic && inputs.linux_startup_diagnostic }}
         run: |
@@ -297,6 +300,21 @@ jobs:
           printf 'RW_CPU_DIAGNOSTIC_IMAGE_ID=%s\n' "$IMAGE_ID" >> "$GITHUB_ENV"
           python evals/linux_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
           python evals/durable_integration_checks.py --docker "$(command -v docker)" --context default --image-id "$IMAGE_ID"
+      - name: Require deterministic native supervisor-fault controls
+        id: linux_fault_native
+        if: ${{ !cancelled() && steps.linux_diagnostic_contracts.outcome == 'success' && steps.provision_linux_image.outcome == 'success' }}
+        timeout-minutes: 2
+        run: |
+          [[ "$RW_CPU_DIAGNOSTIC_IMAGE_ID" =~ ^sha256:[0-9a-f]{64}$ ]]
+          timeout --signal=KILL 90s python evals/linux_fault_integration_checks.py --run-native --docker "$(command -v docker)" --context default --image-id "$RW_CPU_DIAGNOSTIC_IMAGE_ID" --report "$RUNNER_TEMP/linux-fault-native.jsonl"
+      - name: Preserve synthetic supervisor-fault records
+        if: ${{ always() && steps.linux_fault_native.outcome != 'skipped' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: linux-supervisor-fault-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/linux-fault-native.jsonl
+          if-no-files-found: error
+          retention-days: 7
       - name: Observe one bounded batch of fresh CPU fixtures
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.linux_cpu_diagnostic && !inputs.linux_startup_diagnostic }}
         timeout-minutes: 3
