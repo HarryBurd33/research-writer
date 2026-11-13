@@ -1,6 +1,8 @@
-# Research Writer — version 0.18.1
+# Research Writer — version 0.19.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
+
+Version 0.19.0 integrates [StoryScope and Humanizer](references/writing-review.md): a pinned 304-feature narrative taxonomy and offline inspection tool, research-adapted structural review, and a full Humanizer editing reference with evidence-preserving overrides. These support outline development and prose revision while preserving the novelty assessment. StoryScope's provider/model pipeline is not installed, and its fiction classifiers are not validated for research papers. [Notices and exact source pins](references/third-party-notices.md) accompany the resources.
 
 It also helps develop the research question itself. It maps the territory, investigates possible niches, compares contribution options against the closest prior work and helps decide how to occupy the niche. It revises the question as evidence changes and distinguishes possible novelty from a verified difference within the inspected literature.
 
@@ -65,7 +67,7 @@ Browsing or a scholarly connector enables live discovery and verification. Full 
 
 Research quality depends on accessible evidence, tool capabilities and expert judgment. A polished draft is not evidence that a hypothesis is true or that a manuscript meets all requirements for publication.
 
-All workflow text in this package is newly authored. Referenced methodological sources retain their own rights. No third-party source text is redistributed. This original skill package is licensed under the [MIT License](LICENSE).
+Original Research Writer code and guidance are licensed under the [MIT License](LICENSE). The bundled Humanizer instructions and StoryScope taxonomy retain their MIT copyrights and attribution in [third-party notices](references/third-party-notices.md). Other referenced methodological sources retain their own rights; their full text is not bundled.
 
 ## Optional Linux isolation and recovery
 

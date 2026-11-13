@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "inspected_on": "2026-11-12",
+  "resources": [
+    {
+      "path": "humanizer.md",
+      "repository": "blader/humanizer",
+      "revision": "b48c832f0f809c1b5658edbb838c2521b72f2413",
+      "source_path": "SKILL.md",
+      "source_url": "https://github.com/blader/humanizer/blob/b48c832f0f809c1b5658edbb838c2521b72f2413/SKILL.md",
+      "git_blob_sha1": "175bf05f45ae3bf566059a560467166d93a9599c",
+      "sha256": "804a119e924ac30295b298213e0b71b3e38b2667b8ef4fb7b69e9246369b9045",
+      "license": "MIT",
+      "modified": false
+    },
+    {
+      "path": "humanizer-license.md",
+      "repository": "blader/humanizer",
+      "revision": "b48c832f0f809c1b5658edbb838c2521b72f2413",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/blader/humanizer/blob/b48c832f0f809c1b5658edbb838c2521b72f2413/LICENSE",
+      "git_blob_sha1": "625297fb778f32eb39d3a5b97e3e3b611b7304d6",
+      "sha256": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
+      "license": "MIT",
+      "modified": false
+    },
+    {
+      "path": "storyscope-taxonomy.json",
+      "repository": "jenna-russell/storyscope",
+      "revision": "b82d93534ab25dbf20dfe902c21e77d0b0602ca1",
+      "source_path": "data/taxonomy.json",
+      "source_url": "https://github.com/jenna-russell/storyscope/blob/b82d93534ab25dbf20dfe902c21e77d0b0602ca1/data/taxonomy.json",
+      "git_blob_sha1": "b5f075bf50f1345941007a303276c3a41024636a",
+      "sha256": "e7302f37e437928a16149e0c4bba2432d7f148cf65bf5d16772ac65e97265d5e",
+      "license": "MIT",
+      "modified": false
+    },
+    {
+      "path": "storyscope-license.md",
+      "repository": "jenna-russell/storyscope",
+      "revision": "b82d93534ab25dbf20dfe902c21e77d0b0602ca1",
+      "source_path": "LICENSE",
+      "source_url": "https://github.com/jenna-russell/storyscope/blob/b82d93534ab25dbf20dfe902c21e77d0b0602ca1/LICENSE",
+      "git_blob_sha1": "c45d016bd8418d6c80ad0ed8d203a31e92a6798d",
+      "sha256": "4ae015c1203e464ad613c6f35faefa82c0703d9ef538871662d6256511023229",
+      "license": "MIT",
+      "modified": false
+    }
+  ],
+  "scope": "Pinned instructional text and taxonomy only. No story corpus, models, provider runtime or empirical classifier validation."
+}

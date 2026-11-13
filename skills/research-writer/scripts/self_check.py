@@ -33,6 +33,11 @@ REQUIRED = ('SKILL.md', 'LICENSE', 'README.md', 'scripts/evidence_tools.py',
             'scripts/accelerator_remote_tools.py', 'scripts/accelerator_remote_worker.py',
             'scripts/linux_tools.py', 'scripts/linux_supervisor.py',
             'scripts/checkpoint_tools.py', 'scripts/backup_tools.py', 'scripts/stream_backup_tools.py',
+            'scripts/writing_tools.py', 'templates/writing-review.md',
+            'references/writing-review.md', 'references/third-party-notices.md',
+            'references/upstream/manifest.json', 'references/upstream/humanizer.md',
+            'references/upstream/humanizer-license.md',
+            'references/upstream/storyscope-taxonomy.json', 'references/upstream/storyscope-license.md',
             'templates/research-record.md', 'references/tool-catalog.json',
             *('references/' + name + '.md' for name in (
                 'argument-and-synthesis', 'computational-research', 'delivery',
@@ -71,6 +76,22 @@ def package_check():
     entries = json.loads((ROOT / 'references/tool-catalog.json').read_text(encoding='utf-8'))
     engines = entries.get('engines') if isinstance(entries, dict) else None
     require(isinstance(engines, list) and len(engines) == 14, 'Incomplete engine catalog')
+    upstream = ROOT / 'references' / 'upstream'
+    manifest = json.loads((upstream / 'manifest.json').read_text(encoding='utf-8'))
+    required_sources = {'humanizer.md', 'humanizer-license.md',
+                        'storyscope-taxonomy.json', 'storyscope-license.md'}
+    resources = manifest.get('resources', [])
+    require(len(resources) == 4 and {r.get('path') for r in resources} == required_sources,
+            'Incomplete writing-source manifest')
+    for resource in resources:
+        data = (upstream / resource['path']).read_bytes()
+        require(hashlib.sha256(data).hexdigest() == resource.get('sha256'),
+                'Writing-source hash mismatch: ' + resource['path'])
+        blob = b'blob ' + str(len(data)).encode() + b'\0' + data
+        require(hashlib.sha1(blob).hexdigest() == resource.get('git_blob_sha1'),
+                'Writing-source Git identity mismatch: ' + resource['path'])
+        require(resource.get('license') == 'MIT' and resource.get('modified') is False,
+                'Unexpected writing-source provenance: ' + resource['path'])
 
 
 def run_cli(work, script, arguments, expected=0):

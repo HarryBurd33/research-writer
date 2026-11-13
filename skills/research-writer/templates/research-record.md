@@ -95,6 +95,7 @@ Use status such as candidate, supported within inspected literature, already add
 - Extraction, calculation inputs/code/versions/outputs when applicable:
 - Draft/output locations:
 - Completed checks / unresolved claims / limitations:
+- Structural/prose review, when used: [writing review record](writing-review.md), actual coverage, upstream pins, protected claims/items and remaining issues:
 - Last completed action and next action:
 
 ## Publication preparation, when requested
