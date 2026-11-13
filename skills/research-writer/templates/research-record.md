@@ -49,6 +49,9 @@ Use only fields needed for this task. Store this filled record outside the skill
 
 Use status such as candidate, supported within inspected literature, already addressed or unresolved. Do not infer worldwide novelty from missing search results.
 
+- User-facing assessment, when developing an idea or claiming novelty: date and message/brief location; exact contribution assessed; already addressed / potentially novel within inspected evidence / unresolved; rationale and search/access limits:
+- Next direction, user's settled choice or delegated selection; revised contribution and reassessment needed:
+
 ## Search log
 
 | Date | Source/index | Exact query and filters | Actual coverage or records | Selection/deviation notes |
@@ -65,6 +68,7 @@ Use status such as candidate, supported within inspected literature, already add
 - Duplication test and decision: revise / justified replication / stop / proceed within stated scope:
 - Gap hypothesis: significance, venue/readership value, uncertain publishability and feasibility/resources:
 - Disconfirming evidence sought, weakest assumption and next check:
+- Explicit assessment delivered before drafting, still current / updated / pending; or no novelty aim:
 - Ready within scope / material blocker; unresolved currency or novelty claims:
 
 ## Source and claim ledger
