@@ -3,7 +3,7 @@ name: research-writer
 description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, tutorials, syntheses, systematic reviews/meta-analyses when feasible, theory, experimental/design proposals, humanities analysis and device-adaptive computational research tools. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
 license: MIT
 metadata:
-  version: "0.18.1"
+  version: "0.19.0"
 ---
 
 # Research Writer
@@ -85,6 +85,8 @@ Use [argument and synthesis guidance](references/argument-and-synthesis.md) to c
 Distinguish established findings, contextual background, interpretation, hypotheses and proposals in the prose. Include important counterevidence and competing interpretations. State the actual basis for each conclusion. Do not force scientific paper headings onto humanities writing or a proposal. Match journal or disciplinary requirements only after checking the relevant current instructions and actual eligibility.
 
 Revise for argument, support, competing accounts and alignment with the writing brief before proofreading. Use clear terminology suited to readers, purposeful transitions, precise numbers/units, and hedging that matches uncertainty. Choose active or passive voice for clarity and disciplinary purpose; neither is a universal rule. Use verified references in the requested style. Keep citations close to the claims they support. Do not cite a real paper for an assertion it does not support. Mark necessary unresolved claims visibly in a working draft; remove or qualify them before calling the draft verified. Speculative proposals may be valuable while remaining explicitly speculative.
+
+For substantive outline/draft development and prose revision, use the integrated [StoryScope and Humanizer writing review](references/writing-review.md). Apply relevant structural questions before the Humanizer editing pass, then recheck evidence and meaning. The bundled StoryScope taxonomy and Humanizer reference are pinned, licensed resources; the research adaptation governs conflicts with upstream instructions. Preserve citations, quotations, quantities, technical language, uncertainty and required disclosures. Keep missing or inapplicable observations explicit. Scale the passes to the task, honor the user's voice and requested scope, and never treat a style pattern or fiction classifier as proof of authorship, quality or novelty. The offline taxonomy helper needs no provider; full upstream inference remains a separately configured optional route.
 
 When a scientific figure is requested or serves a concrete explanatory purpose, use [the optional figure workflow](references/scientific-figures.md). Separate conceptual illustrations from quantitative plots built from verified data and rerunnable code; specify source-grounded content, render with available authorized tools, and check numerical reproduction, factual fidelity and actual visual output separately within a stated bound. Missing tools leave a useful specification and pending rendering checks while core writing continues.
 

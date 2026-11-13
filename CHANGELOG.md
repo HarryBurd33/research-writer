@@ -1,5 +1,11 @@
 # Changes
 
+## 0.19.0 — 2026-11-12
+
+- Integrate pinned Humanizer 4.0.0 instructions and StoryScope's 304-feature taxonomy, retaining source identities and MIT notices.
+- Add research-specific structural and prose review with citation, quotation, numerical, uncertainty and voice preservation; include a review record and explicit domain/runtime limits.
+- Add a standard-library taxonomy inspection CLI, offline controls, installed-resource integrity checks and portable resources. Full StoryScope inference/classification and external datasets/models remain optional, uninstalled routes.
+
 ## 0.18.1 — 2026-11-12
 
 - Require a visible novelty assessment before substantive drafting for idea development or a proposed novel contribution: closest paper(s), substantive overlap/difference, an evidence-bounded verdict and search/access limits.

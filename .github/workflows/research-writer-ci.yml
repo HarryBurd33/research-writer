@@ -111,6 +111,7 @@ jobs:
         run: |
           python evals/workflow/reproduce_quantitative.py
           python evals/workflow_checks.py
+          python evals/writing_checks.py
       - name: Synthetic figure reproduction and source integrity
         run: python evals/figure_example_checks.py
       - name: Isolated installed-package smoke
