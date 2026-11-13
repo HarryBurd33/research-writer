@@ -28,6 +28,8 @@ Assess separately: importance to knowledge or practice; suitability for the actu
 
 ## Record readiness and proceed proportionately
 
+For idea development or a proposed novel contribution, check that the [explicit novelty assessment](question-development.md) has been shown to the user before substantive drafting: closest-paper comparison, verdict, search/access limits and next direction. A saved internal status alone does not satisfy this check. Reuse a still-current assessment; update it after a material contribution or evidence change. An unresolved assessment permits a scoped provisional proposal or synthesis, not an established novelty claim. An already-addressed verdict requires honest repositioning if writing continues. Reporting the assessment creates no additional approval gate, and routine synthesis, tutorial or other work without a novelty aim does not require this assessment.
+
 Mark **ready with scope** when the checks support writing within stated limits; otherwise identify **blocked material decisions/checks**, their effect and the next action. Continue independent reading, planning or provisional scaffolding, but do not draft an unverified novelty claim as established. Revisit the gate when new evidence changes the argument. Plan, revise and proofread for the chosen readers; source diagrams may help active reading when useful.
 
 Conceptual references: [Pautasso, 2013](https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003149), on audience and renewed literature review; [Nature publication criteria](https://www.nature.com/nature/for-referees/policies-and-processes), on evidence, significance and readership. These inform this original synthesis; Nature's criteria are not universal. Accessed 2026-10-26.

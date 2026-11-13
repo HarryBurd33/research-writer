@@ -40,6 +40,20 @@ Challenge the niche using alternate terminology, the closest prior work, relevan
 
 If the original idea is already territory, explain the overlap and compare refinement, justified replication, synthesis or stopping the proposed new study. The literature may already answer the question; do not insist that every prior-work collision hides a novel tweak. Do not manufacture a gap by ignoring prior work. If new research is unavailable, retain candidate language and specify the search needed rather than pretending it happened.
 
+## Tell the user what the novelty check found
+
+After the initial comparison and duplication challenge, and before substantive drafting, show a concise assessment in the conversation or the agreed contribution brief. Do not bury it in the research record or the eventual manuscript. For idea development or a novelty claim, include:
+
+- The idea and proposed contribution being assessed, in plain language.
+- The closest paper(s), with verified citations/links and inspected passages where available; why they are the nearest substantive comparisons; what they actually established; and the overlap, proposed difference and reason that difference matters. Use multiple neighbors when needed and acknowledge when access prevents identifying a defensible closest paper.
+- A direct verdict: **already addressed** when inspected prior work covers the proposed contribution; **potentially novel within the inspected evidence** when a meaningful difference survives the bounded duplication challenge; or **unresolved** when searches, access or the contribution itself are insufficient to decide. Mixed ideas may need separate verdicts for their components. Never convert either a positive assessment or no matching search hit into a worldwide first-ever claim.
+- The assessment date, actual search dates/sources/scope, access levels, contrary evidence and consequential remaining checks. Under a supplied-only restriction, name that corpus and qualify the verdict to it. If unseen full text could change the comparison, keep the verdict unresolved and distinguish abstract-level information from inspected findings.
+- The next direction and its evidence needs. If already addressed, explain the decisive overlap and help compare substantive refinements, a justified replication/synthesis or stopping the novelty claim. If potentially novel, develop the question, method and paper around the supported increment. If unresolved, perform the next permitted check or offer a provisional artifact that leaves novelty unclaimed.
+
+Research necessary for this assessment precedes it; "before drafting" does not mean giving a verdict before searching. Reuse a fresh adequate comparison. Retest a materially revised contribution and show the updated assessment before drafting around it. Significance, feasibility and publishability remain separate judgments. Do not promise that every prior-work collision can be repaired into a novel idea.
+
+Reporting is not a mandatory approval stop. Continue within settled user choices or delegated discretion, asking only when a consequential direction remains undecided. A synthesis, tutorial, interpretation or replication without a novelty aim can proceed on its stated value without this assessment; do not invent an originality requirement or reopen narrow proofreading.
+
 ## Offer distinct ways to occupy the niche
 
 Usually offer two to four useful options, fewer when only one is supported. They should change the inquiry or contribution, not just paraphrase the same question. For each show:

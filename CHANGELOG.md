@@ -1,5 +1,11 @@
 # Changes
 
+## 0.18.1 — 2026-11-12
+
+- Require a visible novelty assessment before substantive drafting for idea development or a proposed novel contribution: closest paper(s), substantive overlap/difference, an evidence-bounded verdict and search/access limits.
+- Carry the delivered assessment and any material reassessment into the prewriting check and research record; help refine or honestly reposition ideas already covered by prior work.
+- Preserve supplied-source limits, provisional work under uncertainty, and useful writing without a novelty aim; no new approval gate or guarantee of originality/publication.
+
 ## 0.18.0 — candidate
 
 - Preserve a bounded Linux supervisor fault receipt after verified cleanup or before launch, with recovery by validated container identity. Native tests cover safe retention and unsafe cleanup refusal.
