@@ -21,6 +21,7 @@ Use only fields needed for this task. Store this filled record outside the skill
 - Inquiry type and whether a prediction is appropriate:
 - Selected writing route(s), preferred-method alternative and feasibility gates:
 - Search plan, selection rules and stopping rule:
+- For substantial multi-source work, [deep-research record](deep-research-record.md): subquestion coverage, source families/versions, contradictions, reconciliation and review dispositions:
 - Changes from the original plan and reasons:
 
 ## Question and contribution development

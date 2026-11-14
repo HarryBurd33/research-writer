@@ -1,6 +1,8 @@
-# Research Writer — version 0.19.0
+# Research Writer — version 0.20.0
 
 A reusable research-and-writing skill with no default finished-work target or output destination. It asks what you want to produce and where it should go when either is missing, then selects methods suited to the work. Exploratory briefs, scholarly drafts and publication-oriented manuscripts are all valid targets. Delivery can be in chat, a Google Doc, a local document or another supported location.
+
+Version 0.20.0 adds a [HyperResearch-adapted deep-research route](references/deep-research.md): explicit evidence coverage, source-family/version provenance, contradiction mapping, bounded investigations, cross-question reconciliation and citation checking after revisions. It retains the novelty assessment and StoryScope/Humanizer stages. This is a workflow integration, not an installation of HyperResearch's CLI, vault, crawler or Stop hook. Runtime requirements and deliberate differences are documented in the guide.
 
 Version 0.19.0 integrates [StoryScope and Humanizer](references/writing-review.md): a pinned 304-feature narrative taxonomy and offline inspection tool, research-adapted structural review, and a full Humanizer editing reference with evidence-preserving overrides. These support outline development and prose revision while preserving the novelty assessment. StoryScope's provider/model pipeline is not installed, and its fiction classifiers are not validated for research papers. [Notices and exact source pins](references/third-party-notices.md) accompany the resources.
 
