@@ -1,5 +1,11 @@
 # Changes
 
+## 0.20.0 — 2026-11-14
+
+- Adapt HyperResearch's evidence coverage, contradiction analysis, cross-question reconciliation and post-patch citation audit into a bounded deep-research route and reusable record.
+- Preserve source independence/version/access distinctions, unresolved positions and the pre-drafting novelty assessment; require evidence review after prose changes.
+- Document upstream source revision, MIT attribution and runtime differences. No upstream CLI, database, crawler, provider configuration or blocking hook is installed.
+
 ## 0.19.0 — 2026-11-12
 
 - Integrate pinned Humanizer 4.0.0 instructions and StoryScope's 304-feature taxonomy, retaining source identities and MIT notices.

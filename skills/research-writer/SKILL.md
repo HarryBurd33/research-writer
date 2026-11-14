@@ -3,7 +3,7 @@ name: research-writer
 description: Develop research questions and evidence-grounded writing from an idea. Map the research territory, discover and test a niche, compare possible novel contributions, and plan how to occupy it. Support exploratory briefs, tutorials, syntheses, systematic reviews/meta-analyses when feasible, theory, experimental/design proposals, humanities analysis and device-adaptive computational research tools. Ask what finished work the user wants and where it should go when unspecified; never assume either. Use for substantive research, question development, or research-informed writing; not quick facts, ordinary proofreading, citation formatting alone, or purely creative writing.
 license: MIT
 metadata:
-  version: "0.19.0"
+  version: "0.20.0"
 ---
 
 # Research Writer
@@ -68,6 +68,8 @@ Use supplied evidence and actually available research tools. Read underlying mat
 
 For deep research, iterate from field orientation to comparison of the closest precedents, then challenge the proposed niche and resolve the most consequential evidence gaps. Follow terminology across adjacent fields and citation trails when useful. Save what each research pass changed about the question. Depth means resolving important uncertainties and engaging conflicting evidence, not accumulating a fixed number of sources or announcing an exhaustive search.
 
+For substantial multi-source research, use the [HyperResearch-adapted deep-research route](references/deep-research.md): track subquestion coverage, source families and retrieved versions; map genuine contradictions; investigate consequential gaps within bounded assignments; and reconcile findings across questions before drafting. Reuse current ledgers and preserve unresolved judgments. Agreement counts, source rankings and investigator confidence do not establish truth. This route supplies agent procedures and record templates without replacing the research controller or installing upstream software, providers or hooks.
+
 If browsing, full texts, data or statistical execution are unavailable, say what the limitation prevents and deliver the best warranted artifact: a bounded synthesis, source-backed section, search protocol, feasibility assessment or proposal. Never fabricate access, searches, citations, study counts, analysis or completed work. Respect an instruction to use only supplied materials.
 
 ## 5. Develop the argument and write
@@ -93,6 +95,8 @@ When a scientific figure is requested or serves a concrete explanatory purpose, 
 ## 6. Audit and deliver
 
 Check the finished work against the brief and the selected mode's gate. Verify quotations and locators, consequential factual claims, references, numerical results and all assertions of performed work. Check that causal language, certainty and scope match the evidence. Confirm that limitations are specific and that conclusions survive the strongest contrary evidence considered.
+
+For substantial work using the deep-research route, record critic findings and their disposition, then audit citation-to-sentence bindings on the actual post-edit text. Recheck evidence after structural and Humanizer revisions; report review coverage and any unreviewed claims. Matching strings or numbers and successful integrity tools are not semantic verification.
 
 Revisit the positioning after research: is the niche still supported, does the actual method answer the question, and does the claimed contribution differ meaningfully from the closest prior work? Report novelty only within the search and access actually achieved. A well-supported continuation, synthesis or reinterpretation can be worthwhile without a first-ever claim.
 
